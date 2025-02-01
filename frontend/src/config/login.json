@@ -1,0 +1,10 @@
+{
+    "email": {
+        "required": "Email is required",
+        "invalid": "Invalid email address"
+    },
+    "password": {
+        "required": "Password is required",
+        "minLength": "Password must be at least 6 characters"
+    }
+}
