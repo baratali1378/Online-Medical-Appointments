@@ -1,14 +1,15 @@
-"use client"
+"use client";
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Snackbar, Alert } from '@mui/material';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Box, Typography, Button } from '@mui/material';
+import { Formik, Form } from 'formik';
 import useLoginForm from '../../hooks/login/useLoginForm';
+import { useTheme } from '@mui/material/styles';
+import CustomField from '../common/Field';
 
 const LoginForm: React.FC = () => {
-    const { initialValues, validationSchema, handleSubmit } = useLoginForm();
-    const [result, setResult] = useState<{ success: boolean; message?: string } | null>(
-        null
-    );
+    const { initialValues, showPassword, setShowPassword, validationSchema, handleSubmit } = useLoginForm();
+    const theme = useTheme();
+    const [result, setResult] = useState<{ success: boolean; message?: string } | null>(null);
 
     const onSubmit = async (values: { email: string; password: string }) => {
         const result = await handleSubmit(values);
@@ -25,42 +26,32 @@ const LoginForm: React.FC = () => {
                 padding: { xs: 2, md: 0 },
             }}
         >
-            <Typography variant="h4" component="h1" gutterBottom>
+            {/* Responsive Typography */}
+            <Typography
+                color={theme.palette.text.disabled}
+                textAlign="center"
+                variant="h4"
+                component="h1"
+                gutterBottom
+                sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }} // Responsive font size
+            >
                 Login
             </Typography>
-            <Typography variant="body1" color="textSecondary" gutterBottom>
+
+            <Typography
+                variant="body1"
+                textAlign="center"
+                gutterBottom
+                sx={{ fontSize: { xs: '0.9rem', sm: '1rem', md: '1.2rem' } }} // Responsive font size
+            >
                 Welcome back! Please log in to your account.
             </Typography>
 
-            <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={onSubmit}
-            >
+            <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
                 {({ isSubmitting }) => (
                     <Form>
-                        <Field
-                            as={TextField}
-                            fullWidth
-                            label="Email"
-                            name="email"
-                            variant="outlined"
-                            margin="normal"
-                            required
-                        />
-                        <ErrorMessage name="email" component="div" />
-
-                        <Field
-                            as={TextField}
-                            fullWidth
-                            label="Password"
-                            name="password"
-                            type="password"
-                            variant="outlined"
-                            margin="normal"
-                            required
-                        />
-                        <ErrorMessage name="password" component="div" />
+                        <CustomField name="email" label="Email" type="text" />
+                        <CustomField name="password" label="Password" type="password" showPassword={showPassword} setShowPassword={setShowPassword} />
 
                         <Button
                             type="submit"
@@ -68,27 +59,13 @@ const LoginForm: React.FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={isSubmitting}
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{ mt: 3, mb: 2, bgcolor: theme.palette.text.disabled }}
                         >
                             Login
                         </Button>
                     </Form>
                 )}
             </Formik>
-
-            {/* Display success or error message */}
-            <Snackbar
-                open={!!result}
-                autoHideDuration={6000}
-                onClose={() => setResult(null)}
-            >
-                <Alert
-                    severity={result?.success ? 'success' : 'error'}
-                    onClose={() => setResult(null)}
-                >
-                    {result?.message}
-                </Alert>
-            </Snackbar>
         </Box>
     );
 };

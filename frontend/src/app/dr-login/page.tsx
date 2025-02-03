@@ -8,7 +8,7 @@ const LoginPage: React.FC = () => {
         <Container maxWidth="lg" sx={{ mt: 8, mb: 8 }}>
             <Grid2 container spacing={4}>
                 {/* Side Image */}
-                <Grid2 size={{ xs: 12, md: 6 }}>
+                <Grid2 display={{ xs: "none", md: "flex" }} size={{ xs: 12, md: 6 }}>
                     <SideImage
                         imageUrl="/docto_image (1).jpg"
                         altText="Medical Appointment"

@@ -23,7 +23,7 @@ const SideImage: React.FC<SideImageProps> = ({ imageUrl, altText }) => {
                 src={imageUrl}
                 alt={altText}
                 width={600}
-                height={500}
+                height={600}
                 style={{
                     borderRadius: '10px',
                     maxWidth: '100%',

@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import validationMessages from '../../config/login.json';
+import { useState } from 'react';
 
 interface LoginFormValues {
     email: string;
@@ -17,12 +18,13 @@ const useLoginForm = () => {
         password: '',
     };
 
+    const [showPassword, setShowPassword] = useState(false);
+
     const validationSchema = Yup.object({
         email: Yup.string()
             .email(validationMessages.email.invalid)
             .required(validationMessages.email.required),
         password: Yup.string()
-            .min(6, validationMessages.password.minLength)
             .required(validationMessages.password.required),
     });
 
@@ -46,6 +48,8 @@ const useLoginForm = () => {
         initialValues,
         validationSchema,
         handleSubmit,
+        showPassword,
+        setShowPassword
     };
 };
 
