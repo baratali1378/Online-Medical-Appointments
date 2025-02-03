@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { Formik, Form } from 'formik';
-import Link from 'next/link'; // ✅ Import Link from Next.js
+import Link from 'next/link';
 import useLoginForm from '../../hooks/login/useLoginForm';
 import { useTheme } from '@mui/material/styles';
 import CustomField from '../common/Field';
