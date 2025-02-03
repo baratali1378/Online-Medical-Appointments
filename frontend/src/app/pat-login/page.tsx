@@ -1,6 +1,6 @@
 export default async function DashboardPage() {
     // Simulate a delay (e.g., fetching data)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 6000));
 
     return (
         <div>

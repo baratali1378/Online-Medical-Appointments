@@ -1,8 +1,5 @@
-import React from "react"
+import AnimatedLoading from '../components/loading/loading';
 
-function Loading() {
-    // You can add any UI inside Loading, including a Skeleton.
-    return <h1>Loading....</h1>
+export default function Loading() {
+    return <AnimatedLoading />;
 }
-
-export default Loading;
