@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Grid2, Paper } from '@mui/material';
+import { Container, Grid2 } from '@mui/material';
 import SideImage from '../../components/login/SideImage';
 import LoginForm from '../../components/login/LoginForm';
 
@@ -14,7 +14,6 @@ const LoginPage: React.FC = () => {
                         altText="Medical Appointment"
                     />
                 </Grid2>
-
                 {/* Login Form */}
                 <Grid2 size={{ xs: 12, md: 6 }}>
                     <LoginForm />

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { Formik, Form } from 'formik';
+import Link from 'next/link'; // ✅ Import Link from Next.js
 import useLoginForm from '../../hooks/login/useLoginForm';
 import { useTheme } from '@mui/material/styles';
 import CustomField from '../common/Field';
@@ -42,7 +43,7 @@ const LoginForm: React.FC = () => {
                 variant="body1"
                 textAlign="center"
                 gutterBottom
-                sx={{ fontSize: { xs: '0.9rem', sm: '1rem', md: '1.2rem' } }} // Responsive font size
+                sx={{ fontSize: { xs: '0.7rem', sm: '0.90rem', md: '1rem' } }} // Responsive font size
             >
                 Welcome back! Please log in to your account.
             </Typography>
@@ -66,6 +67,14 @@ const LoginForm: React.FC = () => {
                     </Form>
                 )}
             </Formik>
+
+            {/* "Don't have an account? Sign up" */}
+            <Typography textAlign="center" sx={{ fontSize: { xs: '0.7rem', sm: '0.9rem', md: '1rem' }, mt: 2 }} >
+                Don’t have an account?{" "}
+                <Link href="/signup" style={{ color: theme.palette.primary.main, textDecoration: 'none', fontWeight: 'bold' }}>
+                    Sign up
+                </Link>
+            </Typography>
         </Box>
     );
 };
