@@ -1,17 +1,10 @@
+import React from "react";
+import LoginPage from "@/components/common/LoginPage";
 
-import React from 'react';
-import SideImage from '../../components/common/AuthSideImage';
-import LoginForm from '../../components/doctor-login/LoginForm';
-import AuthLayout from '../../components/common/LoginLayout';
-
-const LoginPage: React.FC = () => {
+const DoctorLoginPage: React.FC = () => {
     return (
-        <AuthLayout
-            sideImage={<SideImage imageUrl="/docto_image (1).jpg" altText="Medical Appointment" />}
-            formComponent={<LoginForm />}
-        />
+        <LoginPage image_url="/doctor_image.jpg" image_alt="Doctor Login" user_role="doctor" />
     );
 };
 
-
-export default LoginPage;
+export default DoctorLoginPage;

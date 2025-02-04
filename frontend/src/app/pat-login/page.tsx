@@ -1,11 +1,10 @@
-export default async function DashboardPage() {
-    // Simulate a delay (e.g., fetching data)
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+import React from "react";
+import LoginPage from "@/components/common/LoginPage";
 
+const UserLoginPage: React.FC = () => {
     return (
-        <div>
-            <h1>Dashboard</h1>
-            <p>Welcome to your dashboard!</p>
-        </div>
+        <LoginPage image_url="/patient_image.jpg" image_alt="Patient Login" user_role="user" />
     );
-}
+};
+
+export default UserLoginPage;
