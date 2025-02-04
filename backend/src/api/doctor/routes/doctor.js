@@ -1,9 +1,12 @@
-'use strict';
-
-/**
- * doctor router
- */
-
-const { createCoreRouter } = require('@strapi/strapi').factories;
-
-module.exports = createCoreRouter('api::doctor.doctor');
+module.exports = {
+    routes: [
+        {
+            method: "POST",
+            path: "/doctors/auth",
+            handler: "auth.login",
+            config: {
+                auth: false, // No authentication required
+            },
+        },
+    ],
+};
