@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import SideImage from "../../components/login/AuthSideImage";
-import AuthLayout from "../../components/login/LoginLayout";
-import LoginForm from "../../components/login/LoginForm";
-import withAuthHandler from "../../components/login/withAuthHandler";
+import SideImage from "@/components/login/AuthSideImage";
+import AuthLayout from "@/components/login/LoginLayout";
+import LoginForm from "@/components/login/LoginForm";
+import withAuthHandler from "@/components/login/withAuthHandler";
 
 const Login = withAuthHandler(LoginForm);
 
