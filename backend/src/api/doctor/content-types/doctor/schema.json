@@ -61,6 +61,10 @@
     },
     "available_slots": {
       "type": "json"
+    },
+    "password": {
+      "type": "password",
+      "private": true
     }
   }
 }

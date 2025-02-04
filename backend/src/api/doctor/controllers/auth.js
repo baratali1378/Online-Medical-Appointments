@@ -2,9 +2,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 module.exports = {
-    /**
-     * @param {{ request: { body: { email: any; password: any; }; }; badRequest: (arg0: string) => any; unauthorized: (arg0: string) => any; send: (arg0: { token: string; doctor: { id: any; name: any; email: any; profile_picture: any; }; }) => any; }} ctx
-     */
     async login(ctx) {
         const { email, password } = ctx.request.body;
 
@@ -12,31 +9,41 @@ module.exports = {
             return ctx.badRequest("Email and password are required");
         }
 
-        // Find the doctor by email
+        // Find doctor by email
         const doctor = await strapi.db.query("api::doctor.doctor").findOne({
             where: { email },
         });
+
 
         if (!doctor) {
             return ctx.unauthorized("Invalid email or password");
         }
 
-        // Check password
-        const validPassword = await bcrypt.compare(password, doctor.password);
-
-        if (!validPassword) {
+        // Ensure that doctor.password is a hashed string
+        if (!doctor.password) {
             return ctx.unauthorized("Invalid email or password");
+        }
+
+        // Validate password with bcrypt
+        try {
+            const validPassword = await bcrypt.compare(password, doctor.password);
+            if (!validPassword) {
+                return ctx.unauthorized("Invalid email or password");
+            }
+        } catch (error) {
+            console.error("Error comparing passwords:", error);
+            return ctx.internalServerError("Something went wrong while checking the password.");
         }
 
         // Generate JWT token
         const token = jwt.sign(
             { id: doctor.id, email: doctor.email, role: "doctor" },
-            process.env.JWT_SECRET || "your-secret-key",
-            { expiresIn: "7d" }
+            process.env.JWT_SECRET || "online-medical",
+            { expiresIn: "1d" }
         );
 
-        // Return response
-        return ctx.send({
+        // Return the token and doctor information
+        return {
             token,
             doctor: {
                 id: doctor.id,
@@ -44,6 +51,6 @@ module.exports = {
                 email: doctor.email,
                 profile_picture: doctor.profile_picture,
             },
-        });
+        };
     },
 };

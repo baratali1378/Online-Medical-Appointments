@@ -436,6 +436,7 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    password: Schema.Attribute.Password & Schema.Attribute.Private;
     phone_number: Schema.Attribute.JSON;
     profile_picture: Schema.Attribute.Media<'images' | 'files'>;
     publishedAt: Schema.Attribute.DateTime;

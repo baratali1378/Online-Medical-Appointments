@@ -2,8 +2,8 @@ module.exports = {
     routes: [
         {
             method: "POST",
-            path: "/doctors/login",
-            handler: "auth.login",
+            path: "/doctors/auth",
+            handler: "auth.login", // ✅ Changed from "auth.login" to "doctor.loginDoctor"
             config: {
                 auth: false, // No authentication required
             },
