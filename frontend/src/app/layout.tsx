@@ -8,7 +8,7 @@ export const metadata = {
   description: "Created by Barat Ali Hassanzada.",
   keywords: ["Booking", "Doctor", "Patient", "Online Oppointment System"],
   icons: [
-    { rel: "icon", type: "image/png", sizes: "32x32", url: "/favicon.png" },
+    { rel: "icon", type: "image/png", sizes: "300x300", url: "/logo.png" },
   ],
 };
 
