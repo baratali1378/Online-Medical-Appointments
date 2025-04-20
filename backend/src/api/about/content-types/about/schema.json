@@ -4,7 +4,8 @@
   "info": {
     "singularName": "about",
     "pluralName": "abouts",
-    "displayName": "About"
+    "displayName": "About",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -13,19 +14,20 @@
     "title": {
       "type": "text"
     },
-    "content": {
-      "type": "blocks"
-    },
     "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "seoTitle": {
       "type": "text"
+    },
+    "content": {
+      "type": "richtext"
     }
   }
 }

@@ -1,5 +1,5 @@
 :root {
-  --background: #71C9CE;
+  --background: #fffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,7 +25,6 @@ body {
 }
 
 @keyframes bounce {
-
   0%,
   100% {
     transform: translateY(0);

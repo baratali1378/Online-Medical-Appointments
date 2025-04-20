@@ -372,6 +372,7 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiAboutAbout extends Struct.SingleTypeSchema {
   collectionName: 'abouts';
   info: {
+    description: '';
     displayName: 'About';
     pluralName: 'abouts';
     singularName: 'about';
@@ -380,7 +381,7 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.Blocks;
+    content: Schema.Attribute.RichText;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
