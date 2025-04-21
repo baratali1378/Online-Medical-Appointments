@@ -1,5 +1,3 @@
-// types/contact.ts
-
 export interface ContactImageFormat {
   url: string;
   width: number;
@@ -7,26 +5,29 @@ export interface ContactImageFormat {
 }
 
 export interface ContactImage {
-  data: {
-    attributes: {
-      formats: {
-        medium: ContactImageFormat;
-        [key: string]: ContactImageFormat;
-      };
-    };
+  id: number;
+  name: string;
+  url: string;
+  formats: {
+    thumbnail?: ContactImageFormat;
+    small?: ContactImageFormat;
+    medium?: ContactImageFormat;
+    large?: ContactImageFormat;
   };
 }
 
 export interface ContactData {
   id: number;
-  attributes: {
-    address: string;
-    email: string;
-    phone: string;
-    facebook: string;
-    twitter: string;
-    instagram: string;
-    linkedin: string;
-    image: ContactImage;
-  };
+  documentId: string;
+  address: string;
+  email: string;
+  phone: string;
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  linkedin?: string;
+  image?: ContactImage;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
 }

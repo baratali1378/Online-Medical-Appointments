@@ -1,37 +1,39 @@
-'use client';
+"use client";
 
-import { Box, Typography } from '@mui/material';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Poppins } from 'next/font/google';
+import { Box, Typography } from "@mui/material";
+import Link from "next/link";
+import Image from "next/image";
+import { Poppins } from "next/font/google";
 
 const poppins = Poppins({
-  weight: ['600'],
-  subsets: ['latin'],
-  display: 'swap',
+  weight: ["600"],
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const Logo = () => (
-  <Box 
-    component={Link} 
-    href="/" 
-    sx={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      textDecoration: 'none',
-      gap: 1, 
+  <Box
+    component={Link}
+    href="/"
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      textDecoration: "none",
+      gap: 1,
     }}
   >
-    <Box sx={{ 
-      width: 80, 
-      height: 80, 
-      position: 'relative',
-    }}>
-      <Image 
+    <Box
+      sx={{
+        width: 80,
+        height: 80,
+        position: "relative",
+      }}
+    >
+      <Image
         src="/logo.png"
         alt="HealthGate Logo"
         fill
-        style={{ objectFit: 'contain' }}
+        style={{ objectFit: "contain" }}
         priority
       />
     </Box>
@@ -42,8 +44,8 @@ export const Logo = () => (
       sx={{
         marginLeft: -3,
         fontWeight: 600,
-        color: '#71C9CE', 
-        textDecoration: 'none',
+        color: "#71C9CE",
+        textDecoration: "none",
       }}
     >
       HealthGate

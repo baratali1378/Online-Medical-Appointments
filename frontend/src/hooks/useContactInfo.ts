@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ContactData } from "@/types/contact";
-import { getContactInfo } from "@/service/contactService";
+import getContact from "@/service/contactService";
 
 export const useContactInfo = () => {
   const [contact, setContact] = useState<ContactData | null>(null);
@@ -12,7 +12,7 @@ export const useContactInfo = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getContactInfo();
+        const data = await getContact();
         setContact(data);
       } catch (err) {
         setError("Failed to fetch contact info");
