@@ -433,6 +433,34 @@ export interface ApiAppointmentAppointment extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCityCity extends Struct.CollectionTypeSchema {
+  collectionName: 'cities';
+  info: {
+    displayName: 'city';
+    pluralName: 'cities';
+    singularName: 'city';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    doctor: Schema.Attribute.Relation<'oneToOne', 'api::doctor.doctor'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::city.city'> &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiContactMessageContactMessage
   extends Struct.CollectionTypeSchema {
   collectionName: 'contact_messages';
@@ -520,6 +548,7 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     >;
     available_slots: Schema.Attribute.JSON;
     biography: Schema.Attribute.Text;
+    city: Schema.Attribute.Relation<'oneToOne', 'api::city.city'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -620,6 +649,38 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
     patient: Schema.Attribute.Relation<'manyToOne', 'api::patient.patient'>;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Integer;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSpecialtySpecialty extends Struct.CollectionTypeSchema {
+  collectionName: 'specialties';
+  info: {
+    description: '';
+    displayName: 'Specialty';
+    pluralName: 'specialties';
+    singularName: 'specialty';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::specialty.specialty'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Private &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1137,11 +1198,13 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
       'api::appointment.appointment': ApiAppointmentAppointment;
+      'api::city.city': ApiCityCity;
       'api::contact-message.contact-message': ApiContactMessageContactMessage;
       'api::contact.contact': ApiContactContact;
       'api::doctor.doctor': ApiDoctorDoctor;
       'api::patient.patient': ApiPatientPatient;
       'api::review.review': ApiReviewReview;
+      'api::specialty.specialty': ApiSpecialtySpecialty;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
