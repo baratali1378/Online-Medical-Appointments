@@ -10,11 +10,13 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
+  Link,
 } from "@mui/material";
 import { FormikProps } from "formik";
 import { SignupFormValues, genderOptions } from "@/types/patient";
 import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import NextLink from "next/link";
 
 interface SignupFormProps {
   formik: FormikProps<SignupFormValues>;
@@ -36,7 +38,10 @@ export const SignupForm = ({
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+    <Paper
+      elevation={3}
+      sx={{ p: 4, borderRadius: 3, maxWidth: 600, mx: "auto" }}
+    >
       <Typography
         variant="h5"
         color="#71C9CE"
@@ -138,12 +143,10 @@ export const SignupForm = ({
           </Grid>
 
           <Grid item xs={12}>
-            <Box position="relative">
+            <Box position="relative" textAlign="center">
               <Button
                 type="submit"
-                fullWidth
                 variant="contained"
-                color="primary"
                 disabled={loading}
                 sx={{
                   bgcolor: "#71C9CE",
@@ -151,6 +154,7 @@ export const SignupForm = ({
                   fontWeight: 600,
                   fontSize: "1rem",
                   borderRadius: 2,
+                  width: "60%",
                 }}
               >
                 {loading ? "Submitting..." : "Sign Up"}
@@ -168,6 +172,20 @@ export const SignupForm = ({
                 />
               )}
             </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="body2" textAlign="center" mt={2}>
+              Already have an account?{" "}
+              <Link
+                component={NextLink}
+                href="/patient-login"
+                color="primary"
+                underline="hover"
+              >
+                Log in here
+              </Link>
+            </Typography>
           </Grid>
         </Grid>
       </form>

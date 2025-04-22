@@ -10,6 +10,5 @@ export interface PatientPayload {
 }
 
 export async function signUp(data: PatientPayload) {
-  console.log("hello");
   return postData("/patients/signup", data);
 }

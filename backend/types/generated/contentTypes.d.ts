@@ -442,7 +442,7 @@ export interface ApiContactMessageContactMessage
     singularName: 'contact-message';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -556,7 +556,7 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
     singularName: 'patient';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     appointments: Schema.Attribute.Relation<

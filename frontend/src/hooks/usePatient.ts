@@ -11,7 +11,8 @@ export const usePatient = () => {
       setError(null);
       return await signUp(data);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Signup failed");
+      console.log("hello", err);
+      setError(err.message || "Signup failed");
       throw err;
     } finally {
       setLoading(false);

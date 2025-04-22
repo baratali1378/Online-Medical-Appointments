@@ -9,6 +9,7 @@ const strapi = axios.create({
 export async function fetchData<T>(endpoint: string): Promise<T> {
   try {
     const response = await strapi.get(endpoint);
+    console.log(response.data);
     return response.data.data;
   } catch (error: any) {
     throw new Error(
@@ -20,10 +21,11 @@ export async function fetchData<T>(endpoint: string): Promise<T> {
 export async function postData<T>(endpoint: string, data: any): Promise<T> {
   try {
     const response = await strapi.post(endpoint, { data });
+    console.log("hello Hi", 12323);
     return response.data;
   } catch (error: any) {
     throw new Error(
-      error.response?.data?.message || `Failed to post to ${endpoint}`
+      error.response?.data?.error?.message || `Failed to post to ${endpoint}`
     );
   }
 }
