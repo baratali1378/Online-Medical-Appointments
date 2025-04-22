@@ -17,13 +17,16 @@ const withAuthHandler = (
   return function AuthenticatedComponent({ role }: AuthHandlerProps) {
     const router = useRouter();
     const { postData } = useFetch();
+    const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
     const handleSubmit = async (values: {
       email: string;
       password: string;
     }) => {
       const url =
-        role === "doctor" ? "/api/auth/doctor-login" : "/api/auth/user-login";
+        role === "doctor"
+          ? "/api/auth/doctor-login"
+          : `${API_URL}/api/patients/login`;
       const result = await postData(url, values);
 
       if (result.success) {

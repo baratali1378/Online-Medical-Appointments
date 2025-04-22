@@ -3,17 +3,17 @@ module.exports = {
     {
       method: "POST",
       path: "/patients/signup",
-      handler: "auth.signup", // This should match the controller method name
+      handler: "signup.signup",
       config: {
-        auth: false, // No auth required for signup
+        auth: false,
       },
     },
     {
       method: "POST",
       path: "/patients/login",
-      handler: "auth.login", // This should match the controller method name
+      handler: "login.login",
       config: {
-        auth: false, // No auth required for login
+        auth: false,
       },
     },
   ],
