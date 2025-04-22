@@ -39,6 +39,7 @@ const AboutSection: React.FC<Props> = ({ about }) => {
               textAlign={"center"}
               fontWeight="bold"
               gutterBottom
+              color="#71C9CE"
             >
               {about.title}
             </Typography>
