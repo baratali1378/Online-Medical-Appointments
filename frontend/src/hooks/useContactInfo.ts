@@ -3,5 +3,9 @@ import { ContactData } from "@/types/contact";
 import { useFetch } from "@/hooks/useFetchData";
 
 export const useContactInfo = () => {
-  return useFetch<ContactData>(fetchContactData);
+  const { data, loading, error } = useFetch<ContactData>(fetchContactData);
+
+  if (error) throw new Error(error);
+
+  return { contact: data, loading: loading };
 };

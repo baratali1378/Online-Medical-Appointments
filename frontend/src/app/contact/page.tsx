@@ -9,12 +9,12 @@ import Loading from "../loading";
 import ContactForm from "@/components/contact/ContactForm";
 
 const ContactPage: React.FC = () => {
-  const { contact, loading, error } = useContactInfo();
+  const { contact, loading } = useContactInfo();
 
   if (loading) return <Loading />;
 
-  if (error || !contact) {
-    throw new Error(error || "Failed to load contact information.");
+  if (!contact) {
+    throw new Error("Failed to load contact information.");
   }
 
   try {
