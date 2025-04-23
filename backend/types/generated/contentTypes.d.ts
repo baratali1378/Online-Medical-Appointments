@@ -602,6 +602,7 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
     fullname: Schema.Attribute.String & Schema.Attribute.Required;
     gender: Schema.Attribute.Enumeration<['Male', 'Female', 'Other']> &
       Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images' | 'files'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
