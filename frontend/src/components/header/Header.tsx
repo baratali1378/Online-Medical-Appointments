@@ -1,34 +1,34 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Container, 
+import { useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Container,
   IconButton,
   Drawer,
   useMediaQuery,
-  useTheme
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { NAV_ITEMS } from '../../config/navigation';
-import { MobileDrawer } from './MobileDrawer';
-import { DesktopNavigation } from './DesktopNavigation';
-import { Logo } from './Logo';
+  useTheme,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { NAV_ITEMS } from "../../config/navigation";
+import { MobileDrawer } from "./MobileDrawer";
+import { DesktopNavigation } from "./DesktopNavigation";
+import { Logo } from "./Logo";
 
 export const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
     <AppBar position="static" color="default" elevation={1} sx={{ py: 1 }}>
       <Container maxWidth="lg">
-        <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
+        <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
           <Logo />
-          
+
           {!isMobile ? (
             <DesktopNavigation items={NAV_ITEMS} />
           ) : (
@@ -51,7 +51,7 @@ export const Header = () => {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{ keepMounted: true }}
-        sx={{ '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 } }}
+        sx={{ "& .MuiDrawer-paper": { boxSizing: "border-box", width: 250 } }}
       >
         <MobileDrawer items={NAV_ITEMS} onClose={handleDrawerToggle} />
       </Drawer>

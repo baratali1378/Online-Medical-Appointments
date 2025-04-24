@@ -35,7 +35,11 @@
     },
     "gender": {
       "type": "enumeration",
-      "enum": ["Male", "Female", "Other"],
+      "enum": [
+        "Male",
+        "Female",
+        "Other"
+      ],
       "required": true
     },
     "appointments": {
@@ -54,6 +58,14 @@
       "type": "password",
       "required": true,
       "private": true
+    },
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }
