@@ -25,7 +25,7 @@ const withAuthHandler = (
     }) => {
       const url =
         role === "doctor"
-          ? "/api/auth/doctor-login"
+          ? `${API_URL}/api/auth/doctor-login`
           : `${API_URL}/api/patients/login`;
       const result = await postData(url, values);
 
