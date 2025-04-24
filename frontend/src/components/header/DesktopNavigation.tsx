@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { Box, Button } from '@mui/material';
-import Link from 'next/link';
-import { NavItem } from '../../config/navigation';
-import { Montserrat } from 'next/font/google';
+import { Box, Button } from "@mui/material";
+import Link from "next/link";
+import { NavItem } from "../../config/navigation";
+import { Montserrat } from "next/font/google";
 
 const montserrat = Montserrat({
-  weight: ['500', '600'],
-  subsets: ['latin'],
-  display: 'swap',
+  weight: ["500", "600"],
+  subsets: ["latin"],
+  display: "swap",
 });
 
 interface DesktopNavigationProps {
@@ -24,13 +24,13 @@ const createNavigationLink = (item: NavItem) => (
     className={montserrat.className}
     sx={{
       fontWeight: 500,
-      fontSize: '0.95rem',
-      color: 'text.secondary', // Using text.secondary here
-      textDecoration: 'none',
+      fontSize: "0.95rem",
+      color: "text.secondary", // Using text.secondary here
+      textDecoration: "none",
       px: 1,
       py: 0.5,
-      '&:hover': { color: '#71C9CE' },
-      transition: 'color 0.2s ease'
+      "&:hover": { color: "#71C9CE" },
+      transition: "color 0.2s ease",
     }}
   >
     {item.label}
@@ -38,26 +38,29 @@ const createNavigationLink = (item: NavItem) => (
 );
 
 // Button Factory
-const createLoginButton = (type: 'patient' | 'doctor') => {
+const createLoginButton = (type: "patient" | "doctor") => {
   const config = {
     patient: {
-      href: '/patient-login',
-      label: 'Patient Login',
-      variant: 'outlined' as const,
+      href: "/patient-login",
+      label: "Patient Login",
+      variant: "outlined" as const,
       sx: {
-        borderColor: '#E0E0E0',
-        '&:hover': { borderColor: '#71C9CE', color: '#71C9CE' }
-      }
+        borderColor: "#E0E0E0",
+        "&:hover": { borderColor: "#71C9CE", color: "#71C9CE" },
+      },
     },
     doctor: {
-      href: '/doctor-login',
-      label: 'Doctor Login',
-      variant: 'contained' as const,
+      href: "/doctor-login",
+      label: "Doctor Login",
+      variant: "contained" as const,
       sx: {
-        backgroundColor: '#71C9CE',
-        '&:hover': { backgroundColor: '#5AB5BA', transform: 'translateY(-1px)' }
-      }
-    }
+        backgroundColor: "#71C9CE",
+        "&:hover": {
+          backgroundColor: "#5AB5BA",
+          transform: "translateY(-1px)",
+        },
+      },
+    },
   };
 
   return (
@@ -68,13 +71,13 @@ const createLoginButton = (type: 'patient' | 'doctor') => {
       className={montserrat.className}
       sx={{
         fontWeight: 600,
-        textTransform: 'none',
-        fontSize: '0.85rem',
+        textTransform: "none",
+        fontSize: "0.85rem",
         px: 2,
         py: 0.8,
-        color: type === 'patient' ? 'text.secondary' : 'white', // Using text.secondary for patient login
-        transition: 'all 0.2s ease',
-        ...config[type].sx
+        color: type === "patient" ? "text.secondary" : "white", // Using text.secondary for patient login
+        transition: "all 0.2s ease",
+        ...config[type].sx,
       }}
     >
       {config[type].label}
@@ -83,14 +86,14 @@ const createLoginButton = (type: 'patient' | 'doctor') => {
 };
 
 export const DesktopNavigation = ({ items }: DesktopNavigationProps) => (
-  <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+  <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
     {/* Navigation Links - using text.secondary */}
     {items.map(createNavigationLink)}
-    
+
     {/* Login Buttons */}
-    <Box sx={{ display: 'flex', gap: 1, ml: 2 }}>
-      {createLoginButton('patient')}
-      {createLoginButton('doctor')}
+    <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
+      {createLoginButton("patient")}
+      {createLoginButton("doctor")}
     </Box>
   </Box>
 );
