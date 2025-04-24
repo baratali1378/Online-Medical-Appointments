@@ -30,7 +30,7 @@ export const Header = () => {
           <Logo />
 
           {!isMobile ? (
-            <DesktopNavigation navItems={NAV_ITEMS} />
+            <DesktopNavigation items={NAV_ITEMS} />
           ) : (
             <IconButton
               color="inherit"
