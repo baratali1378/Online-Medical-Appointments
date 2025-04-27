@@ -1,38 +1,55 @@
-"use client"
+"use client";
+
 import { useState } from "react";
+import { signIn } from "next-auth/react";
+
+interface LoginValues {
+  email: string;
+  password?: string;
+}
 
 interface FetchResult {
-    success: boolean;
-    message?: string;
+  success: boolean;
+  message?: string;
 }
 
 const useFetch = () => {
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    const postData = async (url: string, values: object): Promise<FetchResult> => {
-        setLoading(true);
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(values),
-            });
+  const postData = async (
+    url: string,
+    values: LoginValues
+  ): Promise<FetchResult> => {
+    setLoading(true);
+    try {
+      const loginResult = await signIn("credentials", {
+        ...values,
+        redirect: false, // important to prevent page reload
+      });
 
-            const data = await response.json();
-            setLoading(false);
+      setLoading(false);
 
-            if (!response.ok) {
-                throw new Error(data.message || "Something went wrong");
-            }
+      if (loginResult?.error) {
+        return {
+          success: false,
+          message: loginResult.error,
+        };
+      }
 
-            return { success: true, message: data.message || "Success" };
-        } catch (error: any) {
-            setLoading(false);
-            return { success: false, message: error.message };
-        }
-    };
+      return {
+        success: true,
+        message: "Login successful",
+      };
+    } catch (error: any) {
+      setLoading(false);
+      return {
+        success: false,
+        message: error.message || "Something went wrong",
+      };
+    }
+  };
 
-    return { postData, loading };
+  return { postData, loading };
 };
 
 export default useFetch;

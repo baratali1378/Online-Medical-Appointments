@@ -1,9 +1,10 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials";
+import axios from "axios";
 
 const handler = NextAuth({
   providers: [
-    Credentials({
+    CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -12,34 +13,30 @@ const handler = NextAuth({
       async authorize(credentials) {
         const { email, password } = credentials || {};
 
-        // 👉 Call your backend API to check credentials
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/patients/login`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
+        try {
+          const { data } = await axios.post(
+            `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/patients/login`,
+            { email, password },
+            { headers: { "Content-Type": "application/json" } }
+          );
+
+          const user = data.patient;
+
+          if (user) {
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.fullname,
+              role: "user",
+            };
           }
-        );
 
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || "Invalid credentials");
+          return null;
+        } catch (error: any) {
+          throw new Error(
+            error.response?.data?.message || "Invalid credentials"
+          );
         }
-
-        const user = data.patient;
-
-        if (user) {
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.fullname,
-            role: "user",
-          };
-        }
-
-        return null;
       },
     }),
   ],

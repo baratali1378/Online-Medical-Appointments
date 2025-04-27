@@ -30,7 +30,8 @@ const withAuthHandler = (
       const result = await postData(url, values);
 
       if (result.success) {
-        router.push("/dashboard");
+        if (role == "user") router.push("/dashboard/patient");
+        else router.push("/dashboard/doctor");
       }
       return result;
     };
