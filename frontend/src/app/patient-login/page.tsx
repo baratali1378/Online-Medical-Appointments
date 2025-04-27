@@ -1,10 +1,16 @@
-import React from "react";
-import LoginPage from "@/components/common/LoginPage";
+"use client";
 
-const UserLoginPage: React.FC = () => {
-    return (
-        <LoginPage image_url="/patient_image.jpg" image_alt="Patient Login" user_role="user" />
-    );
+import LoginPage from "@/components/common/LoginPage";
+import React from "react";
+
+const PatientLoginPage = () => {
+  return (
+    <LoginPage
+      image_url={"/patient_image.jpg"}
+      image_alt={"user Image"}
+      user_role={"user"}
+    />
+  );
 };
 
-export default UserLoginPage;
+export default PatientLoginPage;
