@@ -45,6 +45,7 @@ module.exports = {
           fullname: patient.fullname,
           email: patient.email,
           phone: patient.phone,
+          image: patient.image,
         },
       };
     } catch (error) {
