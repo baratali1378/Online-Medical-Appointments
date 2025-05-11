@@ -6,6 +6,8 @@ module.exports = {
     try {
       const { email, password } = ctx.request.body;
 
+      console.log("hello", email);
+
       if (!email || !password) {
         return ctx.badRequest("Email and password are required.");
       }
