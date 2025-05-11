@@ -12,7 +12,7 @@ describe("GET localhost:1337/api/about", () => {
 
   // @ts-ignore
   beforeAll(async () => {
-    await setupStrapi();
+    let strapiInstance = await setupStrapi();
     // Create test data before all tests
     // @ts-ignore
     await strapiInstance.entityService.update("api::about.about", 1, {
