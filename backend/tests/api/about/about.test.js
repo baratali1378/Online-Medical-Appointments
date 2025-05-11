@@ -2,6 +2,8 @@
 const { setupStrapi, cleanupStrapi } = require("../../helpers/strapi");
 const request = require("supertest");
 
+let strapiInstance;
+
 // @ts-ignore
 describe("GET localhost:1337/api/about", () => {
   const testAboutData = {
@@ -12,7 +14,6 @@ describe("GET localhost:1337/api/about", () => {
 
   // @ts-ignore
   beforeAll(async () => {
-    let strapiInstance = await setupStrapi();
     // Create test data before all tests
     // @ts-ignore
     await strapiInstance.entityService.update("api::about.about", 1, {
