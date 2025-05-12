@@ -1,12 +1,12 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
 import { NavItem } from "../../config/navigation";
 import { Montserrat } from "next/font/google";
 import { ProfileMenu } from "./ProfileMenu";
+import { Session } from "next-auth";
+import { useEffect, useState } from "react";
 
 const montserrat = Montserrat({
   weight: ["500", "600"],
@@ -16,18 +16,20 @@ const montserrat = Montserrat({
 
 interface DesktopNavigationProps {
   items: NavItem[];
+  session: Session | null;
+  status: "loading" | "authenticated" | "unauthenticated";
 }
 
-export const DesktopNavigation = ({ items }: DesktopNavigationProps) => {
-  const { data: session } = useSession();
-  const [hasMounted, setHasMounted] = useState(false);
+export const DesktopNavigation = ({
+  items,
+  session,
+  status,
+}: DesktopNavigationProps) => {
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true);
+    setMounted(true);
   }, []);
-
-  // Prevent mismatch by waiting for client render
-  if (!hasMounted) return null;
 
   const createNavigationLink = (item: NavItem) => (
     <Box
@@ -98,11 +100,21 @@ export const DesktopNavigation = ({ items }: DesktopNavigationProps) => {
     );
   };
 
+  // Only render navigation links initially
+  if (!mounted) {
+    return (
+      <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
+        {items.map(createNavigationLink)}
+        <Box sx={{ display: "flex", gap: 1, ml: 2 }} />
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
       {items.map(createNavigationLink)}
       <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
-        {session?.user ? (
+        {session ? (
           <ProfileMenu />
         ) : (
           <>

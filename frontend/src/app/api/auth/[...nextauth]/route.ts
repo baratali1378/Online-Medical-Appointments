@@ -28,6 +28,11 @@ const handler = NextAuth({
               email: user.email,
               name: user.fullname,
               role: "user",
+              image: user.image
+                ? `${process.env.NEXT_PUBLIC_STRAPI_URL}${
+                    user.image.url || user.image
+                  }`
+                : null,
             };
           }
 
@@ -49,6 +54,7 @@ const handler = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.image = user.image;
       }
       return token;
     },
@@ -56,6 +62,7 @@ const handler = NextAuth({
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.image = token.image as string;
       }
       return session;
     },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import {
   Avatar,
   IconButton,
@@ -13,27 +13,31 @@ import {
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export const ProfileMenu = () => {
-  const { data: session } = useSession();
-  const user = session?.user;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+  const router = useRouter();
   const open = Boolean(anchorEl);
-  const handleOpen = (e: React.MouseEvent<HTMLElement>) =>
-    setAnchorEl(e.currentTarget);
-  const handleClose = () => setAnchorEl(null);
 
-  if (!user) return null;
+  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSignOut = async () => {
+    handleClose();
+    await signOut({ redirect: false });
+    router.refresh(); // Ensure the page updates after sign out
+  };
 
   return (
     <>
       <IconButton onClick={handleOpen}>
-        <Avatar
-          src={user.image || "/default_profile.jpg"}
-          alt={user.name || "Profile"}
-          sx={{ width: 40, height: 40 }}
-        />
+        <Avatar sx={{ width: 40, height: 40 }} />
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -43,17 +47,13 @@ export const ProfileMenu = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem
-          component={Link}
-          href="/dashboard/patient"
-          onClick={handleClose}
-        >
+        <MenuItem component={Link} href="/dashboard" onClick={handleClose}>
           <ListItemIcon>
             <PersonIcon fontSize="small" />
           </ListItemIcon>
           <Typography variant="inherit">Profile</Typography>
         </MenuItem>
-        <MenuItem onClick={() => signOut()}>
+        <MenuItem onClick={handleSignOut}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>
