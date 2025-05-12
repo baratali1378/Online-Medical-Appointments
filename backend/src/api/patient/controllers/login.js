@@ -6,7 +6,7 @@ module.exports = {
     try {
       const { email, password } = ctx.request.body;
 
-      console.log("hello", email);
+      console.log("email", email);
 
       if (!email || !password) {
         return ctx.badRequest("Email and password are required.");
@@ -35,7 +35,7 @@ module.exports = {
           email: patient.email,
           role: "patient",
         },
-        process.env.JWT_SECRET || "your-secret-key",
+        process.env.JWT_SECRET || "FW91rGoi1U5ozmmQhbhVDQ==",
         { expiresIn: "7d" }
       );
 

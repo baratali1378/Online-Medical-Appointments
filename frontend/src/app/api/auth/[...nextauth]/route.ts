@@ -1,3 +1,4 @@
+// src/pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
@@ -14,15 +15,18 @@ const handler = NextAuth({
         const { email, password } = credentials || {};
 
         try {
+          // Make API call to Strapi login endpoint
           const { data } = await axios.post(
             `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/patients/login`,
             { email, password },
             { headers: { "Content-Type": "application/json" } }
           );
 
+          // Extract user and token from Strapi response
           const user = data.patient;
+          const token = data.token; // Strapi's token
 
-          if (user) {
+          if (user && token) {
             return {
               id: user.id,
               email: user.email,
@@ -33,6 +37,7 @@ const handler = NextAuth({
                     user.image.url || user.image
                   }`
                 : null,
+              token, // Include the token in the user object
             };
           }
 
@@ -50,19 +55,26 @@ const handler = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    // Store the JWT token in the token object
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
         token.role = user.role;
         token.image = user.image;
+        token.token = user.token; // Save JWT token to token object
       }
       return token;
     },
+
+    // Add JWT token to the session object
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
+        session.user.email = token.email as string;
         session.user.role = token.role as string;
         session.user.image = token.image as string;
+        session.user.token = token.token as string; // Pass token to session
       }
       return session;
     },

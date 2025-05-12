@@ -16,5 +16,13 @@ module.exports = {
         auth: false,
       },
     },
+    {
+      method: "GET",
+      path: "/patient/me",
+      handler: "profile.me",
+      config: {
+        auth: false,
+      },
+    },
   ],
 };

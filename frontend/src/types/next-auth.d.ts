@@ -9,6 +9,7 @@ declare module "next-auth" {
       name?: string;
       role: string;
       image?: string | null;
+      token?: string; // Add the token to the Session
     };
   }
 
@@ -18,6 +19,7 @@ declare module "next-auth" {
     name?: string;
     role: string;
     image?: string | null;
+    token?: string; // Add the token to the User
   }
 }
 
@@ -28,5 +30,6 @@ declare module "next-auth/jwt" {
     name?: string;
     role: string;
     image?: string | null;
+    token?: string; // Add the token to the JWT
   }
 }

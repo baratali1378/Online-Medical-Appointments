@@ -9,3 +9,11 @@ export interface SignupFormValues {
   gender: Gender | "";
   birth: string;
 }
+
+export interface ProfileData {
+  id: string;
+  fullname: string;
+  email: string;
+  phone: string;
+  image: string | null;
+}
