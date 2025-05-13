@@ -15,9 +15,9 @@
       "required": true,
       "unique": true
     },
-    "doctor": {
+    "doctors": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::doctor.doctor",
       "mappedBy": "city"
     }

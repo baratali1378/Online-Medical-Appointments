@@ -447,7 +447,7 @@ export interface ApiCityCity extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    doctor: Schema.Attribute.Relation<'oneToOne', 'api::doctor.doctor'>;
+    doctors: Schema.Attribute.Relation<'oneToMany', 'api::doctor.doctor'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::city.city'> &
       Schema.Attribute.Private;
@@ -548,7 +548,7 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     >;
     available_slots: Schema.Attribute.JSON;
     biography: Schema.Attribute.Text;
-    city: Schema.Attribute.Relation<'oneToOne', 'api::city.city'>;
+    city: Schema.Attribute.Relation<'manyToOne', 'api::city.city'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

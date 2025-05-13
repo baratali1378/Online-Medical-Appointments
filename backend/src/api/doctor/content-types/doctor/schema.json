@@ -63,12 +63,6 @@
       "type": "password",
       "private": true
     },
-    "city": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::city.city",
-      "inversedBy": "doctor"
-    },
     "specialties": {
       "type": "relation",
       "relation": "manyToMany",
@@ -79,6 +73,12 @@
       "type": "component",
       "repeatable": true,
       "component": "contact.phone-number"
+    },
+    "city": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::city.city",
+      "inversedBy": "doctors"
     }
   }
 }
