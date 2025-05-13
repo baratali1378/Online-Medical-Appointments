@@ -16,6 +16,12 @@
       "required": true,
       "unique": true,
       "private": true
+    },
+    "doctors": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::doctor.doctor",
+      "mappedBy": "specialties"
     }
   }
 }

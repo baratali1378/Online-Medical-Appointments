@@ -34,9 +34,6 @@
       "type": "uid",
       "targetField": "name"
     },
-    "phone_number": {
-      "type": "json"
-    },
     "biography": {
       "type": "text"
     },
@@ -71,6 +68,17 @@
       "relation": "oneToOne",
       "target": "api::city.city",
       "inversedBy": "doctor"
+    },
+    "specialties": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::specialty.specialty",
+      "inversedBy": "doctors"
+    },
+    "phone_number": {
+      "type": "component",
+      "repeatable": true,
+      "component": "contact.phone-number"
     }
   }
 }
