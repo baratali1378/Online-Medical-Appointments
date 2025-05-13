@@ -26,7 +26,7 @@ const Header = () => {
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
-    <AppBar position="static" color="default" elevation={1} sx={{ py: 1 }}>
+    <AppBar position="fixed" color="default" elevation={1} sx={{ py: 1 }}>
       <Container maxWidth="lg">
         <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
           <Logo />

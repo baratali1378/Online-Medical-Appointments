@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 interface LoginValues {
   email: string;
   password?: string;
+  role: string;
 }
 
 interface FetchResult {
@@ -16,10 +17,7 @@ interface FetchResult {
 const useFetch = () => {
   const [loading, setLoading] = useState(false);
 
-  const postData = async (
-    url: string,
-    values: LoginValues
-  ): Promise<FetchResult> => {
+  const postData = async (values: LoginValues): Promise<FetchResult> => {
     setLoading(true);
     try {
       const loginResult = await signIn("credentials", {

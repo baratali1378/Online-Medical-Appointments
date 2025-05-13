@@ -1,12 +1,14 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import {
   getProfile,
   updateProfile,
 } from "@/service/profile/patient/profileService";
-import { ProfileData } from "@/types/patient";
+import { PatientProfile } from "@/types/patient";
 
 const useProfile = (token: string) => {
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [profile, setProfile] = useState<PatientProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +31,7 @@ const useProfile = (token: string) => {
     fetchProfile();
   }, [token]);
 
-  const handleUpdateProfile = async (profileData: Partial<ProfileData>) => {
+  const handleUpdateProfile = async (profileData: Partial<PatientProfile>) => {
     if (!token) return;
 
     setLoading(true);

@@ -42,7 +42,8 @@ module.exports = {
       // Return the JWT and patient data (excluding sensitive information)
       return {
         token,
-        patient: {
+        role: "patient",
+        user: {
           id: patient.id,
           fullname: patient.fullname,
           email: patient.email,

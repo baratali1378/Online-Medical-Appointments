@@ -59,6 +59,7 @@ module.exports = {
     // Return patient data and token
     return ctx.send({
       token,
+      role: "patient",
       patient: {
         id: newPatient.id,
         fullname: newPatient.fullname,

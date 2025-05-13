@@ -10,38 +10,47 @@ const handler = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        role: { label: "Role", type: "text" }, // We now expect a role
       },
       async authorize(credentials) {
-        const { email, password } = credentials || {};
+        const { email, password, role } = credentials || {};
 
         try {
-          // Make API call to Strapi login endpoint
+          // Dynamically set the URL based on the role (doctor or patient)
+          const apiUrl =
+            role === "doctor"
+              ? `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/doctors/login`
+              : `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/patients/login`;
+
+          // Make API call to login endpoint
           const { data } = await axios.post(
-            `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/patients/login`,
+            apiUrl,
             { email, password },
-            { headers: { "Content-Type": "application/json" } }
+            {
+              headers: { "Content-Type": "application/json" },
+            }
           );
 
-          // Extract user and token from Strapi response
-          const user = data.patient;
-          const token = data.token; // Strapi's token
+          const user = data.user;
+          const token = data.token; // The token returned from Strapi
 
           if (user && token) {
+            // Make sure the object returned follows NextAuth's User interface
             return {
               id: user.id,
               email: user.email,
               name: user.fullname,
-              role: "user",
+              role: role || "patient", // Default to 'patient' if role is undefined
               image: user.image
                 ? `${process.env.NEXT_PUBLIC_STRAPI_URL}${
                     user.image.url || user.image
                   }`
                 : null,
-              token, // Include the token in the user object
+              token, // Store the token
             };
           }
 
-          return null;
+          return null; // Return null if no user or token is found
         } catch (error: any) {
           throw new Error(
             error.response?.data?.message || "Invalid credentials"
