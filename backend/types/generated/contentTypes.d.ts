@@ -447,7 +447,7 @@ export interface ApiCityCity extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    doctor: Schema.Attribute.Relation<'oneToOne', 'api::doctor.doctor'>;
+    doctors: Schema.Attribute.Relation<'oneToMany', 'api::doctor.doctor'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::city.city'> &
       Schema.Attribute.Private;
@@ -548,7 +548,7 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     >;
     available_slots: Schema.Attribute.JSON;
     biography: Schema.Attribute.Text;
-    city: Schema.Attribute.Relation<'oneToOne', 'api::city.city'>;
+    city: Schema.Attribute.Relation<'manyToOne', 'api::city.city'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -564,12 +564,16 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     password: Schema.Attribute.Password & Schema.Attribute.Private;
-    phone_number: Schema.Attribute.JSON;
+    phone_number: Schema.Attribute.Component<'contact.phone-number', true>;
     profile_picture: Schema.Attribute.Media<'images' | 'files'>;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Decimal;
     reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     slug_id: Schema.Attribute.UID<'name'>;
+    specialties: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::specialty.specialty'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -671,6 +675,7 @@ export interface ApiSpecialtySpecialty extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    doctors: Schema.Attribute.Relation<'manyToMany', 'api::doctor.doctor'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

@@ -21,7 +21,6 @@ export async function fetchData<T>(endpoint: string): Promise<T> {
 export async function postData<T>(endpoint: string, data: any): Promise<T> {
   try {
     const response = await strapi.post(endpoint, { data });
-    console.log("hello Hi", 12323);
     return response.data;
   } catch (error: any) {
     throw new Error(

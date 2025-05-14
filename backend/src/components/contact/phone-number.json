@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_contact_phone_numbers",
+  "info": {
+    "displayName": "Phone Number",
+    "icon": "phone"
+  },
+  "options": {},
+  "attributes": {
+    "countryCode": {
+      "type": "string",
+      "default": "+93",
+      "required": true
+    },
+    "text": {
+      "type": "string",
+      "regex": "^\\+?[1-9]\\d{1,3}[-.\\s]?(\\d{1,4}[-.\\s]?){1,4}\\d{1,4}$",
+      "required": true
+    },
+    "label": {
+      "type": "enumeration",
+      "enum": [
+        "mobile",
+        "work",
+        "home"
+      ]
+    }
+  }
+}
