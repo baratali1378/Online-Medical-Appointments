@@ -11,7 +11,7 @@ module.exports = {
     {
       method: "GET",
       path: "/doctors/search",
-      handler: "doctor.search",
+      handler: "search.search",
       config: {
         policies: [],
         middlewares: [],
