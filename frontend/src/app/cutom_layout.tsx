@@ -7,12 +7,16 @@ import { Box, CssBaseline } from "@mui/material";
 import Header from "@/components/header/Header";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import { SessionProvider } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const isDashboard = pathname?.startsWith("/dashboard");
+
   return (
     <html lang="en">
       <body>
@@ -20,11 +24,11 @@ export default function RootLayout({
           <ThemeProvider theme={theme}>
             <CssBaseline />
 
-            <Header />
-            {/* Add margin-top to account for the fixed header */}
-            <Box sx={{ mt: 14 }}>
-              {" "}
-              {/* Adjust mt to match your header height */}
+            {/* Render Header only if not on dashboard pages */}
+            {!isDashboard && <Header />}
+
+            {/* If Header is shown, add top margin for fixed header */}
+            <Box sx={{ mt: !isDashboard ? 14 : 0 }}>
               <ErrorBoundary>{children}</ErrorBoundary>
             </Box>
           </ThemeProvider>
