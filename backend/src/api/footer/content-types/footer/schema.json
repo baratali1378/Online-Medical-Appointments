@@ -27,10 +27,7 @@
       "type": "media",
       "multiple": false,
       "required": true,
-      "allowedTypes": [
-        "images",
-        "files"
-      ]
+      "allowedTypes": ["images", "files"]
     },
     "useful_links": {
       "displayName": "Useful Links",
