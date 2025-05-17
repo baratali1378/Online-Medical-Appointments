@@ -24,5 +24,21 @@ module.exports = {
         auth: false,
       },
     },
+    {
+      method: "PUT",
+      path: "/patient/me",
+      handler: "update.updateMe",
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: "POST",
+      path: "/patient/img",
+      handler: "update.updateImg",
+      config: {
+        auth: false,
+      },
+    },
   ],
 };

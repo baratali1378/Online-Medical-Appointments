@@ -1,51 +1,115 @@
-"use client";
-
 import { useState, useEffect } from "react";
-import {
-  getProfile,
-  updateProfile,
-} from "@/service/profile/patient/profileService";
-import { PatientProfile } from "@/types/patient";
+import { PatientProfile, SignupFormValues } from "@/types/patient";
+import { PatientService } from "@/service/profile/patient/profileService";
 
-const useProfile = (token: string) => {
-  const [profile, setProfile] = useState<PatientProfile | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+type UsePatientProfileReturn = {
+  patient: PatientProfile | null;
+  loading: boolean;
+  error: string | null;
+  updateProfile: (data: Partial<SignupFormValues>) => Promise<void>;
+  uploadImage: (file: File) => Promise<void>;
+  refetch: () => Promise<void>;
+};
 
-  useEffect(() => {
-    if (!token) return;
+interface PatientProp {
+  token: string | null;
+}
 
-    const fetchProfile = async () => {
-      setLoading(true);
-      try {
-        const data = await getProfile(token);
-        setProfile(data);
-        console.log("data", data);
-      } catch (err) {
-        setError("Failed to fetch profile");
-      } finally {
-        setLoading(false);
-      }
-    };
+export const usePatientProfile = ({
+  token,
+}: PatientProp): UsePatientProfileReturn => {
+  const [state, setState] = useState<{
+    patient: PatientProfile | null;
+    loading: boolean;
+    error: string | null;
+  }>({
+    patient: null,
+    loading: !!token, // Only load if we have a token
+    error: null,
+  });
 
-    fetchProfile();
-  }, [token]);
+  const fetchPatient = async () => {
+    if (!token) {
+      setState({
+        patient: null,
+        loading: false,
+        error: "No authentication token",
+      });
+      return;
+    }
 
-  const handleUpdateProfile = async (profileData: Partial<PatientProfile>) => {
-    if (!token) return;
-
-    setLoading(true);
     try {
-      const updatedProfile = await updateProfile(token, profileData);
-      setProfile(updatedProfile);
-    } catch (err) {
-      setError("Failed to update profile");
-    } finally {
-      setLoading(false);
+      setState((prev) => ({ ...prev, loading: true }));
+      const patient = await PatientService.getPatientProfile(token);
+      setState({ patient, loading: false, error: null });
+    } catch (error) {
+      setState({
+        patient: null,
+        loading: false,
+        error: getErrorMessage(error),
+      });
     }
   };
 
-  return { profile, loading, error, handleUpdateProfile };
+  const updateProfile = async (data: Partial<SignupFormValues>) => {
+    if (!token) throw new Error("No authentication token");
+
+    try {
+      setState((prev) => ({ ...prev, loading: true }));
+      const updatedPatient = await PatientService.updatePatientProfile(
+        token,
+        data
+      );
+      setState((prev) => ({
+        ...prev,
+        patient: updatedPatient,
+        loading: false,
+      }));
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+        error: getErrorMessage(error),
+      }));
+      throw error;
+    }
+  };
+
+  const uploadImage = async (file: File) => {
+    if (!token) throw new Error("No authentication token");
+
+    try {
+      setState((prev) => ({ ...prev, loading: true }));
+      const image = await PatientService.uploadPatientImage(token, file);
+      setState((prev) => ({
+        ...prev,
+        patient: prev.patient ? { ...prev.patient, image } : null,
+        loading: false,
+      }));
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+        error: getErrorMessage(error),
+      }));
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchPatient();
+    }
+  }, [token]);
+
+  return {
+    ...state,
+    updateProfile,
+    uploadImage,
+    refetch: fetchPatient,
+  };
 };
 
-export default useProfile;
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Unknown error occurred";
+}

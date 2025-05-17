@@ -1,17 +1,17 @@
-// components/layout/ResponsiveAppBar.tsx
-
 "use client";
 
 import {
   AppBar,
   Toolbar,
   IconButton,
-  Typography,
-  Box,
   Avatar,
+  Menu,
+  MenuItem,
+  Box,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useSession } from "next-auth/react";
+import { useUserMenu } from "@/hooks/profile/dashboard/useUserMenu";
 
 export default function ResponsiveAppBar({
   onDrawerToggle,
@@ -19,6 +19,18 @@ export default function ResponsiveAppBar({
   onDrawerToggle: () => void;
 }) {
   const { data: session } = useSession();
+  const role = session?.user?.role;
+
+  console.log(session?.user.token);
+
+  const {
+    anchorEl,
+    open,
+    handleMenuOpen,
+    handleMenuClose,
+    handleProfile,
+    handleSignOut,
+  } = useUserMenu(role);
 
   return (
     <AppBar
@@ -32,7 +44,7 @@ export default function ResponsiveAppBar({
       elevation={1}
     >
       <Toolbar>
-        {/* Toggle for mobile */}
+        {/* Menu toggle button for mobile */}
         <IconButton
           color="inherit"
           edge="start"
@@ -44,15 +56,39 @@ export default function ResponsiveAppBar({
 
         <Box sx={{ flexGrow: 1 }} />
 
-        {/* User info */}
         {session?.user && (
-          <Box display="flex" alignItems="center" gap={2}>
-            <Typography variant="body1">{session.user.name}</Typography>
-            <Avatar
-              src={session.user.image || "/default-avatar.png"}
-              alt="User Avatar"
-            />
-          </Box>
+          <>
+            <IconButton onClick={handleMenuOpen} size="small">
+              <Avatar
+                src={session.user.image || "/default-avatar.png"}
+                alt={session.user.name}
+              />
+            </IconButton>
+
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleMenuClose}
+              PaperProps={{
+                elevation: 2,
+                sx: {
+                  mt: 1.5,
+                  minWidth: 160,
+                },
+              }}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <MenuItem onClick={handleProfile}>Profile</MenuItem>
+              <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+            </Menu>
+          </>
         )}
       </Toolbar>
     </AppBar>

@@ -1,38 +1,60 @@
+// service/profile/patient/profileService.ts
 import axios from "axios";
-import { PatientProfile } from "@/types/patient";
-
-// Define the interface for the profile data you expect
+import {
+  PatientProfile,
+  PatientImage,
+  SignupFormValues,
+} from "@/types/patient";
 
 const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
-export const getProfile = async (token: string): Promise<PatientProfile> => {
-  try {
-    console.log(token);
-    const response = await axios.get(`${API_URL}/api/patient/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+export const PatientService = {
+  async getPatientProfile(token: string): Promise<PatientProfile> {
+    const response = await axios.get<{ data: PatientProfile; meta: any }>(
+      `${API_URL}/api/patient/me`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.data;
+  },
 
-    return response.data;
-  } catch (error) {
-    throw new Error("Failed to fetch profile data");
-  }
-};
+  async updatePatientProfile(
+    token: string,
+    patientData: Partial<SignupFormValues>
+  ): Promise<PatientProfile> {
+    const response = await axios.put<{ data: PatientProfile; meta: any }>(
+      `${API_URL}/api/patient/me`,
+      { data: patientData },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.data;
+  },
 
-export const updateProfile = async (
-  token: string,
-  profileData: Partial<PatientProfile>
-): Promise<PatientProfile> => {
-  try {
-    const response = await axios.put(`${API_URL}/api/patient/me`, profileData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  async uploadPatientImage(
+    token: string,
+    imageFile: File
+  ): Promise<PatientImage> {
+    const formData = new FormData();
+    formData.append("files", imageFile);
 
-    return response.data;
-  } catch (error) {
-    throw new Error("Failed to update profile");
-  }
+    const response = await axios.post<{ data: PatientImage; meta: any }>(
+      `${API_URL}/api/patient/img`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data.data;
+  },
 };

@@ -1,50 +1,65 @@
+// components/sidebar/Sidebar.tsx
 "use client";
 
 import {
   Drawer,
   Toolbar,
-  Avatar,
   Typography,
   Box,
   useMediaQuery,
   Theme,
   Divider,
 } from "@mui/material";
-import { Dashboard, People, EventNote } from "@mui/icons-material";
 import NavItems from "./NavItems";
+import { Poppins } from "next/font/google";
+
+// Import Poppins with desired weights
+const poppins = Poppins({
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+});
 
 const drawerWidth = 260;
 
-const navItems = [
-  { text: "Dashboard", icon: <Dashboard /> },
-  { text: "Patients", icon: <People /> },
-  { text: "Appointments", icon: <EventNote /> },
-];
-
-export default function DoctorSidebar({
-  mobileOpen,
-  onDrawerToggle,
-}: {
+type SidebarProps = {
   mobileOpen: boolean;
   onDrawerToggle: () => void;
-}) {
+  navItems: Array<{
+    text: string;
+    icon: React.ReactNode;
+    path: string;
+  }>;
+  title?: string;
+};
+
+export default function Sidebar({
+  mobileOpen,
+  onDrawerToggle,
+  navItems,
+  title = "Dashboard",
+}: SidebarProps) {
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
 
   const drawer = (
-    <>
+    <div className={poppins.className}>
       <Toolbar sx={{ display: "flex", alignItems: "center", gap: 2, px: 2 }}>
-        <Avatar alt="Doctor User" src="/doctor-avatar.png" />
-        <Typography variant="h6" noWrap>
-          Doctor Name
+        <Typography
+          variant="h6"
+          noWrap
+          sx={{
+            fontWeight: 600,
+          }}
+        >
+          {title}
         </Typography>
       </Toolbar>
       <Divider />
       <Box sx={{ px: 2, pt: 2 }}>
         <NavItems items={navItems} />
       </Box>
-    </>
+    </div>
   );
 
   return isMobile ? (

@@ -11,12 +11,9 @@ module.exports = {
     const token = authHeader.replace("Bearer ", "");
 
     try {
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || "your-secret-key"
-      );
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      if (typeof decoded !== "object" || !("id" in decoded)) {
+      if (typeof decoded !== "object" || !decoded.id) {
         return ctx.unauthorized("Invalid token payload");
       }
 
@@ -24,18 +21,6 @@ module.exports = {
         where: { id: decoded.id },
         populate: {
           image: true,
-          appointments: {
-            populate: {
-              doctor: {
-                populate: ["fullname", "specialty"], // optional nested doctor info
-              },
-            },
-          },
-          reviews: {
-            populate: {
-              doctor: true,
-            },
-          },
         },
       });
 
@@ -43,21 +28,26 @@ module.exports = {
         return ctx.notFound("Patient not found");
       }
 
+      // Return patient data without sensitive information
       return ctx.send({
-        id: patient.id,
-        fullname: patient.fullname,
-        email: patient.email,
-        phone: patient.phone,
-        birth: patient.birth,
-        gender: patient.gender,
-        slug_id: patient.slug_id,
-        image: patient.image,
-        appointments: patient.appointments,
-        reviews: patient.reviews,
+        data: {
+          id: patient.id,
+          fullname: patient.fullname,
+          email: patient.email,
+          phone: patient.phone,
+          birth: patient.birth,
+          gender: patient.gender,
+          slug_id: patient.slug_id,
+          image: patient.image,
+        },
+        meta: {},
       });
     } catch (error) {
       strapi.log.error("JWT verify error:", error);
-      return ctx.unauthorized("Invalid or expired token");
+      if (error.name === "TokenExpiredError") {
+        return ctx.unauthorized("Token expired");
+      }
+      return ctx.unauthorized("Invalid token");
     }
   },
 };

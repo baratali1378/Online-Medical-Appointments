@@ -1,3 +1,15 @@
+export const genderOptions = ["Male", "Female", "Other"] as const;
+export type Gender = (typeof genderOptions)[number];
+
+export interface SignupFormValues {
+  fullname: string;
+  email: string;
+  phone: string;
+  password: string;
+  gender: Gender | "";
+  birth: string;
+}
+
 export interface PatientImageFormat {
   ext: string;
   url: string;
@@ -38,6 +50,4 @@ export interface PatientProfile {
   gender: "Male" | "Female" | "Other";
   slug_id: string | null;
   image: PatientImage | null;
-  appointments: any[]; // You can define these later
-  reviews: any[];
 }

@@ -2,9 +2,9 @@
 
 import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import DoctorSidebar from "./DoctorSidebar";
-import PatientSidebar from "./PatientSidebar";
 import { useRouter } from "next/navigation";
+import Sidebar from "./SideBar";
+import { doctorNavItems, patientNavItems } from "./utils";
 
 interface SidebarProps {
   mobileOpen: boolean;
@@ -27,11 +27,21 @@ export default function SidebarWrapper({
 
   if (session?.user.role == "doctor")
     return (
-      <DoctorSidebar mobileOpen={mobileOpen} onDrawerToggle={onDrawerToggle} />
+      <Sidebar
+        mobileOpen={mobileOpen}
+        navItems={doctorNavItems}
+        title="Doctor Panel"
+        onDrawerToggle={onDrawerToggle}
+      />
     );
   else {
     return (
-      <PatientSidebar mobileOpen={mobileOpen} onDrawerToggle={onDrawerToggle} />
+      <Sidebar
+        mobileOpen={mobileOpen}
+        navItems={patientNavItems}
+        title="Dashboard"
+        onDrawerToggle={onDrawerToggle}
+      />
     );
   }
 }
