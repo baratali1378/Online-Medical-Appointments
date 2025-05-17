@@ -8,7 +8,10 @@ import { useTheme } from "@mui/material/styles";
 import CustomField from "./Field";
 
 interface LoginFormProps {
-  handleSubmit: (values: { email: string; password: string }) => Promise<any>;
+  handleSubmit: (values: { email: string; password: string }) => Promise<{
+    success: boolean;
+    message?: string;
+  }>;
   signupLink: string;
 }
 
@@ -22,8 +25,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleSubmit, signupLink }) => {
   } | null>(null);
 
   const onSubmit = async (values: { email: string; password: string }) => {
-    const result = await handleSubmit(values);
-    setResult(result);
+    const res = await handleSubmit(values);
+    setResult(res);
   };
 
   return (
@@ -82,11 +85,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleSubmit, signupLink }) => {
             >
               Login
             </Button>
+
+            {/* Error message display */}
+            {result && !result.success && (
+              <Typography
+                color="error"
+                textAlign="center"
+                sx={{ mt: 2, fontSize: { xs: "0.75rem", sm: "0.9rem" } }}
+              >
+                {result.message || "Login failed. Please try again."}
+              </Typography>
+            )}
           </Form>
         )}
       </Formik>
 
-      {/* Different Signup Links Based on Role */}
+      {/* Signup link */}
       <Typography
         textAlign="center"
         sx={{ fontSize: { xs: "0.7rem", sm: "0.9rem", md: "1rem" }, mt: 2 }}
