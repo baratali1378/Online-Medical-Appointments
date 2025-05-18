@@ -4,7 +4,7 @@ import { Box, Container, Grid2, Typography } from "@mui/material";
 import { useFooter } from "@/hooks/useFooter";
 import FooterSection from "./FooterSection";
 import UsefulLinks from "./UsefulLinks";
-import SocialLinks from "./SocialLinks";
+import SocialLinks from "../common/SocialLinks";
 import { Poppins } from "next/font/google";
 
 // Importing Google Font
