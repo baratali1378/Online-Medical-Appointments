@@ -1,14 +1,6 @@
 import { postData } from "@/lib/strapiClient";
+import { PatientSignupResponse, SignupFormValues } from "@/types/patient";
 
-export interface PatientPayload {
-  fullname: string;
-  email: string;
-  phone: string;
-  password: string;
-  gender: "Male" | "Female" | "Other";
-  birth?: string;
-}
-
-export async function signUp(data: PatientPayload) {
-  return postData("/patients/signup", data);
+export async function signUp(data: SignupFormValues) {
+  return postData<PatientSignupResponse>("/patients/signup", data);
 }

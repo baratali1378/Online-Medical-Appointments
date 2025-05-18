@@ -25,7 +25,7 @@ export const useUserMenu = (role?: string) => {
   };
 
   const handleSignOut = () => {
-    signOut();
+    signOut({ callbackUrl: "/" });
     handleMenuClose();
   };
 
