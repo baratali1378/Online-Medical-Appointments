@@ -1,3 +1,4 @@
+// components/navigation/Header.tsx
 "use client";
 
 import { useState } from "react";
@@ -12,7 +13,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useSession } from "next-auth/react";
-import { NAV_ITEMS } from "../../config/navigation";
+import { NAV_ITEMS } from "@/config/navigation";
 import { MobileDrawer } from "./MobileDrawer";
 import { DesktopNavigation } from "./DesktopNavigation";
 import { Logo } from "./Logo";
@@ -30,7 +31,6 @@ const Header = () => {
       <Container maxWidth="lg">
         <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
           <Logo />
-
           {!isMobile ? (
             <DesktopNavigation
               items={NAV_ITEMS}

@@ -1,49 +1,63 @@
-// components/LoginButtons.tsx
-"use client";
-
 import { Button } from "@mui/material";
-import { useRouter } from "next/navigation";
-import { NavigationCommands } from "@/lib/navigationCommands";
+import Link from "next/link";
+import { Montserrat } from "next/font/google";
 
-export const LoginButtons = () => {
-  const router = useRouter();
+const montserrat = Montserrat({
+  weight: ["600"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+interface LoginButtonProps {
+  type: "patient" | "doctor";
+}
+
+export const LoginButton = ({ type }: LoginButtonProps) => {
+  const config = {
+    patient: {
+      href: "/login/patient",
+      label: "Patient Login",
+      variant: "outlined" as const,
+      sx: {
+        borderColor: "#E0E0E0",
+        color: "text.secondary",
+        "&:hover": { borderColor: "#71C9CE", color: "#71C9CE" },
+      },
+    },
+    doctor: {
+      href: "/login/doctor",
+      label: "Doctor Login",
+      variant: "contained" as const,
+      sx: {
+        backgroundColor: "#71C9CE",
+        color: "white",
+        "&:hover": {
+          backgroundColor: "#5AB5BA",
+          transform: "translateY(-1px)",
+        },
+      },
+    },
+  };
+
+  const { href, label, variant, sx } = config[type];
 
   return (
-    <div style={{ display: "flex", gap: "8px", marginLeft: "16px" }}>
-      <Button
-        variant="outlined"
-        onClick={() => NavigationCommands.goToLogin(router, "patient")}
-        sx={{
-          fontWeight: 600,
-          textTransform: "none",
-          fontSize: "0.85rem",
-          padding: "6px 16px",
-          color: "text.secondary",
-          borderColor: "#E0E0E0",
-          "&:hover": {
-            borderColor: "#71C9CE",
-            color: "#71C9CE",
-          },
-        }}
-      >
-        Patient Login
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => NavigationCommands.goToLogin(router, "doctor")}
-        sx={{
-          fontWeight: 600,
-          textTransform: "none",
-          fontSize: "0.85rem",
-          padding: "6px 16px",
-          backgroundColor: "#71C9CE",
-          "&:hover": {
-            backgroundColor: "#5AB5BA",
-          },
-        }}
-      >
-        Doctor Login
-      </Button>
-    </div>
+    <Button
+      variant={variant}
+      component={Link}
+      href={href}
+      className={montserrat.className}
+      sx={{
+        fontWeight: 600,
+        textTransform: "none",
+        fontSize: "0.85rem",
+        px: 2,
+        py: 0.8,
+        transition: "all 0.2s ease",
+        ...sx,
+      }}
+    >
+      {label}
+    </Button>
   );
 };

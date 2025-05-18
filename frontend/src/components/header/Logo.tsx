@@ -22,13 +22,7 @@ export const Logo = () => (
       gap: 1,
     }}
   >
-    <Box
-      sx={{
-        width: 80,
-        height: 80,
-        position: "relative",
-      }}
-    >
+    <Box sx={{ width: 80, height: 80, position: "relative" }}>
       <Image
         src="/logo.png"
         alt="HealthGate Logo"
@@ -41,12 +35,7 @@ export const Logo = () => (
       variant="h6"
       noWrap
       className={poppins.className}
-      sx={{
-        marginLeft: -3,
-        fontWeight: 600,
-        color: "#71C9CE",
-        textDecoration: "none",
-      }}
+      sx={{ ml: -3, fontWeight: 600, color: "#71C9CE", textDecoration: "none" }}
     >
       HealthGate
     </Typography>
