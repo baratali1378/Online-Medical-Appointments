@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Container, Grid, Typography } from "@mui/material";
+import { Box, Container, Grid2, Typography } from "@mui/material";
 import { useFooter } from "@/hooks/useFooter";
 import FooterSection from "./FooterSection";
 import UsefulLinks from "./UsefulLinks";
@@ -30,13 +30,13 @@ const Footer = () => {
       }}
     >
       <Container maxWidth="lg">
-        <Grid
+        <Grid2
           container
           spacing={{ xs: 4, sm: 6 }}
           direction={{ xs: "column", md: "row" }}
         >
           {/* Company Info */}
-          <Grid item xs={12} md={4}>
+          <Grid2 size={{ xs: 12, md: 4 }}>
             <FooterSection title={data.company_name}>
               <Box
                 component="img"
@@ -52,20 +52,20 @@ const Footer = () => {
                 {data.description}
               </Typography>
             </FooterSection>
-          </Grid>
+          </Grid2>
 
           {/* Links */}
-          <Grid item xs={12} md={4}>
+          <Grid2 size={{ xs: 12, md: 4 }}>
             <FooterSection title="Useful Links">
               <UsefulLinks links={data.useful_links} />
             </FooterSection>
             <FooterSection title="Social">
               <SocialLinks links={data.social_links} />
             </FooterSection>
-          </Grid>
+          </Grid2>
 
           {/* Contact */}
-          <Grid item xs={12} md={4}>
+          <Grid2 size={{ xs: 12, md: 4 }}>
             <FooterSection title="Contact">
               <Typography variant="body2" mb={1}>
                 <strong>Address:</strong> {data.address}
@@ -79,8 +79,8 @@ const Footer = () => {
                 </Typography>
               ))}
             </FooterSection>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
 
         <Box mt={5} textAlign="center">
           <Typography
