@@ -51,3 +51,7 @@ export interface PatientProfile {
   slug_id: string | null;
   image: PatientImage | null;
 }
+export interface PatientSignupResponse {
+  token: string;
+  role: string;
+}

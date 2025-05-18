@@ -60,12 +60,6 @@ module.exports = {
     return ctx.send({
       token,
       role: "patient",
-      patient: {
-        id: newPatient.id,
-        fullname: newPatient.fullname,
-        email: newPatient.email,
-        phone: newPatient.phone,
-      },
     });
   },
 };
