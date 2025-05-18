@@ -1,4 +1,4 @@
-import { AboutData } from "@/types/strapi";
+import { AboutData } from "@/types/about";
 import { fetchData } from "@/lib/strapiClient";
 
 export async function fetchAboutData(): Promise<AboutData> {

@@ -1,7 +1,7 @@
 import React from "react";
-import { Box, Typography, Container, Paper, Grid } from "@mui/material";
+import { Box, Typography, Container, Paper, Grid2 } from "@mui/material";
 import MarkdownRenderer from "./MarkdownRenderer";
-import { AboutData } from "@/types/strapi";
+import { AboutData } from "@/types/about";
 
 interface Props {
   about: AboutData;
@@ -10,19 +10,16 @@ interface Props {
 const BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
 const AboutSection: React.FC<Props> = ({ about }) => {
-  const imageUrl = about.image?.formats?.medium?.url || about.image?.url || "";
-  const fullImageUrl = `${BASE_URL}${imageUrl}`;
-
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: { xs: 3, md: 5 }, borderRadius: 4 }}>
-        <Grid container spacing={4} alignItems="center">
+        <Grid2 container spacing={4} alignItems="center">
           {/* Image */}
-          <Grid item xs={12} md={5}>
+          <Grid2 size={{ xs: 12, md: 5 }}>
             <Box
               component="img"
-              src={fullImageUrl}
-              alt={about.image?.alternativeText || "About HealthGate"}
+              src={`${BASE_URL}${about.image?.url}`}
+              alt={about?.image?.url || "About HealthGate"}
               sx={{
                 width: "100%",
                 height: "auto",
@@ -30,10 +27,10 @@ const AboutSection: React.FC<Props> = ({ about }) => {
                 boxShadow: 3,
               }}
             />
-          </Grid>
+          </Grid2>
 
           {/* Text */}
-          <Grid item xs={12} md={7}>
+          <Grid2 size={{ xs: 12, md: 7 }}>
             <Typography
               variant="h3"
               textAlign={"center"}
@@ -45,8 +42,8 @@ const AboutSection: React.FC<Props> = ({ about }) => {
             </Typography>
 
             <MarkdownRenderer content={about.content} />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Paper>
     </Container>
   );
