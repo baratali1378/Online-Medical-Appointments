@@ -55,7 +55,7 @@ export const DesktopNavigation = ({
   const createLoginButton = (type: "patient" | "doctor") => {
     const config = {
       patient: {
-        href: "/patient-login",
+        href: "/login/patient",
         label: "Patient Login",
         variant: "outlined" as const,
         sx: {
@@ -64,7 +64,7 @@ export const DesktopNavigation = ({
         },
       },
       doctor: {
-        href: "/doctor-login",
+        href: "/login/doctor",
         label: "Doctor Login",
         variant: "contained" as const,
         sx: {

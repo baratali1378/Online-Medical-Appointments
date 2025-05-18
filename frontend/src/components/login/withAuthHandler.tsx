@@ -39,7 +39,7 @@ const withAuthHandler = (
     };
 
     // Set different signup links based on role
-    const signupLink = role === "doctor" ? "/doctor-signup" : "/patient-signup";
+    const signupLink = role === "doctor" ? "/signup/doctor" : "/signup/patient";
 
     // Render the wrapped component with the handleSubmit and signupLink as props
     return (
