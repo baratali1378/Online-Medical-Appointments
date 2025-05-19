@@ -38,3 +38,18 @@ export const signupFormFields: FormFieldConfig[] = [
     type: "date",
   },
 ];
+
+export const loginFormFields: FormFieldConfig[] = [
+  {
+    name: "email",
+    label: "Email",
+    type: "text",
+    placeholder: "Enter your email",
+  },
+  {
+    name: "password",
+    label: "Password",
+    type: "password",
+    placeholder: "Enter your password",
+  },
+];

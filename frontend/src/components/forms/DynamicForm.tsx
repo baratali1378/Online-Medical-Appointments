@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import { FormikProps } from "formik";
 import { FormTextField } from "./fields/FormTextField";
 import { PasswordField } from "./fields/FormPasswordField";
@@ -20,9 +20,9 @@ export const DynamicForm = <T,>({
   buttonLabel = "Submit",
 }: DynamicFormProps<T>) => (
   <form onSubmit={formik.handleSubmit}>
-    <Grid container spacing={2}>
+    <Grid2 container spacing={2}>
       {fields.map((field) => (
-        <Grid item xs={12} key={field.name}>
+        <Grid2 size={{ xs: 12 }} key={field.name}>
           {field.type === "password" ? (
             <PasswordField
               name={field.name}
@@ -45,11 +45,11 @@ export const DynamicForm = <T,>({
               placeholder={field.placeholder}
             />
           )}
-        </Grid>
+        </Grid2>
       ))}
-      <Grid item xs={12}>
+      <Grid2 size={{ xs: 12 }}>
         <FormSubmitButton loading={loading}>{buttonLabel}</FormSubmitButton>
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   </form>
 );

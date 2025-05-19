@@ -11,7 +11,7 @@ const Login = withAuthHandler(LoginForm);
 interface LoginProp {
   image_url: string;
   image_alt: string;
-  user_role: "doctor" | "user";
+  user_role: "doctor" | "patient";
 }
 
 const LoginPage: React.FC<LoginProp> = ({

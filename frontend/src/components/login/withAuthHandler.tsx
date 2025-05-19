@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import useFetch from "../../useFetch/useLoginFetch"; // Assuming your custom hook is inside this folder
+import useFetch from "../../useFetch/useLoginFetch"; // Adjust import path
 
 interface AuthHandlerProps {
   role: "doctor" | "patient";
@@ -10,11 +10,7 @@ interface AuthHandlerProps {
 
 const withAuthHandler = (
   WrappedComponent: React.FC<{
-    handleSubmit: (values: {
-      email: string;
-      password: string;
-      role: "doctor" | "patient";
-    }) => Promise<any>;
+    handleSubmit: (values: { email: string; password: string }) => Promise<any>;
     signupLink: string;
   }>
 ) => {
@@ -25,23 +21,21 @@ const withAuthHandler = (
     const handleSubmit = async (values: {
       email: string;
       password: string;
-      role: "doctor" | "patient";
     }) => {
-      // Post data using the provided role
-      const result = await postData(values);
+      // Inject role here
+      const result = await postData({ ...values, role });
+
+      console.log("hello hi", values.email);
 
       if (result.success) {
-        // On successful login, navigate to the dashboard
         router.push("/dashboard");
       }
 
       return result;
     };
 
-    // Set different signup links based on role
     const signupLink = role === "doctor" ? "/signup/doctor" : "/signup/patient";
 
-    // Render the wrapped component with the handleSubmit and signupLink as props
     return (
       <WrappedComponent handleSubmit={handleSubmit} signupLink={signupLink} />
     );
