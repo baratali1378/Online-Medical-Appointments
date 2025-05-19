@@ -8,10 +8,11 @@ import { Container, Box } from "@mui/material";
 import { SignupFormValues, Gender } from "@/types/patient";
 import { patientProfileSchema } from "@/utils/validation";
 import { loginWithCredentials } from "@/lib/authHelper";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export const SignupContainer: React.FC = () => {
   const { signup, loading, error } = usePatient();
+  const router = useRouter();
 
   const formik = useFormik<SignupFormValues>({
     initialValues: {
@@ -25,7 +26,10 @@ export const SignupContainer: React.FC = () => {
     validationSchema: patientProfileSchema,
     onSubmit: async (values) => {
       try {
-        await signup({ ...values, gender: values.gender as Gender });
+        const data = await signup({
+          ...values,
+          gender: values.gender as Gender,
+        });
         const result = await loginWithCredentials(
           values.email,
           values.password
@@ -33,10 +37,10 @@ export const SignupContainer: React.FC = () => {
         if (result?.error) {
           alert("Signin failed: " + result.error);
         } else {
-          redirect("/");
+          router.push("/");
         }
       } catch (err) {
-        alert("Signup failed. Please try again.");
+        alert("Signup failed. Please try again." + err);
       }
     },
   });
