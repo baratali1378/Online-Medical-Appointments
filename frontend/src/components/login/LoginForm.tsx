@@ -4,10 +4,10 @@ import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import Link from "next/link";
 import { useTheme } from "@mui/material/styles";
-import { Formik, FormikProvider } from "formik";
+import { Formik } from "formik";
 import { DynamicForm } from "@/components/forms/DynamicForm";
 import { loginFormFields } from "@/components/constant/FormConstant";
-import { validation } from "@/utils/validation";
+import { loginValidation } from "@/utils/validation";
 
 interface LoginFormProps {
   handleSubmit: (values: { email: string; password: string }) => Promise<{
@@ -31,7 +31,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleSubmit, signupLink }) => {
 
   const onSubmit = async (values: typeof initialValues) => {
     try {
-      console.log("jjj"); // ✅ This should now log
       const res = await handleSubmit(values);
       setResult(res);
     } catch (err) {
@@ -71,30 +70,28 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleSubmit, signupLink }) => {
 
       <Formik
         initialValues={initialValues}
-        validationSchema={validation}
+        validationSchema={loginValidation}
         onSubmit={onSubmit}
       >
         {(formik) => (
-          <FormikProvider value={formik}>
-            <>
-              <DynamicForm
-                formik={formik}
-                fields={loginFormFields}
-                loading={formik.isSubmitting}
-                buttonLabel="Login"
-              />
+          <>
+            <DynamicForm
+              formik={formik}
+              fields={loginFormFields}
+              loading={formik.isSubmitting}
+              buttonLabel="Login"
+            />
 
-              {result && !result.success && (
-                <Typography
-                  color="error"
-                  textAlign="center"
-                  sx={{ mt: 2, fontSize: { xs: "0.75rem", sm: "0.9rem" } }}
-                >
-                  {result.message}
-                </Typography>
-              )}
-            </>
-          </FormikProvider>
+            {result && !result.success && (
+              <Typography
+                color="error"
+                textAlign="center"
+                sx={{ mt: 2, fontSize: { xs: "0.75rem", sm: "0.9rem" } }}
+              >
+                {result.message}
+              </Typography>
+            )}
+          </>
         )}
       </Formik>
 

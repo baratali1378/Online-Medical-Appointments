@@ -18,3 +18,11 @@ export const validation = Yup.object().shape({
 
   gender: Yup.string().required("Gender is required"),
 });
+
+// In @/utils/validation.ts
+export const loginValidation = Yup.object().shape({
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: Yup.string().required("Password is required"),
+});
