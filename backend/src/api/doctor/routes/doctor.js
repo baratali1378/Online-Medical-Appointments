@@ -18,5 +18,14 @@ module.exports = {
         auth: false,
       },
     },
+    {
+      method: "POST",
+      path: "/doctors/signup",
+      handler: "signup.signup",
+      config: {
+        auth: false, // public access
+        policies: [],
+      },
+    },
   ],
 };
