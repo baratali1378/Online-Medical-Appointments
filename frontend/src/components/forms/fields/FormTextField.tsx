@@ -8,7 +8,6 @@ export const FormTextField = ({
   type,
   placeholder = "",
 }: Omit<FormFieldConfig, "options">) => {
-  console.log("name", name);
   const [field, meta] = useField(name);
 
   return (

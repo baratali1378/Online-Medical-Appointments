@@ -29,6 +29,7 @@ const withAuthHandler = (
     }) => {
       // Post data using the provided role
       const result = await postData(values);
+      console.log("hello hi", values.email);
 
       if (result.success) {
         // On successful login, navigate to the dashboard
