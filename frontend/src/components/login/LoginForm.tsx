@@ -6,6 +6,7 @@ import Link from "next/link";
 import useLoginForm from "@/hooks/login/patient/useLoginForm";
 import { useTheme } from "@mui/material/styles";
 import CustomField from "./Field";
+import { validation } from "@/utils/validation";
 
 interface LoginFormProps {
   handleSubmit: (values: { email: string; password: string }) => Promise<{
@@ -16,8 +17,7 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ handleSubmit, signupLink }) => {
-  const { initialValues, showPassword, setShowPassword, validationSchema } =
-    useLoginForm();
+  const { initialValues, showPassword, setShowPassword } = useLoginForm();
   const theme = useTheme();
   const [result, setResult] = useState<{
     success: boolean;
@@ -61,7 +61,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleSubmit, signupLink }) => {
 
       <Formik
         initialValues={initialValues}
-        validationSchema={validationSchema}
+        validationSchema={validation}
         onSubmit={onSubmit}
       >
         {({ isSubmitting }) => (
