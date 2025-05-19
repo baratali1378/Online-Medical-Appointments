@@ -6,7 +6,7 @@ import { usePatient } from "@/hooks/signup/patient/usePatient";
 import { SignupForm } from "./SignupForm";
 import { Container, Box } from "@mui/material";
 import { SignupFormValues, Gender } from "@/types/patient";
-import { patientProfileSchema } from "@/utils/validation";
+import { validation } from "@/utils/validation";
 import { loginWithCredentials } from "@/lib/authHelper";
 import { useRouter } from "next/navigation";
 
@@ -23,7 +23,7 @@ export const SignupContainer: React.FC = () => {
       gender: "",
       birth: "",
     },
-    validationSchema: patientProfileSchema,
+    validationSchema: validation,
     onSubmit: async (values) => {
       try {
         const data = await signup({
