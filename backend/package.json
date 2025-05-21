@@ -40,6 +40,7 @@
     "uuid": "191a23eb-8d15-412a-8bfa-8240bf60ae58"
   },
   "devDependencies": {
+    "@strapi/types": "^5.13.0",
     "cross-env": "^7.0.3",
     "jest": "^29.7.0",
     "rimraf": "^5.0.10",

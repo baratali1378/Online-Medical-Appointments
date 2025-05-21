@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_personal_info_personal_infos",
+  "info": {
+    "displayName": "Personal Info",
+    "icon": "user",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "fullname": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "required": true,
+      "unique": true
+    },
+    "gender": {
+      "type": "enumeration",
+      "enum": [
+        "Male",
+        "Female",
+        "Others"
+      ]
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    }
+  }
+}

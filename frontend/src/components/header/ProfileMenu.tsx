@@ -15,7 +15,11 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export const ProfileMenu = () => {
+interface Props {
+  url: string;
+}
+
+export const ProfileMenu = ({ url }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
   const open = Boolean(anchorEl);
@@ -37,7 +41,7 @@ export const ProfileMenu = () => {
   return (
     <>
       <IconButton onClick={handleOpen}>
-        <Avatar sx={{ width: 40, height: 40 }} />
+        <Avatar src={url} sx={{ width: 40, height: 40 }} />
       </IconButton>
       <Menu
         anchorEl={anchorEl}

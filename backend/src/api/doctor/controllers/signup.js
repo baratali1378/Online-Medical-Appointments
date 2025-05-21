@@ -58,7 +58,7 @@ module.exports = {
       // Generate JWT token
       const token = jwt.sign(
         { id: newDoctor.id, email: newDoctor.email, role: "doctor" },
-        process.env.JWT_SECRET || "your-secret-key",
+        process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
 

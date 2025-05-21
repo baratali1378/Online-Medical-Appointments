@@ -12,28 +12,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "name": {
-      "type": "string",
-      "required": true
-    },
-    "profile_picture": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files"
-      ]
-    },
-    "email": {
-      "type": "email",
-      "required": true,
-      "unique": true
-    },
-    "slug_id": {
-      "type": "uid",
-      "targetField": "name"
-    },
     "biography": {
       "type": "text"
     },
@@ -59,10 +37,6 @@
     "available_slots": {
       "type": "json"
     },
-    "password": {
-      "type": "password",
-      "private": true
-    },
     "specialties": {
       "type": "relation",
       "relation": "manyToMany",
@@ -79,6 +53,16 @@
       "relation": "manyToOne",
       "target": "api::city.city",
       "inversedBy": "doctors"
+    },
+    "personal_info": {
+      "type": "component",
+      "repeatable": false,
+      "component": "personal-info.personal-info"
+    },
+    "password": {
+      "type": "password",
+      "required": true,
+      "private": true
     }
   }
 }

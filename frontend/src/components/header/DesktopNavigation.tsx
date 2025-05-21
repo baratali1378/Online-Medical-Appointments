@@ -31,7 +31,7 @@ export const DesktopNavigation = ({
       <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
         {mounted &&
           (session ? (
-            <ProfileMenu />
+            <ProfileMenu url={session.user.image || ""} />
           ) : (
             <>
               <LoginButton type="patient" />

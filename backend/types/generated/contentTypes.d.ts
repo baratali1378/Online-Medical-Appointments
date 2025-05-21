@@ -549,9 +549,6 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    email: Schema.Attribute.Email &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
     expreience: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -559,14 +556,17 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
       'api::doctor.doctor'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    password: Schema.Attribute.Password & Schema.Attribute.Private;
+    password: Schema.Attribute.Password &
+      Schema.Attribute.Required &
+      Schema.Attribute.Private;
+    personal_info: Schema.Attribute.Component<
+      'personal-info.personal-info',
+      false
+    >;
     phone_number: Schema.Attribute.Component<'contact.phone-number', true>;
-    profile_picture: Schema.Attribute.Media<'images' | 'files'>;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Decimal;
     reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
-    slug_id: Schema.Attribute.UID<'name'>;
     specialties: Schema.Attribute.Relation<
       'manyToMany',
       'api::specialty.specialty'
@@ -610,7 +610,7 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    useful_links: Schema.Attribute.Component<'useful-links.useful-links', true>;
+    useful_links: Schema.Attribute.Component<'links.useful-links', true>;
   };
 }
 
@@ -630,17 +630,13 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::appointment.appointment'
     >;
-    birth: Schema.Attribute.Date;
+    contact_details: Schema.Attribute.Component<
+      'contact.contact-details',
+      false
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    email: Schema.Attribute.Email &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    fullname: Schema.Attribute.String & Schema.Attribute.Required;
-    gender: Schema.Attribute.Enumeration<['Male', 'Female', 'Other']> &
-      Schema.Attribute.Required;
-    image: Schema.Attribute.Media<'images' | 'files'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -650,12 +646,13 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
     password: Schema.Attribute.Password &
       Schema.Attribute.Required &
       Schema.Attribute.Private;
-    phone: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
+    personal_info: Schema.Attribute.Component<
+      'personal-info.personal-info',
+      false
+    >;
     publishedAt: Schema.Attribute.DateTime;
     reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
-    slug_id: Schema.Attribute.UID<'fullname'>;
+    security: Schema.Attribute.Component<'systems.security-fields', false>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

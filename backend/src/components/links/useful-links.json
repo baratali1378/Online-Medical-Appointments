@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_links_useful_links",
+  "info": {
+    "displayName": "Useful links"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    }
+  }
+}

@@ -1,58 +1,117 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCK_TIME_MINUTES = 15;
+
 module.exports = {
   async login(ctx) {
     try {
       const { email, password } = ctx.request.body;
 
-      console.log("email", email);
-
       if (!email || !password) {
         return ctx.badRequest("Email and password are required.");
       }
 
-      // Find the patient by email
-      const patient = await strapi.db.query("api::patient.patient").findOne({
-        where: { email },
+      // Find patient using query API
+      const patient = await strapi.query("api::patient.patient").findOne({
+        where: {
+          personal_info: { email: email },
+        },
+        populate: {
+          personal_info: {
+            populate: ["image"], // Populate the image relation
+          },
+          security: true,
+          contact_details: true,
+        },
       });
 
-      // If the patient does not exist, return unauthorized
       if (!patient) {
         return ctx.unauthorized("Invalid email or password");
       }
 
-      // Compare the provided password with the hashed password stored in the database
-      const validPassword = await bcrypt.compare(password, patient.password);
-      if (!validPassword) {
-        return ctx.unauthorized("Invalid email or password");
+      if (
+        patient.security?.is_locked &&
+        new Date(patient.security.lock_until) > new Date()
+      ) {
+        const lockTime = new Date(patient.security.lock_until).getTime(); // Convert to timestamp
+        const currentTime = new Date().getTime(); // Convert to timestamp
+        const timeDiffMs = lockTime - currentTime;
+        const minutesLeft = Math.ceil(timeDiffMs / (1000 * 60));
+        return ctx.unauthorized(
+          `Account locked. Try again in ${minutesLeft} minutes.`
+        );
       }
 
-      // Generate a JWT token with the patient's ID and email
+      // Verify password
+      const validPassword = await bcrypt.compare(password, patient.password);
+
+      if (!validPassword) {
+        const attempts = (patient.security?.login_attempts || 0) + 1;
+        const shouldLock = attempts >= MAX_LOGIN_ATTEMPTS;
+        const lockUntil = shouldLock
+          ? new Date(Date.now() + LOCK_TIME_MINUTES * 60 * 1000)
+          : null;
+
+        await strapi.query("api::patient.patient").update({
+          where: { id: patient.id },
+          data: {
+            security: {
+              login_attempts: attempts,
+              last_failed_login: new Date(),
+              ...(shouldLock && {
+                is_locked: true,
+                lock_until: lockUntil,
+              }),
+            },
+          },
+        });
+
+        return ctx.unauthorized(
+          shouldLock
+            ? `Account locked. Try again after ${LOCK_TIME_MINUTES} minutes.`
+            : `Invalid credentials. ${MAX_LOGIN_ATTEMPTS - attempts} attempts remaining.`
+        );
+      }
+
+      // Reset security fields on successful login
+      await strapi.query("api::patient.patient").update({
+        where: { id: patient.id },
+        data: {
+          security: {
+            login_attempts: 0,
+            is_locked: false,
+            lock_until: null,
+            last_login: new Date(),
+          },
+        },
+      });
+
+      // Generate JWT token
       const token = jwt.sign(
         {
           id: patient.id,
-          email: patient.email,
+          email: patient.personal_info.email,
           role: "patient",
         },
-        process.env.JWT_SECRET || "FW91rGoi1U5ozmmQhbhVDQ==",
+        process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
 
-      // Return the JWT and patient data (excluding sensitive information)
       return {
         token,
         role: "patient",
         user: {
           id: patient.id,
-          fullname: patient.fullname,
-          email: patient.email,
-          phone: patient.phone,
-          image: patient.image,
+          role: "patient",
+          fullname: patient.personal_info.fullname,
+          email: patient.personal_info.email,
+          phone: patient.contact_details?.phone,
+          image: patient.personal_info.image.url,
         },
       };
     } catch (error) {
-      // Proper error handling
       strapi.log.error("Login error:", error);
       return ctx.internalServerError("Something went wrong during login");
     }

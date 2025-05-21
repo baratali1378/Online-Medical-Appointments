@@ -12,36 +12,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "fullname": {
-      "type": "string",
-      "required": true
-    },
-    "email": {
-      "type": "email",
-      "required": true,
-      "unique": true
-    },
-    "phone": {
-      "type": "string",
-      "required": true,
-      "unique": true
-    },
-    "birth": {
-      "type": "date"
-    },
-    "slug_id": {
-      "type": "uid",
-      "targetField": "fullname"
-    },
-    "gender": {
-      "type": "enumeration",
-      "enum": [
-        "Male",
-        "Female",
-        "Other"
-      ],
-      "required": true
-    },
     "appointments": {
       "type": "relation",
       "relation": "oneToMany",
@@ -54,18 +24,25 @@
       "target": "api::review.review",
       "mappedBy": "patient"
     },
+    "contact_details": {
+      "type": "component",
+      "repeatable": false,
+      "component": "contact.contact-details"
+    },
+    "security": {
+      "type": "component",
+      "repeatable": false,
+      "component": "systems.security-fields"
+    },
+    "personal_info": {
+      "type": "component",
+      "repeatable": false,
+      "component": "personal-info.personal-info"
+    },
     "password": {
       "type": "password",
       "required": true,
       "private": true
-    },
-    "image": {
-      "allowedTypes": [
-        "images",
-        "files"
-      ],
-      "type": "media",
-      "multiple": false
     }
   }
 }

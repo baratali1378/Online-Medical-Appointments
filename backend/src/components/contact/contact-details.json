@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_contact_contact_details_s",
+  "info": {
+    "displayName": "Contact Details ",
+    "icon": "phone"
+  },
+  "options": {},
+  "attributes": {
+    "phone_number": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "alternate_phone": {
+      "type": "string"
+    },
+    "address": {
+      "type": "text"
+    },
+    "city": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::city.city"
+    },
+    "postal_code": {
+      "type": "string"
+    }
+  }
+}

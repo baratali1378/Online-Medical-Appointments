@@ -1,24 +1,34 @@
+// components/shared/FormTextField.tsx
 import { TextField } from "@mui/material";
-import { useField } from "formik";
-import { FormFieldConfig } from "@/types/formFields"; // adjust path as needed
+import { Field, useField } from "formik";
+
+interface FormTextFieldProps {
+  name: string;
+  label: string;
+  type?: string;
+  [key: string]: any;
+}
 
 export const FormTextField = ({
   name,
   label,
-  type,
-  placeholder = "",
-}: Omit<FormFieldConfig, "options">) => {
+  type = "text",
+  ...props
+}: FormTextFieldProps) => {
   const [field, meta] = useField(name);
 
   return (
-    <TextField
-      fullWidth
+    <Field
+      as={TextField}
+      name={name}
       label={label}
       type={type}
-      placeholder={placeholder}
-      {...field}
+      fullWidth
+      variant="outlined"
+      margin="normal"
       error={meta.touched && Boolean(meta.error)}
-      helperText={meta.touched ? meta.error : ""}
+      helperText={meta.touched && meta.error}
+      {...props}
     />
   );
 };

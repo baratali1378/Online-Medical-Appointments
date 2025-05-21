@@ -2,7 +2,7 @@ import { Grid2 } from "@mui/material";
 import { FormikProps } from "formik";
 import { FormTextField } from "./fields/FormTextField";
 import { PasswordField } from "./fields/FormPasswordField";
-import { SelectField } from "./fields/FormSelectField";
+import { FormSelectField } from "./fields/FormSelectField";
 import { FormSubmitButton } from "./fields/FormSubmitButton";
 import { FormFieldConfig } from "@/types/formFields";
 
@@ -31,11 +31,10 @@ export const DynamicForm = <T,>({
               placeholder={field.placeholder}
             />
           ) : field.type === "select" ? (
-            <SelectField
+            <FormSelectField
               name={field.name}
               label={field.label}
-              type="select"
-              options={field.options!}
+              options={field.options || []}
             />
           ) : (
             <FormTextField

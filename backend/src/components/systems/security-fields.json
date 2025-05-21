@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_systems_security_fields",
+  "info": {
+    "displayName": "Security Fields",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "last_login": {
+      "type": "datetime"
+    },
+    "login_attempts": {
+      "type": "integer",
+      "default": 0
+    },
+    "is_locked": {
+      "type": "boolean",
+      "default": false
+    },
+    "lock_until": {
+      "type": "datetime"
+    }
+  }
+}
