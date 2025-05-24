@@ -2,7 +2,7 @@ module.exports = {
   routes: [
     {
       method: "POST",
-      path: "/doctors/auth",
+      path: "/doctors/login",
       handler: "auth.login",
       config: {
         auth: false,

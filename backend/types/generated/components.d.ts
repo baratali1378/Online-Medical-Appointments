@@ -83,6 +83,7 @@ export interface SystemsSecurityFields extends Struct.ComponentSchema {
   };
   attributes: {
     is_locked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    is_verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     last_login: Schema.Attribute.DateTime;
     lock_until: Schema.Attribute.DateTime;
     login_attempts: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;

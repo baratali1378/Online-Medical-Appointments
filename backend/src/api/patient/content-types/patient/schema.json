@@ -27,7 +27,8 @@
     "contact_details": {
       "type": "component",
       "repeatable": false,
-      "component": "contact.contact-details"
+      "component": "contact.contact-details",
+      "required": true
     },
     "security": {
       "type": "component",
@@ -37,7 +38,8 @@
     "personal_info": {
       "type": "component",
       "repeatable": false,
-      "component": "personal-info.personal-info"
+      "component": "personal-info.personal-info",
+      "required": true
     },
     "password": {
       "type": "password",

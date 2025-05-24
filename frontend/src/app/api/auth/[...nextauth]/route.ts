@@ -40,7 +40,7 @@ const handler = NextAuth({
               id: user.id,
               email: user.email,
               name: user.fullname,
-              role: role || "patient", // Default to 'patient' if role is undefined
+              role: role || "patient",
               image: user.image
                 ? `${process.env.NEXT_PUBLIC_STRAPI_URL}${
                     user.image.url || user.image

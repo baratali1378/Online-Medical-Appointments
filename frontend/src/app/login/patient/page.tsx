@@ -8,7 +8,7 @@ const PatientLoginPage = () => {
     <LoginPage
       image_url={"/patient_image.jpg"}
       image_alt={"user Image"}
-      user_role={"user"}
+      user_role={"patient"}
     />
   );
 };

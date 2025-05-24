@@ -13,15 +13,11 @@ module.exports = {
         return ctx.badRequest("Email and password are required.");
       }
 
-      // Find patient using query API
+      // Find patient with populated fields
       const patient = await strapi.query("api::patient.patient").findOne({
-        where: {
-          personal_info: { email: email },
-        },
+        where: { personal_info: { email: email } },
         populate: {
-          personal_info: {
-            populate: ["image"], // Populate the image relation
-          },
+          personal_info: { populate: ["image"] },
           security: true,
           contact_details: true,
         },
@@ -31,12 +27,19 @@ module.exports = {
         return ctx.unauthorized("Invalid email or password");
       }
 
+      console.log("Stored Hash:", patient.password);
+      console.log(
+        "Password Match:",
+        await bcrypt.compare(password, patient.password)
+      );
+
+      // Account lock check
       if (
         patient.security?.is_locked &&
         new Date(patient.security.lock_until) > new Date()
       ) {
-        const lockTime = new Date(patient.security.lock_until).getTime(); // Convert to timestamp
-        const currentTime = new Date().getTime(); // Convert to timestamp
+        const lockTime = new Date(patient.security.lock_until).getTime();
+        const currentTime = new Date().getTime();
         const timeDiffMs = lockTime - currentTime;
         const minutesLeft = Math.ceil(timeDiffMs / (1000 * 60));
         return ctx.unauthorized(
@@ -44,9 +47,8 @@ module.exports = {
         );
       }
 
-      // Verify password
+      // Password validation
       const validPassword = await bcrypt.compare(password, patient.password);
-
       if (!validPassword) {
         const attempts = (patient.security?.login_attempts || 0) + 1;
         const shouldLock = attempts >= MAX_LOGIN_ATTEMPTS;
@@ -75,7 +77,7 @@ module.exports = {
         );
       }
 
-      // Reset security fields on successful login
+      // Reset failed attempts
       await strapi.query("api::patient.patient").update({
         where: { id: patient.id },
         data: {
@@ -88,7 +90,7 @@ module.exports = {
         },
       });
 
-      // Generate JWT token
+      // Generate token
       const token = jwt.sign(
         {
           id: patient.id,
@@ -108,7 +110,7 @@ module.exports = {
           fullname: patient.personal_info.fullname,
           email: patient.personal_info.email,
           phone: patient.contact_details?.phone,
-          image: patient.personal_info.image.url,
+          image: patient.personal_info.image?.url || null, // 🛡️ Safe access
         },
       };
     } catch (error) {

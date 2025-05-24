@@ -2,12 +2,15 @@ export const genderOptions = ["Male", "Female", "Other"] as const;
 export type Gender = (typeof genderOptions)[number];
 
 export interface SignupFormValues {
-  fullname: string;
+  name: string;
   email: string;
-  phone: string;
   password: string;
-  gender: Gender | "";
-  birth: string;
+  gender: string;
+  birthYear: string;
+  birthMonth: string;
+  birthDay: string;
+  phone: string;
+  city: string;
 }
 
 export interface PatientImageFormat {

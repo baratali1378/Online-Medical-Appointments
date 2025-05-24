@@ -17,6 +17,10 @@
       "type": "boolean",
       "default": false
     },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
     "lock_until": {
       "type": "datetime"
     }

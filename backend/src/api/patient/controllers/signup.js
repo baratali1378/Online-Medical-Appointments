@@ -1,74 +1,89 @@
+"use strict";
+
+// @ts-ignore
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 module.exports = {
-  /**
-   * Patient Signup
-   */
   async signup(ctx) {
-    const {
-      fullname,
-      email,
-      phone,
-      password,
-      gender,
-      city, // this should be the city ID
-    } = ctx.request.body.data;
+    try {
+      const { name, email, password, phone, city, gender } =
+        ctx.request.body.data;
 
-    // Validate required fields
-    if (!fullname || !email || !phone || !password || !gender || !city) {
-      return ctx.badRequest(
-        "Please provide all required fields: fullname, email, phone, password, gender, city"
+      // Validate required fields
+      if (!name || !email || !password || !phone || !city) {
+        return ctx.badRequest("Please provide all required fields");
+      }
+
+      const fullname = name;
+
+      // Check if patient with this email or phone already exists
+      const existingPatients = await strapi.db
+        .query("api::patient.patient")
+        .findMany({
+          where: {
+            $or: [
+              { personal_info: { email } },
+              { contact_details: { phone_number: phone } },
+            ],
+          },
+          populate: ["personal_info", "contact_details"],
+        });
+
+      if (existingPatients.length > 0) {
+        return ctx.badRequest(
+          "A patient with this email or phone already exists"
+        );
+      }
+
+      // Find the city by name
+      const foundCity = await strapi.db.query("api::city.city").findOne({
+        where: { name: city },
+      });
+
+      if (!foundCity) {
+        return ctx.badRequest(`City '${city}' not found`);
+      }
+
+      // Create the patient
+      const newPatient = await strapi.entityService.create(
+        "api::patient.patient",
+        {
+          data: {
+            personal_info: {
+              fullname,
+              email,
+              gender: gender || null,
+            },
+            contact_details: {
+              phone_number: phone,
+              city: foundCity.id,
+            },
+            password: password,
+            publishedAt: new Date(),
+          },
+          populate: ["personal_info"],
+        }
       );
-    }
 
-    // Check if email or phone already exists (in personal_info and contact_details)
-    const existing = await strapi.db.query("api::patient.patient").findOne({
-      where: {
-        $or: [
-          { personal_info: { email } },
-          { contact_details: { phone_number: phone } },
-        ],
-      },
-      populate: ["personal_info", "contact_details"],
-    });
-
-    if (existing) {
-      return ctx.badRequest(
-        "A patient with this email or phone already exists."
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          id: newPatient.id,
+          email: email,
+          role: "patient",
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
       );
+
+      return ctx.send({
+        token,
+        role: "patient",
+      });
+    } catch (error) {
+      strapi.log.error("Patient signup error:", error);
+      return ctx.internalServerError(error.message || "Registration failed");
     }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create patient with components
-    const newPatient = await strapi.db.query("api::patient.patient").create({
-      data: {
-        personal_info: {
-          fullname,
-          email,
-          gender,
-          password: hashedPassword,
-        },
-        contact_details: {
-          phone_number: phone,
-          city: city, // city should be an ID
-        },
-        publishedAt: new Date(),
-      },
-    });
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: newPatient.id, email, role: "patient" },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    return ctx.send({
-      token,
-      role: "patient",
-    });
   },
 };
