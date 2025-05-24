@@ -633,8 +633,7 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
     contact_details: Schema.Attribute.Component<
       'contact.contact-details',
       false
-    > &
-      Schema.Attribute.Required;
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -650,8 +649,7 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
     personal_info: Schema.Attribute.Component<
       'personal-info.personal-info',
       false
-    > &
-      Schema.Attribute.Required;
+    >;
     publishedAt: Schema.Attribute.DateTime;
     reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     security: Schema.Attribute.Component<'systems.security-fields', false>;

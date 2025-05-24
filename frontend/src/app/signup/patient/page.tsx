@@ -12,8 +12,6 @@ import { useRouter } from "next/navigation";
 import { SignupFormValues } from "@/types/patient";
 import { loginWithCredentials } from "@/lib/authHelper";
 
-const patientSteps = ["Personal Info", "Contact Info", "Confirm"];
-
 const patientInitialValues: SignupFormValues = {
   name: "",
   email: "",
@@ -75,7 +73,7 @@ const PatientSignupPage = () => {
       maxWidth="md"
     >
       <SignupStepper
-        steps={patientSteps}
+        steps={["Personal Info", "Contact Info", "Confirm"]}
         initialValues={patientInitialValues}
         validationSchemas={patientValidationSchemas} // assuming validation is ready for patient
         onSubmit={handleSubmit}

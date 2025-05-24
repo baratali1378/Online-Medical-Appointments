@@ -83,7 +83,7 @@ const DoctorSignupPage = () => {
         initialValues={doctorInitialValues}
         validationSchemas={validationSchemas}
         onSubmit={handleSubmit}
-        imageSide={<ImageSide />}
+        imageSide={<ImageSide src="/doctor_signup.jpg" alt="Doctor Image" />}
       >
         <PersonalInfoStep />
         <ContactInfoStep includeExperience />

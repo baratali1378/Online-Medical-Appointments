@@ -1,4 +1,3 @@
-// components/signup/steps/ContactInfoStep.tsx
 "use client";
 
 import { Box, Grid, Typography } from "@mui/material";
@@ -27,7 +26,7 @@ const ContactInfoStep = ({
   dayLabel = "Day",
   experienceLabel = "Experience",
   includeExperience = true,
-  birthPrefix = "birth", // allows use of "birthYear" or just "year" etc.
+  birthPrefix = "birth",
   phoneField = "phone_number",
   cityField = "city",
 }: ContactInfoStepProps) => {
@@ -40,12 +39,18 @@ const ContactInfoStep = ({
     })) || [];
 
   return (
-    <Box display="grid" gap={2}>
-      <Typography variant="subtitle1" gutterBottom>
+    <Box display="grid" gap={3}>
+      <Typography
+        variant="subtitle1"
+        gutterBottom
+        fontWeight={600}
+        color="text.primary"
+      >
         Date of Birth
       </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={4}>
+
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={4}>
           <FormTextField
             name={`${birthPrefix}Year`}
             label={yearLabel}
@@ -58,7 +63,7 @@ const ContactInfoStep = ({
             fullWidth
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={4}>
           <FormTextField
             name={`${birthPrefix}Month`}
             label={monthLabel}
@@ -67,7 +72,7 @@ const ContactInfoStep = ({
             fullWidth
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={4}>
           <FormTextField
             name={`${birthPrefix}Day`}
             label={dayLabel}
@@ -78,7 +83,13 @@ const ContactInfoStep = ({
         </Grid>
       </Grid>
 
-      <FormTextField name={phoneField} label={phoneLabel} type="tel" />
+      <FormTextField
+        name={phoneField}
+        label={phoneLabel}
+        type="tel"
+        fullWidth
+      />
+
       <FormSelectField
         name={cityField}
         label={cityLabel}
@@ -86,7 +97,12 @@ const ContactInfoStep = ({
       />
 
       {includeExperience && (
-        <FormTextField name="experience" label={experienceLabel} type="text" />
+        <FormTextField
+          name="experience"
+          label={experienceLabel}
+          type="text"
+          fullWidth
+        />
       )}
     </Box>
   );
