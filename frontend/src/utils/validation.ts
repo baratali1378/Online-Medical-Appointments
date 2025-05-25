@@ -76,3 +76,15 @@ export const validationSchemas = [
   }),
   Yup.object(),
 ];
+
+export const ProfileValidation = Yup.object().shape({
+  fullname: Yup.string().required("Full name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phone_number: Yup.string()
+    .matches(/^\+?[0-9\s-]+$/, "Invalid phone number")
+    .required("Phone number is required"),
+  birth: Yup.date().nullable(),
+  city: Yup.string().nullable(),
+  address: Yup.string().nullable(),
+  postal_code: Yup.string().nullable(),
+});

@@ -20,18 +20,7 @@ import { PatientProfile, PatientProfileFormValues } from "@/types/patient";
 import * as Yup from "yup";
 import { useCitiesQuery } from "@/hooks/useCitiesQuery";
 import { FormSelectField } from "@/components/forms/fields/FormSelectField";
-
-const validationSchema = Yup.object().shape({
-  fullname: Yup.string().required("Full name is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  phone_number: Yup.string()
-    .matches(/^\+?[0-9\s-]+$/, "Invalid phone number")
-    .required("Phone number is required"),
-  birth: Yup.date().nullable(),
-  city: Yup.string().nullable(),
-  address: Yup.string().nullable(),
-  postal_code: Yup.string().nullable(),
-});
+import { ProfileValidation } from "@/utils/validation";
 
 interface PatientFormCardProps {
   patient: PatientProfile;
@@ -170,7 +159,7 @@ const PatientFormCard = ({
 
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
+          validationSchema={ProfileValidation}
           onSubmit={handleSubmit}
           enableReinitialize
         >

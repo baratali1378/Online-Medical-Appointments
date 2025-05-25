@@ -13,6 +13,10 @@ export default function ProfilePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  // Always call usePatient unconditionally at the top level
+  const { profile, isLoading, error, updateProfile, uploadImage, refetch } =
+    usePatient({ token: session?.user?.token || "" });
+
   // Redirect if unauthenticated
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -20,7 +24,8 @@ export default function ProfilePage() {
     }
   }, [status, router]);
 
-  if (status === "loading") {
+  // Combined loading state
+  if (status === "loading" || isLoading) {
     return (
       <Box
         display="flex"
@@ -33,37 +38,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (!session) {
-    // Session not ready or redirecting
-    return null;
-  }
-
-  const token = session.user?.token || "";
-
-  if (!token) {
-    return (
-      <Box p={3}>
-        <ErrorAlert error="Authentication token not found." />
-      </Box>
-    );
-  }
-
-  const { profile, isLoading, error, updateProfile, uploadImage, refetch } =
-    usePatient(token);
-
-  if (isLoading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
+  // API error state
   if (error) {
     return (
       <Box p={3}>
@@ -72,6 +47,7 @@ export default function ProfilePage() {
     );
   }
 
+  // No profile data state
   if (!profile) {
     return (
       <Box p={3}>

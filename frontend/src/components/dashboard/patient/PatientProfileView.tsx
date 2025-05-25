@@ -1,10 +1,9 @@
 // components/dashboard/patient/PatientProfileView.tsx
 "use client";
 
-import { Box, Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Alert, Box, Grid, useMediaQuery, useTheme } from "@mui/material";
 import PatientImageCard from "./ProfileImageCard";
 import PatientFormCard from "./ProfileFormCard";
-import { ErrorAlert } from "@/components/common/ErrorAlert";
 import { PatientFormValues, PatientProfile } from "@/types/patient";
 import { useState, useEffect } from "react";
 

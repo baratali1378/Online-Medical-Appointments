@@ -9,28 +9,34 @@ import {
   PatientProfileFormValues,
 } from "@/types/patient";
 
-export const usePatient = (token: string) => {
+interface Prop {
+  token?: string;
+}
+
+export const usePatient = ({ token }: Prop) => {
   const queryClient = useQueryClient();
 
-  // Always call useQuery
   const profileQuery = useQuery<PatientProfile, PatientServiceError>({
-    queryKey: ["patientProfile"],
-    queryFn: () => PatientService.getPatientProfile(token),
-    enabled: !!token, // only fetch if token is truthy
+    queryKey: ["patientProfile", token], // ✅ Include token in queryKey
+    queryFn: () => {
+      if (!token) return Promise.reject("No token provided");
+      return PatientService.getPatientProfile(token);
+    },
+    enabled: !!token, // Only enable if token exists
     retry: (failureCount, error) => {
       if (error.status === 404 || error.status === 401) return false;
       return failureCount < 3;
     },
     staleTime: 1000 * 60 * 5,
   });
-
   // Always call updateMutation hook
   const updateMutation = useMutation<
     PatientProfile,
     PatientServiceError,
     Partial<PatientProfileFormValues>
   >({
-    mutationFn: (data) => PatientService.updatePatientProfile(token, data),
+    mutationFn: (data) =>
+      PatientService.updatePatientProfile(token || "", data),
     onSuccess: (updatedProfile) => {
       queryClient.setQueryData(["patientProfile"], updatedProfile);
       queryClient.invalidateQueries({ queryKey: ["patient"] });
@@ -46,7 +52,7 @@ export const usePatient = (token: string) => {
     PatientServiceError,
     File
   >({
-    mutationFn: (file) => PatientService.uploadPatientImage(token, file),
+    mutationFn: (file) => PatientService.uploadPatientImage(token || "", file),
     onSuccess: (imageData) => {
       queryClient.setQueryData<PatientProfile>(["patientProfile"], (old) => {
         if (!old) return undefined;
