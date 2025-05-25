@@ -1,32 +1,57 @@
+// app/dashboard/patient/profile/page.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { CircularProgress, Typography, Box } from "@mui/material";
-import PatientProfileView from "@/components/dashboard/patient/PatientProfileView";
-import { usePatientProfile } from "@/hooks/profile/usePatient";
+import { CircularProgress, Box } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { usePatient } from "@/hooks/profile/usePatient";
+import PatientProfileView from "@/components/dashboard/patient/PatientProfileView";
+import { ErrorAlert } from "@/components/common/ErrorAlert";
+import { useEffect } from "react";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { data: session, status } = useSession();
-  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Handle redirect in useEffect
+  // Redirect if unauthenticated
   useEffect(() => {
-    if (status === "unauthenticated" && !isRedirecting) {
-      setIsRedirecting(true);
-      redirect("/patient-login");
+    if (status === "unauthenticated") {
+      router.push("/patient/login");
     }
-  }, [status, isRedirecting]);
+  }, [status, router]);
 
-  // Get token safely
-  const token = session?.user?.token || null;
+  if (status === "loading") {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="50vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
-  // Call hook unconditionally at the top level
-  const { patient, loading, error, updateProfile, uploadImage, refetch } =
-    usePatientProfile({ token });
+  if (!session) {
+    // Session not ready or redirecting
+    return null;
+  }
 
-  if (status === "loading" || loading) {
+  const token = session.user?.token || "";
+
+  if (!token) {
+    return (
+      <Box p={3}>
+        <ErrorAlert error="Authentication token not found." />
+      </Box>
+    );
+  }
+
+  const { profile, isLoading, error, updateProfile, uploadImage, refetch } =
+    usePatient(token);
+
+  if (isLoading) {
     return (
       <Box
         display="flex"
@@ -40,23 +65,33 @@ export default function ProfilePage() {
   }
 
   if (error) {
-    throw new Error(error);
+    return (
+      <Box p={3}>
+        <ErrorAlert error={error.message} />
+      </Box>
+    );
   }
 
-  if (!patient) {
+  if (!profile) {
     return (
-      <Typography align="center" mt={4}>
-        No patient found.
-      </Typography>
+      <Box p={3}>
+        <ErrorAlert error="No patient data found" />
+      </Box>
     );
   }
 
   return (
     <PatientProfileView
-      patient={patient}
-      onUpdate={updateProfile}
-      onImageUpload={uploadImage}
-      onRefresh={refetch}
+      patient={profile}
+      onUpdate={async (data) => {
+        await updateProfile(data);
+      }}
+      onImageUpload={async (file) => {
+        await uploadImage(file);
+      }}
+      onRefresh={async () => {
+        await refetch();
+      }}
     />
   );
 }

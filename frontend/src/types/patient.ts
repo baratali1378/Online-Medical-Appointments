@@ -44,15 +44,48 @@ export interface PatientImage {
   updatedAt: string;
 }
 
-export interface PatientProfile {
+export interface City {
+  id: number;
+  name: string;
+}
+
+export interface ContactInfo {
+  id: number;
+  phone_number: string;
+  alternate_phone?: string | null;
+  address?: string | null;
+  postal_code?: string | null;
+  city?: City | null;
+}
+
+export interface PersonalInfo {
   id: number;
   fullname: string;
   email: string;
-  phone: string;
-  birth: string;
-  gender: "Male" | "Female" | "Other";
-  slug_id: string | null;
-  image: PatientImage | null;
+  birth?: string | null;
+  image?: { url: string } | null;
+}
+
+export interface PatientProfile {
+  id: number;
+  personal_info: PersonalInfo;
+  contact: ContactInfo;
+  slug_id?: string;
+}
+
+export interface PatientFormValues {
+  fullname: string;
+  email: string;
+  phone_number?: string;
+  birth?: string;
+  gender?: string;
+  city?: string;
+  password?: string;
+}
+
+export interface PatientProfileFormValues extends PatientFormValues {
+  address?: string;
+  posta_code?: string;
 }
 export interface PatientSignupResponse {
   token: string;

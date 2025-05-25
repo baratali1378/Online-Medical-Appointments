@@ -110,7 +110,7 @@ module.exports = {
           fullname: patient.personal_info.fullname,
           email: patient.personal_info.email,
           phone: patient.contact_details?.phone,
-          image: patient.personal_info.image?.url || null, // 🛡️ Safe access
+          image: patient.personal_info.image?.url || null,
         },
       };
     } catch (error) {

@@ -1,115 +1,80 @@
-import { useState, useEffect } from "react";
-import { PatientProfile, SignupFormValues } from "@/types/patient";
-import { PatientService } from "@/service/profile/patient/profileService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  PatientService,
+  PatientServiceError,
+} from "@/service/profile/patient/profileService";
+import {
+  PatientProfile,
+  PatientImage,
+  PatientProfileFormValues,
+} from "@/types/patient";
 
-type UsePatientProfileReturn = {
-  patient: PatientProfile | null;
-  loading: boolean;
-  error: string | null;
-  updateProfile: (data: Partial<SignupFormValues>) => Promise<void>;
-  uploadImage: (file: File) => Promise<void>;
-  refetch: () => Promise<void>;
-};
+export const usePatient = (token: string) => {
+  const queryClient = useQueryClient();
 
-interface PatientProp {
-  token: string | null;
-}
-
-export const usePatientProfile = ({
-  token,
-}: PatientProp): UsePatientProfileReturn => {
-  const [state, setState] = useState<{
-    patient: PatientProfile | null;
-    loading: boolean;
-    error: string | null;
-  }>({
-    patient: null,
-    loading: !!token, // Only load if we have a token
-    error: null,
+  // Always call useQuery
+  const profileQuery = useQuery<PatientProfile, PatientServiceError>({
+    queryKey: ["patientProfile"],
+    queryFn: () => PatientService.getPatientProfile(token),
+    enabled: !!token, // only fetch if token is truthy
+    retry: (failureCount, error) => {
+      if (error.status === 404 || error.status === 401) return false;
+      return failureCount < 3;
+    },
+    staleTime: 1000 * 60 * 5,
   });
 
-  const fetchPatient = async () => {
-    if (!token) {
-      setState({
-        patient: null,
-        loading: false,
-        error: "No authentication token",
+  // Always call updateMutation hook
+  const updateMutation = useMutation<
+    PatientProfile,
+    PatientServiceError,
+    Partial<PatientProfileFormValues>
+  >({
+    mutationFn: (data) => PatientService.updatePatientProfile(token, data),
+    onSuccess: (updatedProfile) => {
+      queryClient.setQueryData(["patientProfile"], updatedProfile);
+      queryClient.invalidateQueries({ queryKey: ["patient"] });
+    },
+    onError: (error) => {
+      console.error("Profile update failed:", error.message);
+    },
+  });
+
+  // Always call uploadImageMutation hook
+  const uploadImageMutation = useMutation<
+    PatientImage,
+    PatientServiceError,
+    File
+  >({
+    mutationFn: (file) => PatientService.uploadPatientImage(token, file),
+    onSuccess: (imageData) => {
+      queryClient.setQueryData<PatientProfile>(["patientProfile"], (old) => {
+        if (!old) return undefined;
+        return {
+          ...old,
+          personal_info: {
+            ...old.personal_info,
+            image: imageData,
+          },
+        };
       });
-      return;
-    }
-
-    try {
-      setState((prev) => ({ ...prev, loading: true }));
-      const patient = await PatientService.getPatientProfile(token);
-      setState({ patient, loading: false, error: null });
-    } catch (error) {
-      setState({
-        patient: null,
-        loading: false,
-        error: getErrorMessage(error),
-      });
-    }
-  };
-
-  const updateProfile = async (data: Partial<SignupFormValues>) => {
-    if (!token) throw new Error("No authentication token");
-
-    try {
-      setState((prev) => ({ ...prev, loading: true }));
-      const updatedPatient = await PatientService.updatePatientProfile(
-        token,
-        data
-      );
-      setState((prev) => ({
-        ...prev,
-        patient: updatedPatient,
-        loading: false,
-      }));
-    } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: getErrorMessage(error),
-      }));
-      throw error;
-    }
-  };
-
-  const uploadImage = async (file: File) => {
-    if (!token) throw new Error("No authentication token");
-
-    try {
-      setState((prev) => ({ ...prev, loading: true }));
-      const image = await PatientService.uploadPatientImage(token, file);
-      setState((prev) => ({
-        ...prev,
-        patient: prev.patient ? { ...prev.patient, image } : null,
-        loading: false,
-      }));
-    } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: getErrorMessage(error),
-      }));
-      throw error;
-    }
-  };
-
-  useEffect(() => {
-    if (token) {
-      fetchPatient();
-    }
-  }, [token]);
+    },
+  });
 
   return {
-    ...state,
-    updateProfile,
-    uploadImage,
-    refetch: fetchPatient,
+    profile: profileQuery.data,
+    isLoading: profileQuery.isLoading,
+    isFetching: profileQuery.isFetching,
+    error: profileQuery.error,
+
+    updateProfile: updateMutation.mutateAsync,
+    isUpdating: updateMutation.isPending,
+    updateError: updateMutation.error,
+
+    uploadImage: uploadImageMutation.mutateAsync,
+    isUploading: uploadImageMutation.isPending,
+    uploadError: uploadImageMutation.error,
+
+    refetch: profileQuery.refetch,
   };
 };
-
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : "Unknown error occurred";
-}

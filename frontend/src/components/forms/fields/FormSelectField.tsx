@@ -1,4 +1,3 @@
-// components/forms/fields/FormSelectField.tsx
 import {
   FormControl,
   InputLabel,
@@ -17,12 +16,14 @@ interface FormSelectFieldProps {
   name: string;
   label: string;
   options: Option[];
+  disabled?: boolean; // ✅ Rename from `disable` to `disabled` for clarity
 }
 
 export const FormSelectField = ({
   name,
   label,
   options,
+  disabled = false, // ✅ default to false
 }: FormSelectFieldProps) => {
   const [field, meta, helpers] = useField(name);
   const { value } = field;
@@ -36,6 +37,7 @@ export const FormSelectField = ({
         value={value || ""}
         onChange={(e) => helpers.setValue(e.target.value)}
         label={label}
+        disabled={disabled} // ✅ Properly apply the prop
       >
         {options.map((option) => (
           <MenuItem key={option.value} value={option.value}>

@@ -65,6 +65,7 @@ module.exports = {
             },
             security: {
               is_verified: false,
+              is_locked: false,
             },
             expreience: experience,
             phone_number: phoneComponentData,

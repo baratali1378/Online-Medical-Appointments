@@ -20,6 +20,13 @@ module.exports = {
       const patient = await strapi.db.query("api::patient.patient").findOne({
         where: { id: decoded.id },
         populate: {
+          personal_info: {
+            populate: ["image"],
+          },
+          contact_details: {
+            populate: ["city"],
+          },
+          security: true,
           image: true,
         },
       });
@@ -28,17 +35,13 @@ module.exports = {
         return ctx.notFound("Patient not found");
       }
 
-      // Return patient data without sensitive information
+      const { personal_info, contact_details } = patient;
+
       return ctx.send({
         data: {
           id: patient.id,
-          fullname: patient.fullname,
-          email: patient.email,
-          phone: patient.phone,
-          birth: patient.birth,
-          gender: patient.gender,
-          slug_id: patient.slug_id,
-          image: patient.image,
+          personal_info: personal_info,
+          contact: contact_details,
         },
         meta: {},
       });
