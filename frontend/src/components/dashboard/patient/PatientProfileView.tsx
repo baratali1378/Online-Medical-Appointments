@@ -76,7 +76,11 @@ const PatientProfileView = ({
       maxWidth="1400px"
       mx="auto"
     >
-      {showSuccess && successMessage && <div />}
+      {showSuccess && successMessage && (
+        <Box mb={2}>
+          <Alert severity="success">{successMessage}</Alert>
+        </Box>
+      )}
 
       <Grid container spacing={3} direction={isMobile ? "column" : "row"}>
         <Grid item xs={12} md={4}>
