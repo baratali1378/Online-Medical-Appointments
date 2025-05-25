@@ -5,9 +5,10 @@ import { CircularProgress, Box } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { usePatient } from "@/hooks/profile/usePatient";
-import PatientProfileView from "@/components/dashboard/patient/PatientProfileView";
+import { PatientProfileView } from "@/components/dashboard/patient/PatientProfileView";
 import { ErrorAlert } from "@/components/common/ErrorAlert";
 import { useEffect } from "react";
+import { PatientProfileFormValues } from "@/types/patient";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -59,10 +60,10 @@ export default function ProfilePage() {
   return (
     <PatientProfileView
       patient={profile}
-      onUpdate={async (data) => {
+      onUpdate={async (data: Partial<PatientProfileFormValues>) => {
         await updateProfile(data);
       }}
-      onImageUpload={async (file) => {
+      onImageUpload={async (file: File) => {
         await uploadImage(file);
       }}
       onRefresh={async () => {

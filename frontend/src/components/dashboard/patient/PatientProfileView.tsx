@@ -1,9 +1,7 @@
-// components/dashboard/patient/PatientProfileView.tsx
-"use client";
-
+// components/patient/PatientProfileView.tsx
 import { Alert, Box, Grid, useMediaQuery, useTheme } from "@mui/material";
-import PatientImageCard from "./ProfileImageCard";
-import PatientFormCard from "./ProfileFormCard";
+import { PatientImageCard } from "./ProfileImageCard";
+import { PatientFormCard } from "./ProfileFormCard";
 import { PatientFormValues, PatientProfile } from "@/types/patient";
 import { useState, useEffect } from "react";
 
@@ -14,7 +12,7 @@ interface PatientProfileViewProps {
   onRefresh: () => Promise<void>;
 }
 
-const PatientProfileView = ({
+export const PatientProfileView = ({
   patient,
   onUpdate,
   onImageUpload,
@@ -22,14 +20,12 @@ const PatientProfileView = ({
 }: PatientProfileViewProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [editMode, setEditMode] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
 
-  // Handle success message display and auto-hide
   useEffect(() => {
     if (successMessage) {
       setShowSuccess(true);
@@ -87,7 +83,6 @@ const PatientProfileView = ({
             patient={patient}
             onImageChange={handleImageUpload}
             loading={isUploading}
-            onEditClick={() => setEditMode(true)}
           />
         </Grid>
         <Grid item xs={12} md={8}>
@@ -95,13 +90,10 @@ const PatientProfileView = ({
             patient={patient}
             onSubmit={handleUpdateProfile}
             loading={isUpdating}
-            error={updateError || ""}
-            onEditToggle={() => setEditMode(!editMode)}
+            error={updateError || undefined}
           />
         </Grid>
       </Grid>
     </Box>
   );
 };
-
-export default PatientProfileView;
