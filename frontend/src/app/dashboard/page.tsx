@@ -9,6 +9,8 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  console.log(session?.user.token);
+
   useEffect(() => {
     if (status === "authenticated") {
       const role = session?.user?.role;

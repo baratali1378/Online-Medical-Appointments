@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -7,74 +8,142 @@ import {
   Grid,
   TextField,
   Typography,
+  CircularProgress,
+  Alert,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { Edit, Save, Cancel } from "@mui/icons-material";
-import { useState } from "react";
-import { Formik, Form } from "formik";
-import {
-  PatientProfile,
-  SignupFormValues,
-  genderOptions,
-} from "@/types/patient";
-import { patientProfileSchema } from "@/utils/validation";
 
-interface Props {
+import { Save, Cancel, Edit } from "@mui/icons-material";
+import { Formik, Form, Field } from "formik";
+import { PatientProfile, PatientProfileFormValues } from "@/types/patient";
+import * as Yup from "yup";
+import { useCitiesQuery } from "@/hooks/useCitiesQuery";
+import { FormSelectField } from "@/components/forms/fields/FormSelectField";
+
+const validationSchema = Yup.object().shape({
+  fullname: Yup.string().required("Full name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phone_number: Yup.string()
+    .matches(/^\+?[0-9\s-]+$/, "Invalid phone number")
+    .required("Phone number is required"),
+  birth: Yup.date().nullable(),
+  city: Yup.string().nullable(),
+  address: Yup.string().nullable(),
+  postal_code: Yup.string().nullable(),
+});
+
+interface PatientFormCardProps {
   patient: PatientProfile;
-  onSubmit: (data: Partial<SignupFormValues>) => Promise<void>;
-  onRefetch: () => Promise<void>;
+  onSubmit: (data: Partial<PatientProfileFormValues>) => Promise<void>;
+  loading?: boolean;
+  error?: string;
+  onEditToggle?: () => void;
 }
 
-const ProfileFormCard = ({ patient, onSubmit, onRefetch }: Props) => {
+const PatientFormCard = ({
+  patient,
+  onSubmit,
+  loading,
+  error,
+  onEditToggle,
+}: PatientFormCardProps) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [editMode, setEditMode] = useState(false);
+  const { data: cities, isLoading } = useCitiesQuery();
 
-  const initialValues: SignupFormValues = {
-    fullname: patient.fullname || "",
-    email: patient.email || "",
-    phone: patient.phone || "",
-    birth: patient.birth || "",
-    gender: patient.gender || "",
-    password: "",
+  const cityOptions =
+    cities?.map((city) => ({
+      label: city.name,
+      value: city.name,
+    })) || [];
+
+  const initialValues: PatientProfileFormValues = {
+    address: patient.contact.address || undefined,
+    postal_code: patient.contact.postal_code || undefined,
+    fullname: patient.personal_info.fullname,
+    email: patient.personal_info.email,
+    phone_number: patient.contact.phone_number,
+    birth: patient.personal_info.birth || "",
+    city: patient.contact.city?.name || undefined,
   };
 
-  const handleFormSubmit = async (values: SignupFormValues) => {
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+    if (onEditToggle) onEditToggle();
+  };
+
+  const handleSubmit = async (values: PatientProfileFormValues) => {
     await onSubmit(values);
     setEditMode(false);
-    await onRefetch();
   };
 
   return (
     <Card
       sx={{
-        p: 2,
-        borderRadius: 3,
-        boxShadow: 3,
-        backgroundColor: "background.paper",
+        p: { xs: 2, md: 3 },
+        borderRadius: 4,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        height: "100%",
+        position: "relative",
+        overflow: "visible",
       }}
     >
+      {loading && (
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          bgcolor="rgba(255,255,255,0.7)"
+          zIndex={1}
+          borderRadius={4}
+        >
+          <CircularProgress />
+        </Box>
+      )}
+
       <CardContent>
         <Box
           display="flex"
           justifyContent="space-between"
           alignItems="center"
           mb={3}
+          flexWrap="wrap"
+          gap={1}
         >
-          <Typography variant="h6">Personal Information</Typography>
+          <Typography
+            variant="h6"
+            sx={{ fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
+          >
+            Personal Information
+          </Typography>
+
           {editMode ? (
             <Box display="flex" gap={1}>
               <Button
                 type="submit"
-                form="profile-form"
+                form="patient-form"
                 variant="contained"
                 color="primary"
                 startIcon={<Save />}
+                size={isMobile ? "small" : "medium"}
+                disabled={loading}
               >
-                Save
+                Save Changes
               </Button>
               <Button
                 variant="outlined"
-                color="error"
+                color="inherit"
                 startIcon={<Cancel />}
-                onClick={() => setEditMode(false)}
+                onClick={toggleEditMode}
+                size={isMobile ? "small" : "medium"}
+                disabled={loading}
               >
                 Cancel
               </Button>
@@ -83,7 +152,8 @@ const ProfileFormCard = ({ patient, onSubmit, onRefetch }: Props) => {
             <Button
               variant="contained"
               startIcon={<Edit />}
-              onClick={() => setEditMode(true)}
+              onClick={toggleEditMode}
+              size={isMobile ? "small" : "medium"}
             >
               Edit Profile
             </Button>
@@ -92,82 +162,123 @@ const ProfileFormCard = ({ patient, onSubmit, onRefetch }: Props) => {
 
         <Divider sx={{ mb: 3 }} />
 
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
+
         <Formik
           initialValues={initialValues}
-          validationSchema={patientProfileSchema}
-          onSubmit={handleFormSubmit}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
           enableReinitialize
         >
-          {({ values, errors, touched, handleChange }) => (
-            <Form id="profile-form">
+          {({ errors, touched, values, handleChange }) => (
+            <Form id="patient-form">
               <Grid container spacing={2}>
-                {[
-                  {
-                    label: "Full Name",
-                    name: "fullname",
-                    type: "text",
-                  },
-                  {
-                    label: "Gender",
-                    name: "gender",
-                    select: true,
-                    options: genderOptions,
-                  },
-                  {
-                    label: "Date of Birth",
-                    name: "birth",
-                    type: "date",
-                  },
-                  {
-                    label: "Phone Number",
-                    name: "phone",
-                    type: "text",
-                  },
-                  {
-                    label: "Email",
-                    name: "email",
-                    type: "email",
-                  },
-                ].map((field, index) => (
-                  <Grid
-                    item
-                    xs={12}
-                    sm={field.name === "email" ? 12 : 6}
-                    key={index}
-                  >
-                    <TextField
-                      fullWidth
-                      label={field.label}
-                      name={field.name}
-                      type={field.type}
-                      value={values[field.name as keyof SignupFormValues]}
-                      onChange={handleChange}
-                      disabled={!editMode}
-                      select={!!field.select}
-                      SelectProps={field.select ? { native: true } : undefined}
-                      InputLabelProps={
-                        field.type === "date" ? { shrink: true } : undefined
-                      }
-                      error={
-                        touched[field.name as keyof SignupFormValues] &&
-                        Boolean(errors[field.name as keyof SignupFormValues])
-                      }
-                      helperText={
-                        touched[field.name as keyof SignupFormValues] &&
-                        errors[field.name as keyof SignupFormValues]
-                      }
-                    >
-                      {field.select &&
-                        [<option key="" value=""></option>].concat(
-                          field.options?.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          )) || []
-                        )}
-                    </TextField>
-                  </Grid>
-                ))}
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    as={TextField}
+                    fullWidth
+                    label="Full Name"
+                    name="fullname"
+                    value={values.fullname}
+                    onChange={handleChange}
+                    disabled={!editMode || loading}
+                    error={touched.fullname && Boolean(errors.fullname)}
+                    helperText={touched.fullname && errors.fullname}
+                    size={isMobile ? "small" : "medium"}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    as={TextField}
+                    fullWidth
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={values.email}
+                    multiline
+                    onChange={handleChange}
+                    disabled={!editMode || loading}
+                    error={touched.email && Boolean(errors.email)}
+                    helperText={touched.email && errors.email}
+                    size={isMobile ? "small" : "medium"}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    as={TextField}
+                    fullWidth
+                    label="Phone Number"
+                    name="phone_number"
+                    value={values.phone_number}
+                    onChange={handleChange}
+                    disabled={!editMode || loading}
+                    error={touched.phone_number && Boolean(errors.phone_number)}
+                    helperText={touched.phone_number && errors.phone_number}
+                    size={isMobile ? "small" : "medium"}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    as={TextField}
+                    fullWidth
+                    label="Date of Birth"
+                    name="birth"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    value={values.birth}
+                    onChange={handleChange}
+                    disabled={!editMode || loading}
+                    size={isMobile ? "small" : "medium"}
+                  />
+                </Grid>
+
+                {/* City field */}
+                <Grid item xs={12} sm={6}>
+                  <FormSelectField
+                    name={"city"}
+                    label={"City"}
+                    options={isLoading ? [] : cityOptions}
+                    disabled={!editMode || loading}
+                  />
+                </Grid>
+
+                {/* Address field: multiline, maxRows=4, wider if no city and no postal_code */}
+                <Grid
+                  item
+                  xs={12}
+                  sm={!values.city && !values.postal_code ? 12 : 6}
+                >
+                  <Field
+                    as={TextField}
+                    fullWidth
+                    label="Address"
+                    name="address"
+                    multiline
+                    maxRows={4}
+                    value={values.address}
+                    onChange={handleChange}
+                    disabled={!editMode || loading}
+                    size={isMobile ? "small" : "medium"}
+                  />
+                </Grid>
+
+                {/* Postal Code field */}
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    as={TextField}
+                    fullWidth
+                    label="Postal Code"
+                    name="postal_code"
+                    value={values.postal_code || ""}
+                    onChange={handleChange}
+                    disabled={!editMode || loading}
+                    size={isMobile ? "small" : "medium"}
+                  />
+                </Grid>
               </Grid>
             </Form>
           )}
@@ -177,4 +288,4 @@ const ProfileFormCard = ({ patient, onSubmit, onRefetch }: Props) => {
   );
 };
 
-export default ProfileFormCard;
+export default PatientFormCard;

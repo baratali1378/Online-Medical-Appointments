@@ -59,6 +59,11 @@ module.exports = {
               phone_number: phone,
               city: foundCity.id,
             },
+            security: {
+              is_locked: false,
+              is_verified: true,
+              lock_until: null,
+            },
             password: password,
             publishedAt: new Date(),
           },

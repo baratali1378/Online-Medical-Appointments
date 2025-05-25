@@ -1,85 +1,177 @@
+import { useState } from "react";
 import {
   Avatar,
   Box,
   Card,
   CardContent,
-  IconButton,
   Typography,
+  IconButton,
+  CircularProgress,
+  Tooltip,
   useTheme,
 } from "@mui/material";
-import { CameraAlt } from "@mui/icons-material";
+import { PhotoCamera, Edit } from "@mui/icons-material";
+import { PatientProfile } from "@/types/patient";
 
-interface Props {
-  imageUrl: string | undefined;
-  fullname: string;
-  slugId?: string;
-  onImageChange: (file: File) => void;
+interface PatientImageCardProps {
+  patient: PatientProfile;
+  onImageChange: (file: File) => Promise<void>;
+  loading?: boolean;
+  onEditClick?: () => void;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
-
-const ProfileImageCard = ({
-  imageUrl,
-  fullname,
-  slugId,
+export const PatientImageCard = ({
+  patient,
   onImageChange,
-}: Props) => {
+  loading,
+  onEditClick,
+}: PatientImageCardProps) => {
+  const image = `${process.env.NEXT_PUBLIC_STRAPI_URL}${patient.personal_info.image?.url}`;
+  console.log(image);
+
   const theme = useTheme();
+  const [hover, setHover] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      await onImageChange(e.target.files[0]);
+    }
+  };
 
   return (
     <Card
       sx={{
-        p: 2,
-        borderRadius: 3,
-        boxShadow: 3,
-        textAlign: "center",
-        backgroundColor: theme.palette.background.paper,
+        p: { xs: 2, md: 3 },
+        borderRadius: 4,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        transition: "transform 0.3s ease",
+        "&:hover": { transform: "translateY(-5px)" },
       }}
     >
-      <CardContent>
-        <Box position="relative" mb={2}>
+      <CardContent
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Box
+          position="relative"
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          sx={{ mb: 2 }}
+        >
           <Avatar
-            src={`${API_URL}${imageUrl}`}
+            alt={patient.personal_info.fullname}
+            src={image}
             sx={{
-              width: 150,
-              height: 150,
-              mx: "auto",
-              boxShadow: 2,
-              border: `4px solid ${theme.palette.primary.main}`,
+              width: { xs: 100, sm: 120, md: 140 },
+              height: { xs: 100, sm: 120, md: 140 },
+              border: `3px solid ${theme.palette.primary.main}`,
+              opacity: loading ? 0.7 : 1,
+              transition: "all 0.3s ease",
+              transform: hover ? "scale(1.05)" : "scale(1)",
             }}
           />
-          <IconButton
-            component="label"
+          {hover && (
+            <>
+              <input
+                accept="image/*"
+                style={{ display: "none" }}
+                id="patient-image-upload"
+                type="file"
+                onChange={handleFileChange}
+                disabled={loading}
+              />
+              <label htmlFor="patient-image-upload">
+                <IconButton
+                  color="primary"
+                  component="span"
+                  sx={{
+                    position: "absolute",
+                    bottom: 8,
+                    right: 8,
+                    bgcolor: "background.paper",
+                    "&:hover": {
+                      bgcolor: "primary.main",
+                      "& .MuiSvgIcon-root": { color: "common.white" },
+                    },
+                  }}
+                >
+                  <PhotoCamera />
+                </IconButton>
+              </label>
+            </>
+          )}
+        </Box>
+
+        <Box textAlign="center" width="100%">
+          <Typography
+            variant="h5"
+            fontWeight={600}
             sx={{
-              position: "absolute",
-              bottom: 8,
-              right: 8,
-              backgroundColor: "white",
-              boxShadow: 1,
-              "&:hover": { backgroundColor: "#f0f0f0" },
+              fontSize: { xs: "1.25rem", sm: "1.5rem" },
+              mb: 0.5,
+              wordBreak: "break-word",
             }}
           >
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) onImageChange(file);
+            {patient.personal_info.fullname}
+          </Typography>
+
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            gap={1}
+          >
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                display: "inline-flex",
+                alignItems: "center",
+                backgroundColor: theme.palette.grey[100],
+                px: 1.5,
+                py: 0.5,
+                borderRadius: 4,
               }}
-            />
-            <CameraAlt />
-          </IconButton>
+            >
+              ID: {patient.slug_id || "N/A"}
+            </Typography>
+
+            <Tooltip title="Edit Profile">
+              <IconButton
+                size="small"
+                onClick={onEditClick}
+                sx={{
+                  backgroundColor: theme.palette.grey[100],
+                  "&:hover": { backgroundColor: theme.palette.grey[300] },
+                }}
+              >
+                <Edit fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
-        <Typography variant="h6" gutterBottom>
-          {fullname}
-        </Typography>
-        <Typography color="text.secondary">
-          {slugId || "No patient ID"}
-        </Typography>
+
+        {loading && (
+          <CircularProgress
+            size={24}
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        )}
       </CardContent>
     </Card>
   );
 };
 
-export default ProfileImageCard;
+export default PatientImageCard;

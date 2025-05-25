@@ -66,6 +66,7 @@ export interface PersonalInfoPersonalInfo extends Struct.ComponentSchema {
     icon: 'user';
   };
   attributes: {
+    birth: Schema.Attribute.Date;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;

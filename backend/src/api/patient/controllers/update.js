@@ -13,7 +13,6 @@ module.exports = {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Type check the decoded JWT
       if (
         typeof decoded !== "object" ||
         decoded === null ||
@@ -29,54 +28,55 @@ module.exports = {
         return ctx.badRequest("No image file uploaded");
       }
 
-      const imageFile = files.files; // Assuming single file
+      const imageFile = files.files;
 
       // Upload image
-      const [uploadedImage] = await strapi.plugins[
-        "upload"
-      ].services.upload.upload({
-        data: {},
-        files: imageFile,
-      });
+      const [uploadedImage] = await strapi
+        .plugin("upload")
+        .service("upload")
+        .upload({
+          data: {},
+          files: imageFile,
+        });
 
       if (!uploadedImage?.id) {
         return ctx.badRequest("Image upload failed");
       }
 
-      // Fetch patient with personal_info populated
-      const patient = await strapi.db.query("api::patient.patient").findOne({
-        where: { id: patientId },
-        populate: {
-          personal_info: true,
-        },
-      });
+      // Fetch existing patient with personal_info component populated
+      const patient = await strapi.entityService.findOne(
+        "api::patient.patient",
+        patientId,
+        { populate: { personal_info: true } }
+      );
 
-      const personalInfoId = patient?.personal_info?.id;
-
-      if (personalInfoId) {
-        // Update the image in the personal_info component
-        await strapi.db.query("component::personal-info.personal-info").update({
-          where: { id: personalInfoId },
-          data: {
-            image: uploadedImage.id,
-          },
-        });
+      if (!patient) {
+        return ctx.badRequest("Patient not found");
       }
 
-      // Fetch updated patient with nested fields populated
-      const updatedPatient = await strapi.db
-        .query("api::patient.patient")
-        .findOne({
-          where: { id: patientId },
+      // Prepare updated personal_info data with all existing fields + updated image
+      const updatedPersonalInfo = {
+        // @ts-ignore
+        ...patient.personal_info,
+        image: uploadedImage.id,
+      };
+
+      // Update patient with the updated personal_info component
+      const updatedPatient = await strapi.entityService.update(
+        "api::patient.patient",
+        patientId,
+        {
+          data: {
+            personal_info: updatedPersonalInfo,
+          },
           populate: {
             personal_info: true,
             contact_details: {
-              populate: {
-                city: true,
-              },
+              populate: ["city"],
             },
           },
-        });
+        }
+      );
 
       return ctx.send({ data: updatedPatient, meta: {} });
     } catch (error) {
@@ -98,7 +98,6 @@ module.exports = {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Type guard for decoded JWT
       if (
         typeof decoded !== "object" ||
         decoded === null ||
@@ -110,66 +109,82 @@ module.exports = {
       const patientId = decoded.id;
       const data = ctx.request.body?.data;
 
-      if (!data) {
-        return ctx.badRequest("No data provided");
+      if (!data || !data.personal_info || !data.contact) {
+        return ctx.badRequest("Personal Info and Contact must be provided.");
       }
 
-      // If updating nested components like personal_info or contact_details,
-      // we handle them separately:
-
-      // 1. Update personal_info component if present
-      if (data.personal_info) {
-        // Fetch current patient to get personal_info component ID
-        const patient = await strapi.db.query("api::patient.patient").findOne({
-          where: { id: patientId },
-          populate: { personal_info: true },
-        });
-
-        if (patient.personal_info?.id) {
-          await strapi.db
-            .query("component::personal-info.personal-info")
-            .update({
-              where: { id: patient.personal_info.id },
-              data: data.personal_info,
-            });
+      // Fetch patient to retain component structure
+      const patient = await strapi.entityService.findOne(
+        "api::patient.patient",
+        patientId,
+        {
+          populate: {
+            personal_info: true,
+            contact_details: true,
+          },
         }
-        delete data.personal_info; // Remove from main update data to avoid conflict
+      );
+
+      if (!patient) {
+        return ctx.badRequest("Patient not found");
       }
 
-      // 2. Update contact_details component if present
-      if (data.contact_details) {
-        const patient = await strapi.db.query("api::patient.patient").findOne({
-          where: { id: patientId },
-          populate: { contact_details: true },
-        });
+      // Lookup city by name
+      let cityId = null;
+      if (data.contact.city) {
+        const cityEntity = await strapi.entityService.findMany(
+          "api::city.city",
+          {
+            filters: { name: data.contact.city },
+            limit: 1,
+          }
+        );
 
-        if (patient.contact_details?.id) {
-          await strapi.db.query("component::contact.contact-details").update({
-            where: { id: patient.contact_details.id },
-            data: data.contact_details,
-          });
+        if (cityEntity.length > 0) {
+          cityId = cityEntity[0].id;
         } else {
-          await strapi.db.query("component::contact.contact-details").create({
-            data: data.contact_details,
-          });
+          return ctx.badRequest("Invalid city name provided");
         }
-        delete data.contact_details;
       }
 
-      // Fetch the fully populated updated patient to return
-      const populatedPatient = await strapi.db
-        .query("api::patient.patient")
-        .findOne({
-          where: { id: patientId },
+      const updatedPatient = await strapi.entityService.update(
+        "api::patient.patient",
+        patientId,
+        {
+          data: {
+            personal_info: {
+              // @ts-ignore
+              ...patient.personal_info,
+              ...data.personal_info,
+            },
+            contact_details: {
+              // @ts-ignore
+              ...patient.contact_details,
+              phone_number: data.contact.phone_number,
+              address: data.contact.address,
+              postal_code: data.contact.postal_code,
+              city: cityId ? cityId : null,
+            },
+          },
           populate: {
             personal_info: true,
             contact_details: {
-              populate: { city: true },
+              populate: ["city"],
             },
           },
-        });
+        }
+      );
 
-      return ctx.send({ data: populatedPatient, meta: {} });
+      return ctx.send({
+        data: {
+          id: updatedPatient.id,
+          // @ts-ignore
+          personal_info: updatedPatient.personal_info,
+          // @ts-ignore
+          contact: updatedPatient.contact_details,
+        },
+        meta: {},
+      });
     } catch (error) {
       strapi.log.error("Update error:", error);
       return ctx.internalServerError("An error occurred during update");
