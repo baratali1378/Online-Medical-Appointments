@@ -14,8 +14,7 @@
     "name": {
       "type": "string",
       "required": true,
-      "unique": true,
-      "private": true
+      "unique": true
     },
     "doctors": {
       "type": "relation",

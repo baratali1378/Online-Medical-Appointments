@@ -20,14 +20,11 @@ export interface ContactContactDetails extends Struct.ComponentSchema {
 export interface ContactPhoneNumber extends Struct.ComponentSchema {
   collectionName: 'components_contact_phone_numbers';
   info: {
+    description: '';
     displayName: 'Phone Number';
     icon: 'phone';
   };
   attributes: {
-    countryCode: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'+93'>;
-    label: Schema.Attribute.Enumeration<['mobile', 'work', 'home']>;
     text: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }

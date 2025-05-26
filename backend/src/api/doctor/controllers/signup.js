@@ -42,15 +42,11 @@ module.exports = {
       // Format phone_number array of component entries
       const phoneComponentData = Array.isArray(phone_number)
         ? phone_number.map((number) => ({
-            countryCode: number.countryCode || "+93",
             text: number,
-            label: number.label || "mobile",
           }))
         : [
             {
-              countryCode: phone_number.countryCode || "+93",
               text: phone_number,
-              label: phone_number.label || "mobile",
             },
           ];
 
