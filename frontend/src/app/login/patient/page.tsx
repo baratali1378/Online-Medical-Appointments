@@ -6,7 +6,7 @@ import React from "react";
 const PatientLoginPage = () => {
   return (
     <LoginPage
-      image_url={"/patient_image.jpg"}
+      image_url={"/patient_login.jpg"}
       image_alt={"user Image"}
       user_role={"patient"}
     />
