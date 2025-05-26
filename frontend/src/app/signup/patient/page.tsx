@@ -71,6 +71,7 @@ const PatientSignupPage = () => {
       title="Patient Signup"
       description="Create your patient profile to access personalized care."
       maxWidth="md"
+      role="patient"
     >
       <SignupStepper
         steps={["Personal Info", "Contact Info", "Confirm"]}

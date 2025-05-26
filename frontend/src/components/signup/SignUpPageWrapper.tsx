@@ -1,13 +1,15 @@
 "use client";
 
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Container, Typography, Link as MuiLink } from "@mui/material";
 import { ReactNode } from "react";
+import Link from "next/link";
 
 interface SignupPageLayoutProps {
   title: string;
   description: string;
   children: ReactNode;
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
+  role?: "doctor" | "patient"; // Add role prop
 }
 
 const SignupPageLayout = ({
@@ -15,7 +17,10 @@ const SignupPageLayout = ({
   description,
   children,
   maxWidth = "md",
+  role = "patient", // Default to patient
 }: SignupPageLayoutProps) => {
+  const loginPath = role === "doctor" ? "/login/doctor" : "/login/patient";
+
   return (
     <Container maxWidth={maxWidth} sx={{ py: 5 }}>
       <Box textAlign="center" mb={5}>
@@ -36,6 +41,7 @@ const SignupPageLayout = ({
           {description}
         </Typography>
       </Box>
+
       <Box
         sx={{
           backgroundColor: "background.paper",
@@ -49,6 +55,39 @@ const SignupPageLayout = ({
         }}
       >
         {children}
+        <Box
+          mt={{ xs: 3, md: 5 }}
+          textAlign="center"
+          sx={{
+            transition: "all 0.3s ease",
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              fontSize: { xs: "0.85rem", md: "1rem" },
+            }}
+          >
+            Already have an account?{" "}
+            <MuiLink
+              component={Link}
+              href={loginPath}
+              sx={{
+                color: "primary.main",
+                fontWeight: 600,
+                textDecoration: "none",
+                transition: "color 0.3s ease",
+                "&:hover": {
+                  color: "#008C9E", // a deeper teal for hover
+                  textDecoration: "underline",
+                },
+              }}
+            >
+              Login here
+            </MuiLink>
+          </Typography>
+        </Box>
       </Box>
     </Container>
   );

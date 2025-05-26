@@ -13,8 +13,6 @@ import { DoctorSignupFormValues } from "@/types/doctor";
 import { loginWithCredentials } from "@/lib/authHelper";
 import { useRouter } from "next/navigation";
 
-const doctorSteps = ["Personal Info", "Contact Info", "Confirm"];
-
 const doctorInitialValues: DoctorSignupFormValues = {
   name: "",
   email: "",
@@ -77,9 +75,10 @@ const DoctorSignupPage = () => {
       title="Doctor Signup"
       description="Create your profile and start your journey with us."
       maxWidth="md"
+      role="doctor"
     >
       <SignupStepper
-        steps={doctorSteps}
+        steps={["Personal Info", "Contact Info", "Confirm"]}
         initialValues={doctorInitialValues}
         validationSchemas={validationSchemas}
         onSubmit={handleSubmit}

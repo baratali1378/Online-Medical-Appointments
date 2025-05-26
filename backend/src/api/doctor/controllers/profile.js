@@ -47,6 +47,7 @@ module.exports = {
         rating,
         available_slots,
         verification,
+        security,
       } = doctor;
 
       return ctx.send({
@@ -61,6 +62,7 @@ module.exports = {
           rating,
           available_slots,
           verification,
+          is_verified: security.is_verified || false,
         },
         meta: {},
       });
