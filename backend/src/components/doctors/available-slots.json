@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_doctors_available_slots",
+  "info": {
+    "displayName": "Available Slots",
+    "icon": "doctor"
+  },
+  "options": {},
+  "attributes": {
+    "days": {
+      "type": "enumeration",
+      "enum": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "required": true
+    },
+    "start_time": {
+      "type": "time",
+      "required": true
+    },
+    "end_time": {
+      "type": "time",
+      "required": true
+    }
+  }
+}

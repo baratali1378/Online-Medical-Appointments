@@ -32,6 +32,49 @@ export interface ContactPhoneNumber extends Struct.ComponentSchema {
   };
 }
 
+export interface DoctorsAvailableSlots extends Struct.ComponentSchema {
+  collectionName: 'components_doctors_available_slots';
+  info: {
+    displayName: 'Available Slots';
+    icon: 'doctor';
+  };
+  attributes: {
+    days: Schema.Attribute.Enumeration<
+      [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ]
+    > &
+      Schema.Attribute.Required;
+    end_time: Schema.Attribute.Time & Schema.Attribute.Required;
+    start_time: Schema.Attribute.Time & Schema.Attribute.Required;
+  };
+}
+
+export interface DoctorsDocumentVerification extends Struct.ComponentSchema {
+  collectionName: 'components_doctors_document_verifications';
+  info: {
+    displayName: 'Document Verification';
+    icon: 'doctor';
+  };
+  attributes: {
+    current_status: Schema.Attribute.Enumeration<
+      ['pending', 'rejected', 'approved']
+    >;
+    file: Schema.Attribute.Media<'files'> & Schema.Attribute.Required;
+    type: Schema.Attribute.Enumeration<
+      ['Medical License', 'ID Card', 'Degree', 'Board Certification']
+    > &
+      Schema.Attribute.Required;
+    uploaded_at: Schema.Attribute.DateTime;
+  };
+}
+
 export interface LinksSocialLinks extends Struct.ComponentSchema {
   collectionName: 'components_links_social_links';
   info: {
@@ -96,6 +139,8 @@ declare module '@strapi/strapi' {
     export interface ComponentSchemas {
       'contact.contact-details': ContactContactDetails;
       'contact.phone-number': ContactPhoneNumber;
+      'doctors.available-slots': DoctorsAvailableSlots;
+      'doctors.document-verification': DoctorsDocumentVerification;
       'links.social-links': LinksSocialLinks;
       'links.useful-links': LinksUsefulLinks;
       'personal-info.personal-info': PersonalInfoPersonalInfo;

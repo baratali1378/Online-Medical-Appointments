@@ -67,7 +67,7 @@ module.exports = {
               is_verified: false,
               is_locked: false,
             },
-            expreience: experience,
+            experience: experience,
             phone_number: phoneComponentData,
             city: foundCity.id,
             password: password,

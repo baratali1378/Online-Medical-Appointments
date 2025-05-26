@@ -27,5 +27,13 @@ module.exports = {
         policies: [],
       },
     },
+    {
+      method: "GET",
+      path: "/doctor/profile",
+      handler: "profile.me",
+      config: {
+        auth: false,
+      },
+    },
   ],
 };

@@ -543,13 +543,16 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::appointment.appointment'
     >;
-    available_slots: Schema.Attribute.JSON;
+    available_slots: Schema.Attribute.Component<
+      'doctors.available-slots',
+      true
+    >;
     biography: Schema.Attribute.Text;
     city: Schema.Attribute.Relation<'manyToOne', 'api::city.city'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    expreience: Schema.Attribute.String & Schema.Attribute.Required;
+    experience: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -567,6 +570,7 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Decimal;
     reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
+    security: Schema.Attribute.Component<'systems.security-fields', false>;
     specialties: Schema.Attribute.Relation<
       'manyToMany',
       'api::specialty.specialty'
@@ -574,6 +578,10 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    verification: Schema.Attribute.Component<
+      'doctors.document-verification',
+      true
+    >;
   };
 }
 

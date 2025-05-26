@@ -1,0 +1,39 @@
+{
+  "collectionName": "components_doctors_document_verifications",
+  "info": {
+    "displayName": "Document Verification",
+    "icon": "doctor"
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "Medical License",
+        "ID Card",
+        "Degree",
+        "Board Certification"
+      ],
+      "required": true
+    },
+    "file": {
+      "allowedTypes": [
+        "files"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "current_status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "rejected",
+        "approved"
+      ]
+    },
+    "uploaded_at": {
+      "type": "datetime"
+    }
+  }
+}

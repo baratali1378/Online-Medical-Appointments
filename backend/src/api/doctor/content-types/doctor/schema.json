@@ -15,7 +15,7 @@
     "biography": {
       "type": "text"
     },
-    "expreience": {
+    "experience": {
       "type": "string",
       "required": true
     },
@@ -33,9 +33,6 @@
       "relation": "oneToMany",
       "target": "api::review.review",
       "mappedBy": "doctor"
-    },
-    "available_slots": {
-      "type": "json"
     },
     "specialties": {
       "type": "relation",
@@ -63,6 +60,21 @@
       "type": "password",
       "required": true,
       "private": true
+    },
+    "available_slots": {
+      "type": "component",
+      "repeatable": true,
+      "component": "doctors.available-slots"
+    },
+    "security": {
+      "type": "component",
+      "repeatable": false,
+      "component": "systems.security-fields"
+    },
+    "verification": {
+      "type": "component",
+      "repeatable": true,
+      "component": "doctors.document-verification"
     }
   }
 }
