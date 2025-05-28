@@ -1,7 +1,7 @@
 // app/dashboard/patient/profile/page.tsx
 "use client";
 
-import { CircularProgress, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { usePatient } from "@/hooks/profile/usePatient";
@@ -9,6 +9,7 @@ import { PatientProfileView } from "@/components/dashboard/patient/PatientProfil
 import { ErrorAlert } from "@/components/common/ErrorAlert";
 import { useEffect } from "react";
 import { PatientProfileFormValues } from "@/types/patient";
+import { PatientProfileSkeleton } from "@/components/dashboard/patient/SkeltonLoading";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -27,16 +28,7 @@ export default function ProfilePage() {
 
   // Combined loading state
   if (status === "loading" || isLoading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <PatientProfileSkeleton />;
   }
 
   // API error state

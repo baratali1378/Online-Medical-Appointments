@@ -9,9 +9,8 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  console.log(session?.user.token);
-
   useEffect(() => {
+    if (status == "loading") return;
     if (status === "authenticated") {
       const role = session?.user?.role;
       if (role === "doctor") {
@@ -22,9 +21,9 @@ export default function DashboardPage() {
         router.replace("/"); // fallback if role is missing
       }
     } else if (status === "unauthenticated") {
-      router.replace("/"); // redirect unauthenticated users
+      router.replace("/");
     }
   }, [status, session, router]);
 
-  return <Loading />;
+  return null;
 }

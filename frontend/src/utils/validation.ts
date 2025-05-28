@@ -88,3 +88,45 @@ export const ProfileValidation = Yup.object().shape({
   address: Yup.string().nullable(),
   postal_code: Yup.string().nullable(),
 });
+
+export const doctorPersonalInfoValidation = Yup.object({
+  name: Yup.string().required("Name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  city: Yup.string().required("City is required"),
+  biography: Yup.string(),
+  experience: Yup.string().required("Experience is required"),
+});
+
+export const phoneNumberValidation = Yup.object({
+  phone_numbers: Yup.array()
+    .of(
+      Yup.object().shape({
+        text: Yup.string()
+          .required("Phone number is required")
+          .matches(
+            /^\+?[1-9]\d{1,3}[-.\s]?(\d{1,4}[-.\s]?){1,4}\d{1,4}$/,
+            "Invalid phone number format"
+          ),
+      })
+    )
+    .min(1, "At least one phone number is required"),
+});
+
+export const timeSlotsValidationSchema = Yup.object({
+  available_slots: Yup.array().of(
+    Yup.object().shape({
+      days: Yup.string().required("Day is required"),
+      start_time: Yup.string().required("Start time is required"),
+      end_time: Yup.string()
+        .required("End time is required")
+        .test(
+          "is-after-start",
+          "End time must be after start time",
+          function (end_time) {
+            const { start_time } = this.parent;
+            return end_time > start_time;
+          }
+        ),
+    })
+  ),
+});

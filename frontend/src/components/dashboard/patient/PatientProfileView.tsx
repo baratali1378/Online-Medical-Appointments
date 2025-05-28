@@ -1,6 +1,6 @@
 // components/patient/PatientProfileView.tsx
 import { Alert, Box, Grid, useMediaQuery, useTheme } from "@mui/material";
-import { PatientImageCard } from "./ProfileImageCard";
+import { ProfileImageCard } from "../common/ProfileImageCard";
 import { PatientFormCard } from "./ProfileFormCard";
 import { PatientFormValues, PatientProfile } from "@/types/patient";
 import { useState, useEffect } from "react";
@@ -79,8 +79,10 @@ export const PatientProfileView = ({
 
       <Grid container spacing={3} direction={isMobile ? "column" : "row"}>
         <Grid item xs={12} md={4}>
-          <PatientImageCard
-            patient={patient}
+          <ProfileImageCard
+            imageUrl={patient.personal_info.image?.url}
+            id={patient.id + ""}
+            name={patient.personal_info.fullname}
             onImageChange={handleImageUpload}
             loading={isUploading}
           />

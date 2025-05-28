@@ -17,13 +17,18 @@ export interface SignUpResonpose {
   role: string;
 }
 
+export interface Phone {
+  id?: number;
+  text: string;
+}
+
 export interface Doctor {
   id: number;
   biography?: string;
   experience: string;
   rating?: number;
   personal_info: PersonalInfo;
-  phone_number: PhoneNumber[];
+  phone_number: Phone[];
   city?: City;
   specialties: Specialty[];
   available_slots: AvailableSlot[];
@@ -34,12 +39,6 @@ export interface PersonalInfo {
   fullname: string;
   email: string;
   image?: Media;
-}
-
-export interface PhoneNumber {
-  countryCode: string;
-  text: string;
-  label?: "mobile" | "work" | "home";
 }
 
 export interface City {
@@ -53,7 +52,8 @@ export interface Specialty {
 }
 
 export interface AvailableSlot {
-  day: string;
+  id?: number;
+  days: string;
   start_time: string; // HH:mm format
   end_time: string;
 }

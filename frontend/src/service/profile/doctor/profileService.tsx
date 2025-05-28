@@ -19,7 +19,7 @@ export const DoctorService = {
   async getDoctorProfile(token: string): Promise<Doctor> {
     try {
       const response = await axios.get<{ data: Doctor }>(
-        `${API_URL}/api/doctor/me`,
+        `${API_URL}/api/doctor/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
