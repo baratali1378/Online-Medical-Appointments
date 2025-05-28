@@ -48,11 +48,10 @@ export const SpecialtiesCard = ({
     specialties: Yup.array().min(1, "Select at least one specialty"),
   });
 
-  // Responsive grid calculation
   const getGridColumns = () => {
-    if (isMobile) return 12; // Full width on mobile
-    if (isTablet) return 6; // 2 columns on tablet
-    return 4; // 3 columns on desktop
+    if (isMobile) return 12;
+    if (isTablet) return 6;
+    return 4;
   };
 
   return (
@@ -69,7 +68,7 @@ export const SpecialtiesCard = ({
           setSubmitting(false);
         }}
       >
-        {({ values, setFieldValue, isSubmitting, errors, touched }) => (
+        {({ values, setFieldValue, isSubmitting, errors, touched, dirty }) => (
           <Form>
             {specialtiesLoading ? (
               <Box display="flex" justifyContent="center" py={4}>
@@ -92,7 +91,13 @@ export const SpecialtiesCard = ({
                     );
 
                     return (
-                      <Grid item xs={12} sm={6} md={4} key={spec.id}>
+                      <Grid
+                        item
+                        xs={12}
+                        sm={6}
+                        md={getGridColumns()}
+                        key={spec.id}
+                      >
                         <Paper
                           elevation={isChecked ? 3 : 1}
                           sx={{
@@ -176,6 +181,9 @@ export const SpecialtiesCard = ({
               <BrandButton
                 type="submit"
                 loading={isSubmitting || loading || specialtiesLoading}
+                disabled={
+                  !dirty || isSubmitting || loading || specialtiesLoading
+                }
                 fullWidth={isMobile}
                 size={isMobile ? "small" : "medium"}
               >

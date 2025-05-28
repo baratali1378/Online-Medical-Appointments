@@ -97,21 +97,6 @@ export const doctorPersonalInfoValidation = Yup.object({
   experience: Yup.string().required("Experience is required"),
 });
 
-export const phoneNumberValidation = Yup.object({
-  phone_numbers: Yup.array()
-    .of(
-      Yup.object().shape({
-        text: Yup.string()
-          .required("Phone number is required")
-          .matches(
-            /^\+?[1-9]\d{1,3}[-.\s]?(\d{1,4}[-.\s]?){1,4}\d{1,4}$/,
-            "Invalid phone number format"
-          ),
-      })
-    )
-    .min(1, "At least one phone number is required"),
-});
-
 export const timeSlotsValidationSchema = Yup.object({
   available_slots: Yup.array().of(
     Yup.object().shape({
@@ -129,4 +114,23 @@ export const timeSlotsValidationSchema = Yup.object({
         ),
     })
   ),
+});
+
+const phoneRegex = /^\+?[1-9]\d{1,3}[-.\s]?(\d{1,4}[-.\s]?){1,4}\d{1,4}$/;
+
+export const phoneNumberValidation = Yup.object().shape({
+  phone_numbers: Yup.array()
+    .of(
+      Yup.object().shape({
+        text: Yup.string()
+          .matches(phoneRegex, "Invalid phone number format")
+          .required("Phone number is required"),
+      })
+    )
+    .min(1, "At least one phone number is required")
+    .max(3, "You can only have up to 3 phone numbers")
+    .test("unique", "Phone numbers must be unique", (value) => {
+      const texts = value?.map((v) => v.text.trim());
+      return new Set(texts).size === texts?.length;
+    }),
 });

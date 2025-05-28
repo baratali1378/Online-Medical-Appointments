@@ -1,5 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { Doctor } from "@/types/doctor";
+import { signIn } from "next-auth/react";
+import credentials from "next-auth/providers/credentials";
 
 const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
@@ -49,9 +51,10 @@ export const DoctorService = {
       >
     >
   ): Promise<Doctor> {
+    console.log("token", token);
     try {
       const response = await axios.put<{ data: Doctor }>(
-        `${API_URL}/api/doctor/me`,
+        `${API_URL}/api/doctor/profile`,
         { data: doctorData },
         {
           headers: {
@@ -64,6 +67,7 @@ export const DoctorService = {
       return response.data.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
+        console.log("error", error);
         throw new DoctorServiceError(
           error.response?.data?.message || "Failed to update profile",
           error.response?.status,
@@ -91,7 +95,7 @@ export const DoctorService = {
         },
         timeout: 20000,
       });
-
+      await signIn("credentials", { redirect: false, ...credentials });
       return response.data.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

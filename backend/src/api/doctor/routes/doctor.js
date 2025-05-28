@@ -33,6 +33,25 @@ module.exports = {
       handler: "profile.me",
       config: {
         auth: false,
+        middlewares: ["api::doctor.auth"], // use your auth middleware here
+      },
+    },
+    {
+      method: "POST",
+      path: "/doctor/img",
+      handler: "update.updateImg",
+      config: {
+        auth: false,
+        middlewares: ["api::doctor.auth"],
+      },
+    },
+    {
+      method: "PUT",
+      path: "/doctor/profile",
+      handler: "update.updateMe",
+      config: {
+        auth: false,
+        middlewares: ["api::doctor.auth"],
       },
     },
   ],

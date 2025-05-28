@@ -2,7 +2,7 @@
 "use client";
 
 import { BaseCard } from "@/components/dashboard/common/Card";
-import { Grid, Button, Box, CircularProgress } from "@mui/material";
+import { Grid, Button, Box } from "@mui/material";
 import { Formik, Form } from "formik";
 import { doctorPersonalInfoValidation } from "@/utils/validation";
 import { Doctor } from "@/types/doctor";
@@ -34,7 +34,6 @@ export const PersonalInfoCard = ({
   const { data: cities = [], isLoading: citiesLoading } = useCitiesQuery();
 
   const extractYears = (expStr: string) => {
-    // Extract digits from string, e.g., "10 years" -> "10"
     const match = expStr.match(/\d+/);
     return match ? match[0] : "";
   };
@@ -71,10 +70,10 @@ export const PersonalInfoCard = ({
           });
         }}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, dirty }) => (
           <Form>
             <Grid container spacing={2}>
-              <FormTextField name="name" label="Full Name" />
+              <FormTextField name="name" label="Full Name" multiline />
               <FormTextField name="email" label="Email" multiline />
 
               <FormGridSelectField
@@ -106,7 +105,11 @@ export const PersonalInfoCard = ({
               >
                 Cancel
               </Button>
-              <BrandButton type="submit" loading={isSubmitting || loading}>
+              <BrandButton
+                type="submit"
+                loading={isSubmitting || loading}
+                disabled={!dirty || isSubmitting || loading}
+              >
                 Save Changes
               </BrandButton>
             </Box>

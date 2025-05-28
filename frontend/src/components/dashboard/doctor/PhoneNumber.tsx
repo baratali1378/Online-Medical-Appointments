@@ -7,19 +7,17 @@ import {
   Grid,
   IconButton,
   TextField,
-  CircularProgress,
   Typography,
   Tooltip,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { FieldArray, Formik, Form } from "formik";
-import { Delete, Add, Save } from "@mui/icons-material";
+import { Delete, Add } from "@mui/icons-material";
 import { Doctor, Phone } from "@/types/doctor";
-import { phoneNumberValidation } from "@/utils/validation";
-import { useState } from "react";
 import { BrandButton } from "../common/BrandButton";
-
+import { useState, useMemo } from "react";
+import { phoneNumberValidation } from "@/utils/validation";
 interface PhoneNumbersCardProps {
   phoneNumbers: Phone[];
   doctor: Doctor;
@@ -35,15 +33,19 @@ export const PhoneNumbersCard = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const initialValues = {
-    phone_numbers: phoneNumbers.length ? phoneNumbers : [{ text: "" }],
-  };
+  const initialValues = useMemo(
+    () => ({
+      phone_numbers: phoneNumbers.length ? phoneNumbers : [{ text: "" }],
+    }),
+    [phoneNumbers]
+  );
 
   return (
     <BaseCard title="Phone Numbers">
       <Formik
         initialValues={initialValues}
         validationSchema={phoneNumberValidation}
+        enableReinitialize
         onSubmit={async (values, { setSubmitting }) => {
           await onUpdate({
             phone_number: values.phone_numbers,
@@ -51,7 +53,15 @@ export const PhoneNumbersCard = ({
           setSubmitting(false);
         }}
       >
-        {({ values, handleChange, errors, touched, isSubmitting }) => (
+        {({
+          values,
+          handleChange,
+          errors,
+          touched,
+          isSubmitting,
+          dirty,
+          isValid,
+        }) => (
           <Form>
             <FieldArray name="phone_numbers">
               {({ push, remove }) => (
@@ -122,7 +132,7 @@ export const PhoneNumbersCard = ({
                         borderColor: "#71C9CE",
                       },
                     }}
-                    disabled={loading}
+                    disabled={loading || values.phone_numbers.length >= 3}
                     startIcon={<Add />}
                     size={isMobile ? "small" : "medium"}
                   >
@@ -139,7 +149,11 @@ export const PhoneNumbersCard = ({
               gap={2}
               flexWrap="wrap"
             >
-              <BrandButton type="submit" loading={isSubmitting || loading}>
+              <BrandButton
+                type="submit"
+                loading={isSubmitting || loading}
+                disabled={!dirty || !isValid || loading}
+              >
                 Save Changes
               </BrandButton>
             </Box>

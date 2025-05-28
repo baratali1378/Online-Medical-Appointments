@@ -1,10 +1,8 @@
-"use client";
-
+import * as React from "react";
 import { motion, useInView } from "framer-motion";
-import { ReactNode, useRef } from "react";
 
 interface AnimatedGridItemProps {
-  children: ReactNode;
+  children: React.ReactNode;
   delay?: number;
   direction?: "left" | "right" | "up" | "down";
 }
@@ -14,7 +12,7 @@ export const AnimatedGridItem = ({
   delay = 0,
   direction = "left",
 }: AnimatedGridItemProps) => {
-  const ref = useRef(null);
+  const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const directionMap = {

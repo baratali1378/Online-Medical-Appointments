@@ -8,7 +8,6 @@ import {
   IconButton,
   MenuItem,
   TextField,
-  CircularProgress,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
@@ -34,7 +33,6 @@ const daysOfWeek = [
   { value: "Sunday", label: "Sun" },
 ];
 
-// Generate time options in 15-minute intervals
 const generateTimeOptions = () => {
   return Array.from({ length: 24 * 4 }, (_, i) => {
     const hour = Math.floor(i / 4);
@@ -78,7 +76,6 @@ export const AvailableSlotsCard = ({
           ],
   };
 
-  // Find matching time option
   const findTimeOption = (time: string) => {
     return timeOptions.find((option) => option.value === time);
   };
@@ -88,22 +85,18 @@ export const AvailableSlotsCard = ({
       <Formik
         initialValues={initialValues}
         validationSchema={timeSlotsValidationSchema}
-        onSubmit={async (values) => {
-          await onUpdate({
-            available_slots: values.available_slots,
-          });
+        onSubmit={async (values, actions) => {
+          await onUpdate({ available_slots: values.available_slots });
+          actions.setSubmitting(false);
         }}
       >
-        {({ values, isSubmitting, handleChange, setFieldValue }) => (
+        {({ values, isSubmitting, handleChange, setFieldValue, dirty }) => (
           <Form>
             <FieldArray name="available_slots">
               {({ push, remove }) => (
                 <Box>
                   <Grid container spacing={isMobile ? 1 : 2}>
                     {values.available_slots.map((slot, index) => {
-                      const startTimeOption = findTimeOption(slot.start_time);
-                      const endTimeOption = findTimeOption(slot.end_time);
-
                       return (
                         <Grid item xs={12} key={index}>
                           <Grid
@@ -124,11 +117,7 @@ export const AvailableSlotsCard = ({
                                 disabled={loading}
                                 SelectProps={{
                                   MenuProps: {
-                                    PaperProps: {
-                                      style: {
-                                        maxHeight: 300,
-                                      },
-                                    },
+                                    PaperProps: { style: { maxHeight: 300 } },
                                   },
                                 }}
                               >
@@ -240,7 +229,7 @@ export const AvailableSlotsCard = ({
                     })}
                   </Grid>
 
-                  {/* Add Time Slot Button with brand color */}
+                  {/* Add Button */}
                   <Button
                     variant="outlined"
                     onClick={() =>
@@ -270,12 +259,14 @@ export const AvailableSlotsCard = ({
               )}
             </FieldArray>
 
+            {/* Submit Button */}
             <Box mt={3} display="flex" justifyContent="flex-end">
               <BrandButton
                 type="submit"
                 loading={isSubmitting || loading}
                 fullWidth={isMobile}
                 size={isMobile ? "small" : "medium"}
+                disabled={!dirty || loading}
               >
                 Save Changes
               </BrandButton>
