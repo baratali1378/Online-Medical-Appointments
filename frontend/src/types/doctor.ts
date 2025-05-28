@@ -33,6 +33,7 @@ export interface Doctor {
   specialties: Specialty[];
   available_slots: AvailableSlot[];
   verification: VerificationDocument[];
+  is_verified: boolean;
 }
 
 export interface PersonalInfo {
@@ -61,8 +62,11 @@ export interface AvailableSlot {
 export interface VerificationDocument {
   id: number;
   type: string;
-  status: "pending" | "approved" | "rejected";
-  file: Media;
+  file: {
+    url?: string;
+  };
+  current_status: "pending" | "approved" | "rejected";
+  uploaded_at: string;
 }
 
 export interface Media {

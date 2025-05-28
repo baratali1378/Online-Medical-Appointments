@@ -10,6 +10,7 @@ import { ReactNode } from "react";
 interface BrandButtonProps {
   children: ReactNode;
   loading?: boolean;
+  variant?: "text" | "outlined" | "contained";
   disabled?: boolean;
   startIcon?: ReactNode;
   type?: "button" | "submit" | "reset";
@@ -29,6 +30,7 @@ export const BrandButton = ({
   type = "button",
   onClick,
   size = "medium",
+  variant = "contained",
   fullWidth = false,
 }: BrandButtonProps) => {
   const theme = useTheme();
@@ -37,7 +39,7 @@ export const BrandButton = ({
   return (
     <Button
       type={type}
-      variant="contained"
+      variant={variant}
       disabled={disabled || loading}
       startIcon={
         loading ? (

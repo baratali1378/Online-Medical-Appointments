@@ -66,6 +66,21 @@ export const useDoctor = ({ token }: Prop) => {
     },
   });
 
+  const uploadVerificationMutation = useMutation<
+    void,
+    DoctorServiceError,
+    { file: File; type: string }
+  >({
+    mutationFn: ({ file, type }) =>
+      DoctorService.uploadVerification(token || "", file, type),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["doctorProfile"] });
+    },
+    onError: (error) => {
+      console.error("Verification upload failed:", error.message);
+    },
+  });
+
   return {
     profile: profileQuery.data,
     isLoading: profileQuery.isLoading,
@@ -79,6 +94,10 @@ export const useDoctor = ({ token }: Prop) => {
     uploadImage: uploadImageMutation.mutateAsync,
     isUploading: uploadImageMutation.isPending,
     uploadError: uploadImageMutation.error,
+
+    uploadVerification: uploadVerificationMutation.mutateAsync,
+    isUploadingVerification: uploadVerificationMutation.isPending,
+    uploadVerificationError: uploadVerificationMutation.error,
 
     refetch: profileQuery.refetch,
   };

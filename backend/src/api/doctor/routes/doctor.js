@@ -54,5 +54,14 @@ module.exports = {
         middlewares: ["api::doctor.auth"],
       },
     },
+    {
+      method: "POST",
+      path: "/doctor/verification",
+      handler: "verification.verification",
+      config: {
+        auth: false,
+        middlewares: ["api::doctor.auth"],
+      },
+    },
   ],
 };

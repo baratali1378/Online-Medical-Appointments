@@ -31,7 +31,9 @@ module.exports = (config, { strapi }) => {
           city: true,
           specialties: true,
           available_slots: true,
-          verification: true,
+          verification: {
+            populate: ["file"],
+          },
           security: true,
         },
       });

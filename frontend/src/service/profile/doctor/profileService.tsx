@@ -69,9 +69,7 @@ export const DoctorService = {
       if (axios.isAxiosError(error)) {
         console.log("error", error);
         throw new DoctorServiceError(
-          error.response?.data?.message || "Failed to update profile",
-          error.response?.status,
-          error.response?.data
+          error.response?.data?.error?.message || "Failed to update profile"
         );
       }
       throw new DoctorServiceError("Network error during update");
@@ -104,6 +102,34 @@ export const DoctorService = {
         );
       }
       throw new DoctorServiceError("Network error during image upload");
+    }
+  },
+  async uploadVerification(
+    token: string,
+    file: File,
+    type: string
+  ): Promise<void> {
+    try {
+      const formData = new FormData();
+      console.log("hhhh");
+      formData.append("file", file);
+      formData.append("type", type);
+
+      await axios.post(`${API_URL}/api/doctor/verification`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+        timeout: 20000,
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new DoctorServiceError(
+          error.response?.data?.error?.message ||
+            "Failed to upload verification"
+        );
+      }
+      throw new DoctorServiceError("Network error during verification upload");
     }
   },
 };

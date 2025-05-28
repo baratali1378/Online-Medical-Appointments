@@ -12,8 +12,15 @@ import Skelton from "@/components/dashboard/doctor/SkeltonLoading";
 export default function DoctorProfilePage() {
   const { data: session, status } = useSession();
 
-  const { profile, isLoading, error, updateProfile, uploadImage, refetch } =
-    useDoctor({ token: session?.user?.token || "" });
+  const {
+    profile,
+    isLoading,
+    error,
+    updateProfile,
+    uploadImage,
+    uploadVerification,
+    refetch,
+  } = useDoctor({ token: session?.user?.token || "" });
 
   if (status == "loading" || isLoading) {
     return <Skelton />;
@@ -57,6 +64,9 @@ export default function DoctorProfilePage() {
       }}
       onRefresh={async () => {
         await refetch();
+      }}
+      onUploadVerification={async (file: File, type: string) => {
+        await uploadVerification({ file, type });
       }}
     />
   );

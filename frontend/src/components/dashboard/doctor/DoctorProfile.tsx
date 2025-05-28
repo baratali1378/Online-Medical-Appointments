@@ -7,13 +7,15 @@ import { ProfileImageCard } from "../common/ProfileImageCard";
 import { PersonalInfoCard } from "./PersonalInfo";
 import { PhoneNumbersCard } from "./PhoneNumber";
 import { SpecialtiesCard } from "./SpecialtyCard";
-import { AvailableSlotsCard } from "./AvailableSlotsCard";
+import { AvailableSlotsCard } from "./timeSlots/AvailableSlotsCard";
 import { AnimatedGridItem } from "@/components/common/AnimatedGridItem"; // <-- Import animation component
+import { VerificationCard } from "./verification/VerificationCard";
 
 interface DoctorProfileViewProps {
   doctor: Doctor;
   onUpdate: (data: Partial<Doctor>) => Promise<void>;
   onImageUpload: (file: File) => Promise<void>;
+  onUploadVerification: (file: File, type: string) => Promise<void>;
   onRefresh: () => Promise<void>;
 }
 
@@ -22,12 +24,17 @@ export const DoctorProfileView = ({
   onUpdate,
   onImageUpload,
   onRefresh,
+  onUploadVerification,
 }: DoctorProfileViewProps) => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [isUploadingVerification, setIsUploadingVerification] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     if (successMessage) {
@@ -64,6 +71,23 @@ export const DoctorProfileView = ({
       setUpdateError(error.message || "Failed to upload image");
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleUploadVerification = async (file: File, type: string) => {
+    try {
+      console.log("Uploading file:", file, "of type:", type);
+      setIsUploadingVerification(true);
+      setVerificationError(null);
+      await onUploadVerification(file, type);
+      setSuccessMessage("Verification document uploaded successfully!");
+      await onRefresh();
+    } catch (error: any) {
+      setVerificationError(
+        error.message || "Failed to upload verification document"
+      );
+    } finally {
+      setIsUploadingVerification(false);
     }
   };
 
@@ -138,17 +162,26 @@ export const DoctorProfileView = ({
           </AnimatedGridItem>
         </Grid>
 
-        {doctor.available_slots && doctor.available_slots.length > 0 && (
-          <Grid item>
-            <AnimatedGridItem direction="left" delay={0.4}>
-              <AvailableSlotsCard
-                slots={doctor.available_slots}
-                onUpdate={handleUpdateProfile}
-                loading={isUpdating}
-              />
-            </AnimatedGridItem>
-          </Grid>
-        )}
+        <Grid item>
+          <AnimatedGridItem direction="left" delay={0.4}>
+            <AvailableSlotsCard
+              slots={doctor.available_slots}
+              onUpdate={handleUpdateProfile}
+              loading={isUpdating}
+            />
+          </AnimatedGridItem>
+        </Grid>
+
+        <Grid item>
+          <AnimatedGridItem direction="left" delay={0.5}>
+            <VerificationCard
+              verifications={doctor.verification}
+              onUploadVerification={handleUploadVerification}
+              isUploading={isUploadingVerification}
+              uploadError={verificationError}
+            />
+          </AnimatedGridItem>
+        </Grid>
       </Grid>
     </Box>
   );
