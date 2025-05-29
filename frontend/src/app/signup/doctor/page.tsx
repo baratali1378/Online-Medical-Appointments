@@ -12,6 +12,7 @@ import { useDoctorSignup } from "@/hooks/signup/doctor/useDoctorSignup";
 import { DoctorSignupFormValues } from "@/types/doctor";
 import { loginWithCredentials } from "@/lib/authHelper";
 import { useRouter } from "next/navigation";
+import ProtectedAuth from "@/components/common/ProtectedAuth";
 
 const doctorInitialValues: DoctorSignupFormValues = {
   name: "",
@@ -71,24 +72,26 @@ const DoctorSignupPage = () => {
   };
 
   return (
-    <SignupPageLayout
-      title="Doctor Signup"
-      description="Create your profile and start your journey with us."
-      maxWidth="md"
-      role="doctor"
-    >
-      <SignupStepper
-        steps={["Personal Info", "Contact Info", "Confirm"]}
-        initialValues={doctorInitialValues}
-        validationSchemas={validationSchemas}
-        onSubmit={handleSubmit}
-        imageSide={<ImageSide src="/doctor_signup.jpg" alt="Doctor Image" />}
+    <ProtectedAuth>
+      <SignupPageLayout
+        title="Doctor Signup"
+        description="Create your profile and start your journey with us."
+        maxWidth="md"
+        role="doctor"
       >
-        <PersonalInfoStep />
-        <ContactInfoStep includeExperience />
-        <FinalStep />
-      </SignupStepper>
-    </SignupPageLayout>
+        <SignupStepper
+          steps={["Personal Info", "Contact Info", "Confirm"]}
+          initialValues={doctorInitialValues}
+          validationSchemas={validationSchemas}
+          onSubmit={handleSubmit}
+          imageSide={<ImageSide src="/doctor_signup.jpg" alt="Doctor Image" />}
+        >
+          <PersonalInfoStep />
+          <ContactInfoStep includeExperience />
+          <FinalStep />
+        </SignupStepper>
+      </SignupPageLayout>
+    </ProtectedAuth>
   );
 };
 

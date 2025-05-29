@@ -11,6 +11,7 @@ import { usePatient } from "@/hooks/signup/patient/usePatient";
 import { useRouter } from "next/navigation";
 import { SignupFormValues } from "@/types/patient";
 import { loginWithCredentials } from "@/lib/authHelper";
+import ProtectedAuth from "@/components/common/ProtectedAuth";
 
 const patientInitialValues: SignupFormValues = {
   name: "",
@@ -67,29 +68,33 @@ const PatientSignupPage = () => {
   };
 
   return (
-    <SignupPageLayout
-      title="Patient Signup"
-      description="Create your patient profile to access personalized care."
-      maxWidth="md"
-      role="patient"
-    >
-      <SignupStepper
-        steps={["Personal Info", "Contact Info", "Confirm"]}
-        initialValues={patientInitialValues}
-        validationSchemas={patientValidationSchemas} // assuming validation is ready for patient
-        onSubmit={handleSubmit}
-        imageSide={<ImageSide src="/patient_signup.jpg" alt="Patient Signup" />}
+    <ProtectedAuth>
+      <SignupPageLayout
+        title="Patient Signup"
+        description="Create your patient profile to access personalized care."
+        maxWidth="md"
+        role="patient"
       >
-        <PatientPersonalInfoStep includeGender />
-        <ContactInfoStep
-          phoneField="phone"
-          cityField="city"
-          includeExperience={false} // patient doesn't have experience field
-          birthPrefix="birth"
-        />
-        <FinalStep />
-      </SignupStepper>
-    </SignupPageLayout>
+        <SignupStepper
+          steps={["Personal Info", "Contact Info", "Confirm"]}
+          initialValues={patientInitialValues}
+          validationSchemas={patientValidationSchemas} // assuming validation is ready for patient
+          onSubmit={handleSubmit}
+          imageSide={
+            <ImageSide src="/patient_signup.jpg" alt="Patient Signup" />
+          }
+        >
+          <PatientPersonalInfoStep includeGender />
+          <ContactInfoStep
+            phoneField="phone"
+            cityField="city"
+            includeExperience={false} // patient doesn't have experience field
+            birthPrefix="birth"
+          />
+          <FinalStep />
+        </SignupStepper>
+      </SignupPageLayout>
+    </ProtectedAuth>
   );
 };
 
