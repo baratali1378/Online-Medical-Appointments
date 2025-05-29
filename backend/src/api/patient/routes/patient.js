@@ -22,6 +22,7 @@ module.exports = {
       handler: "profile.me",
       config: {
         auth: false,
+        middlewares: ["api::patient.auth"],
       },
     },
     {
@@ -30,6 +31,7 @@ module.exports = {
       handler: "update.updateMe",
       config: {
         auth: false,
+        middlewares: ["api::patient.auth"],
       },
     },
     {
@@ -38,6 +40,7 @@ module.exports = {
       handler: "update.updateImg",
       config: {
         auth: false,
+        middlewares: ["api::patient.auth"],
       },
     },
   ],

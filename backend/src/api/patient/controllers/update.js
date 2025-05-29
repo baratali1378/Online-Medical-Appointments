@@ -2,27 +2,12 @@ const jwt = require("jsonwebtoken");
 
 module.exports = {
   async updateImg(ctx) {
-    const authHeader = ctx.request.header.authorization;
+    const patient = ctx.state.patient;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return ctx.unauthorized("No token provided");
+    if (!patient) {
+      return ctx.unauthorized("No patient data available");
     }
-
-    const token = authHeader.replace("Bearer ", "");
-
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      if (
-        typeof decoded !== "object" ||
-        decoded === null ||
-        !("id" in decoded)
-      ) {
-        return ctx.unauthorized("Invalid token payload");
-      }
-
-      const patientId = decoded.id;
-
       const { files } = ctx.request;
       if (!files || !files.files) {
         return ctx.badRequest("No image file uploaded");
@@ -43,17 +28,6 @@ module.exports = {
         return ctx.badRequest("Image upload failed");
       }
 
-      // Fetch existing patient with personal_info component populated
-      const patient = await strapi.entityService.findOne(
-        "api::patient.patient",
-        patientId,
-        { populate: { personal_info: true } }
-      );
-
-      if (!patient) {
-        return ctx.badRequest("Patient not found");
-      }
-
       // Prepare updated personal_info data with all existing fields + updated image
       const updatedPersonalInfo = {
         // @ts-ignore
@@ -64,7 +38,7 @@ module.exports = {
       // Update patient with the updated personal_info component
       const updatedPatient = await strapi.entityService.update(
         "api::patient.patient",
-        patientId,
+        patient.id,
         {
           data: {
             personal_info: updatedPersonalInfo,
@@ -87,46 +61,16 @@ module.exports = {
     }
   },
   async updateMe(ctx) {
-    const authHeader = ctx.request.header.authorization;
+    const patient = ctx.state.patient;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return ctx.unauthorized("No token provided");
+    if (!patient) {
+      return ctx.unauthorized("No patient data available");
     }
-
-    const token = authHeader.replace("Bearer ", "");
-
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      if (
-        typeof decoded !== "object" ||
-        decoded === null ||
-        !("id" in decoded)
-      ) {
-        return ctx.unauthorized("Invalid token payload");
-      }
-
-      const patientId = decoded.id;
       const data = ctx.request.body?.data;
 
       if (!data || !data.personal_info || !data.contact) {
         return ctx.badRequest("Personal Info and Contact must be provided.");
-      }
-
-      // Fetch patient to retain component structure
-      const patient = await strapi.entityService.findOne(
-        "api::patient.patient",
-        patientId,
-        {
-          populate: {
-            personal_info: true,
-            contact_details: true,
-          },
-        }
-      );
-
-      if (!patient) {
-        return ctx.badRequest("Patient not found");
       }
 
       // Lookup city by name
@@ -149,7 +93,7 @@ module.exports = {
 
       const updatedPatient = await strapi.entityService.update(
         "api::patient.patient",
-        patientId,
+        patient.id,
         {
           data: {
             personal_info: {
