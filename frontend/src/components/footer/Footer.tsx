@@ -18,6 +18,8 @@ const Footer = () => {
 
   if (isLoading || !data) return null;
 
+  console.log("fotter", data);
+
   return (
     <Box
       component="footer"
@@ -73,9 +75,15 @@ const Footer = () => {
               <Typography variant="body2" mb={1}>
                 <strong>Email:</strong> {data.email}
               </Typography>
+
+              <Typography variant="body1" mb={1}>
+                <strong>Phone:</strong>
+              </Typography>
               {data.phone_number.map((phone) => (
                 <Typography key={phone.id} variant="body2">
-                  {phone.label}: {phone.countryCode} {phone.text}
+                  {phone.text.startsWith("+93")
+                    ? `Home:  ${phone.text}`
+                    : `Office: ${phone.text}`}
                 </Typography>
               ))}
             </FooterSection>

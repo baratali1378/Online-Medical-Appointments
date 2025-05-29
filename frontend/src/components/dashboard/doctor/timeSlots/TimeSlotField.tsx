@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  Grid,
+  Grid2,
   TextField,
   MenuItem,
   IconButton,
@@ -47,7 +47,7 @@ export const TimeSlotField = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Grid
+    <Grid2
       container
       mt={1}
       spacing={2}
@@ -60,7 +60,7 @@ export const TimeSlotField = ({
         backgroundColor: "#fafafa",
       }}
     >
-      <Grid item xs={12} sm={3}>
+      <Grid2 size={{ xs: 12, sm: 3 }}>
         <TextField
           select
           fullWidth
@@ -77,9 +77,9 @@ export const TimeSlotField = ({
             </MenuItem>
           ))}
         </TextField>
-      </Grid>
+      </Grid2>
 
-      <Grid item xs={6} sm={3}>
+      <Grid2 size={{ xs: 6, sm: 3 }}>
         <TextField
           select
           fullWidth
@@ -101,9 +101,9 @@ export const TimeSlotField = ({
             </MenuItem>
           ))}
         </TextField>
-      </Grid>
+      </Grid2>
 
-      <Grid item xs={6} sm={3}>
+      <Grid2 size={{ xs: 6, sm: 3 }}>
         <TextField
           select
           fullWidth
@@ -122,9 +122,9 @@ export const TimeSlotField = ({
             </MenuItem>
           ))}
         </TextField>
-      </Grid>
+      </Grid2>
 
-      <Grid item xs={12} sm={3} display="flex" justifyContent="flex-end">
+      <Grid2 size={{ xs: 12, sm: 3 }} display="flex" justifyContent="flex-end">
         <IconButton
           color="error"
           onClick={() => remove(index)}
@@ -132,7 +132,7 @@ export const TimeSlotField = ({
         >
           <Delete />
         </IconButton>
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 };

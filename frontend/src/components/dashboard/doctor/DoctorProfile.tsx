@@ -1,12 +1,12 @@
 "use client";
 
-import { Alert, Box, Grid } from "@mui/material";
+import { Alert, Box, Grid2 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Doctor } from "@/types/doctor";
 import { ProfileImageCard } from "../common/ProfileImageCard";
 import { PersonalInfoCard } from "./PersonalInfo";
-import { PhoneNumbersCard } from "./PhoneNumber";
-import { SpecialtiesCard } from "./SpecialtyCard";
+import { PhoneNumbersCard } from "./phone_number/PhoneNumber";
+import { SpecialtiesCard } from "./specialty/SpecialtyCard";
 import { AvailableSlotsCard } from "./timeSlots/AvailableSlotsCard";
 import { AnimatedGridItem } from "@/components/common/AnimatedGridItem"; // <-- Import animation component
 import { VerificationCard } from "./verification/VerificationCard";
@@ -117,8 +117,8 @@ export const DoctorProfileView = ({
         </Box>
       )}
 
-      <Grid container spacing={3} direction="column">
-        <Grid item>
+      <Grid2 container spacing={3} direction="column">
+        <Grid2>
           <AnimatedGridItem direction="left">
             <ProfileImageCard
               id={doctor.id + ""}
@@ -128,9 +128,9 @@ export const DoctorProfileView = ({
               loading={isUploading}
             />
           </AnimatedGridItem>
-        </Grid>
+        </Grid2>
 
-        <Grid item>
+        <Grid2>
           <AnimatedGridItem direction="left" delay={0.1}>
             <PersonalInfoCard
               doctor={doctor}
@@ -139,9 +139,9 @@ export const DoctorProfileView = ({
               loading={isUpdating}
             />
           </AnimatedGridItem>
-        </Grid>
+        </Grid2>
 
-        <Grid item>
+        <Grid2>
           <AnimatedGridItem direction="left" delay={0.2}>
             <PhoneNumbersCard
               phoneNumbers={doctor.phone_number}
@@ -150,9 +150,9 @@ export const DoctorProfileView = ({
               loading={isUpdating}
             />
           </AnimatedGridItem>
-        </Grid>
+        </Grid2>
 
-        <Grid item>
+        <Grid2>
           <AnimatedGridItem direction="left" delay={0.3}>
             <SpecialtiesCard
               doctor={doctor}
@@ -160,9 +160,9 @@ export const DoctorProfileView = ({
               loading={isUpdating}
             />
           </AnimatedGridItem>
-        </Grid>
+        </Grid2>
 
-        <Grid item>
+        <Grid2>
           <AnimatedGridItem direction="left" delay={0.4}>
             <AvailableSlotsCard
               slots={doctor.available_slots}
@@ -170,9 +170,9 @@ export const DoctorProfileView = ({
               loading={isUpdating}
             />
           </AnimatedGridItem>
-        </Grid>
+        </Grid2>
 
-        <Grid item>
+        <Grid2>
           <AnimatedGridItem direction="left" delay={0.5}>
             <VerificationCard
               verifications={doctor.verification}
@@ -181,8 +181,8 @@ export const DoctorProfileView = ({
               uploadError={verificationError}
             />
           </AnimatedGridItem>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };

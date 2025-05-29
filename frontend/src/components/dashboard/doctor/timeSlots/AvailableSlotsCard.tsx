@@ -9,37 +9,14 @@ import { timeSlotsValidationSchema } from "@/utils/validation";
 import { BrandButton } from "../../common/BrandButton";
 import { useRef } from "react";
 import { TimeSlotField } from "./TimeSlotField";
+import { generateTimeOptions } from "@/utils/generateTime";
+import { daysOfWeek } from "@/components/constant/timeSlots";
 
 interface AvailableSlotsCardProps {
   slots: AvailableSlot[];
   onUpdate: (data: Partial<Doctor>) => Promise<void>;
   loading: boolean;
 }
-
-const daysOfWeek = [
-  { value: "Monday", label: "Mon" },
-  { value: "Tuesday", label: "Tue" },
-  { value: "Wednesday", label: "Wed" },
-  { value: "Thursday", label: "Thu" },
-  { value: "Friday", label: "Fri" },
-  { value: "Saturday", label: "Sat" },
-  { value: "Sunday", label: "Sun" },
-];
-
-const generateTimeOptions = () =>
-  Array.from({ length: 24 * 4 }, (_, i) => {
-    const hour = Math.floor(i / 4);
-    const minute = (i % 4) * 15;
-    const ampm = hour < 12 ? "AM" : "PM";
-    const displayHour = hour % 12 || 12;
-    return {
-      value: `${hour.toString().padStart(2, "0")}:${minute
-        .toString()
-        .padStart(2, "0")}:00.000`,
-      label: `${displayHour}:${minute.toString().padStart(2, "0")} ${ampm}`,
-      shortLabel: `${displayHour}${ampm}`,
-    };
-  });
 
 const timeOptions = generateTimeOptions();
 

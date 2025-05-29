@@ -3,30 +3,24 @@
 import { BaseCard } from "@/components/dashboard/common/Card";
 import {
   Box,
-  Checkbox,
   CircularProgress,
-  FormControlLabel,
   Typography,
-  Grid,
-  Paper,
+  Grid2,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
 import { Formik, Form } from "formik";
+import * as Yup from "yup";
 import { Doctor } from "@/types/doctor";
 import { useSpecialtiesQuery } from "@/hooks/useSpecialtiesQuery";
-import * as Yup from "yup";
-import { BrandButton } from "../common/BrandButton";
+import { BrandButton } from "../../common/BrandButton";
+import { SpecialtyItem } from "./SpecialtyItem"; // Make sure path is correct
 
 interface SpecialtiesCardProps {
   doctor: Doctor;
   onUpdate: (data: Partial<Doctor>) => Promise<void>;
   loading: boolean;
 }
-
-const BRAND_COLOR = "#A6E3E9";
-const BRAND_HOVER = "#90dbe2";
-const BRAND_LIGHT_BG = "#e7f9fa";
 
 export const SpecialtiesCard = ({
   doctor,
@@ -72,7 +66,7 @@ export const SpecialtiesCard = ({
           <Form>
             {specialtiesLoading ? (
               <Box display="flex" justifyContent="center" py={4}>
-                <CircularProgress size={28} sx={{ color: BRAND_COLOR }} />
+                <CircularProgress size={28} sx={{ color: "#A6E3E9" }} />
               </Box>
             ) : specialties.length === 0 ? (
               <Typography color="text.secondary">
@@ -84,83 +78,30 @@ export const SpecialtiesCard = ({
                   Select one or more specialties:
                 </Typography>
 
-                <Grid container spacing={2}>
+                <Grid2 container spacing={2}>
                   {specialties.map((spec) => {
                     const isChecked = values.specialties.includes(
                       spec.id.toString()
                     );
 
                     return (
-                      <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        md={getGridColumns()}
+                      <SpecialtyItem
                         key={spec.id}
-                      >
-                        <Paper
-                          elevation={isChecked ? 3 : 1}
-                          sx={{
-                            px: isMobile ? 1 : 2,
-                            py: isMobile ? 1 : 1.5,
-                            borderRadius: 2,
-                            backgroundColor: isChecked
-                              ? BRAND_LIGHT_BG
-                              : theme.palette.background.paper,
-                            border: `2px solid ${
-                              isChecked ? BRAND_COLOR : theme.palette.divider
-                            }`,
-                            transition: "all 0.2s ease",
-                            "&:hover": {
-                              boxShadow: `0 0 0 2px ${BRAND_COLOR}`,
-                              borderColor: BRAND_COLOR,
-                              cursor: "pointer",
-                            },
-                          }}
-                          onClick={() => {
-                            const id = spec.id.toString();
-                            const updated = isChecked
-                              ? values.specialties.filter((s) => s !== id)
-                              : [...values.specialties, id];
-                            setFieldValue("specialties", updated);
-                          }}
-                        >
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={isChecked}
-                                onChange={() => {}}
-                                sx={{
-                                  color: BRAND_COLOR,
-                                  "&.Mui-checked": {
-                                    color: BRAND_COLOR,
-                                  },
-                                }}
-                                disabled={loading}
-                                size={isMobile ? "small" : "medium"}
-                              />
-                            }
-                            label={
-                              <Typography
-                                fontWeight={isChecked ? 600 : 400}
-                                color={
-                                  isChecked ? "text.primary" : "text.secondary"
-                                }
-                                variant={isMobile ? "body2" : "body1"}
-                              >
-                                {spec.name}
-                              </Typography>
-                            }
-                            sx={{
-                              marginRight: isMobile ? 0.5 : 1,
-                              marginLeft: isMobile ? -1 : -0.5,
-                            }}
-                          />
-                        </Paper>
-                      </Grid>
+                        spec={spec}
+                        isChecked={isChecked}
+                        loading={loading}
+                        getGridColumns={getGridColumns}
+                        onToggle={() => {
+                          const id = spec.id.toString();
+                          const updated = isChecked
+                            ? values.specialties.filter((s) => s !== id)
+                            : [...values.specialties, id];
+                          setFieldValue("specialties", updated);
+                        }}
+                      />
                     );
                   })}
-                </Grid>
+                </Grid2>
 
                 {touched.specialties && errors.specialties && (
                   <Typography color="error" mt={2} variant="body2">

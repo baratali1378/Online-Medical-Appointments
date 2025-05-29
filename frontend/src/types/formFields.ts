@@ -12,5 +12,5 @@ export interface FormFieldConfig {
   label: string;
   type: FieldType;
   placeholder?: string;
-  options?: Option[]; // only for 'select'
+  options?: string[]; // only for 'select'
 }

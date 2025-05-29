@@ -4,20 +4,19 @@ import { BaseCard } from "@/components/dashboard/common/Card";
 import {
   Box,
   Button,
-  Grid,
-  IconButton,
-  TextField,
+  Grid2,
   Typography,
-  Tooltip,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { FieldArray, Formik, Form } from "formik";
-import { Delete, Add } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import { Doctor, Phone } from "@/types/doctor";
-import { BrandButton } from "../common/BrandButton";
-import { useState, useMemo } from "react";
+import { BrandButton } from "../../common/BrandButton";
+import { useMemo } from "react";
 import { phoneNumberValidation } from "@/utils/validation";
+import { PhoneNumberItem } from "./PhoneNumberItem"; // Import the new component
+
 interface PhoneNumbersCardProps {
   phoneNumbers: Phone[];
   doctor: Doctor;
@@ -69,55 +68,23 @@ export const PhoneNumbersCard = ({
                   <Typography variant="subtitle2" mb={2} color="text.secondary">
                     Manage phone numbers below:
                   </Typography>
-                  <Grid container spacing={2}>
-                    {values.phone_numbers.map((number, index) => {
-                      const hasError =
-                        touched.phone_numbers &&
-                        touched.phone_numbers[index] &&
-                        errors.phone_numbers &&
-                        (errors.phone_numbers[index] as any)?.text;
-
-                      return (
-                        <Grid
-                          item
-                          xs={12}
-                          key={index}
-                          container
-                          spacing={1}
-                          alignItems="flex-start"
-                        >
-                          <Grid item xs={isMobile ? 10 : 11}>
-                            <TextField
-                              fullWidth
-                              size="small"
-                              label={`Phone Number ${index + 1}`}
-                              name={`phone_numbers[${index}].text`}
-                              value={number.text}
-                              onChange={handleChange}
-                              error={!!hasError}
-                              helperText={hasError}
-                              disabled={loading}
-                              placeholder="+93 772228192"
-                            />
-                          </Grid>
-                          <Grid item xs={isMobile ? 2 : 1}>
-                            <Tooltip title="Remove">
-                              <span>
-                                <IconButton
-                                  onClick={() => remove(index)}
-                                  color="error"
-                                  disabled={values.phone_numbers.length <= 1}
-                                  size="small"
-                                >
-                                  <Delete />
-                                </IconButton>
-                              </span>
-                            </Tooltip>
-                          </Grid>
-                        </Grid>
-                      );
-                    })}
-                  </Grid>
+                  <Grid2 container>
+                    {values.phone_numbers.map((number, index) => (
+                      <Grid2 size={{ xs: 12 }} key={index}>
+                        <PhoneNumberItem
+                          index={index}
+                          number={number}
+                          handleChange={handleChange}
+                          errors={errors}
+                          touched={touched}
+                          loading={loading}
+                          isMobile={isMobile}
+                          onRemove={() => remove(index)}
+                          canRemove={values.phone_numbers.length > 1}
+                        />
+                      </Grid2>
+                    ))}
+                  </Grid2>
 
                   <Button
                     variant="outlined"
