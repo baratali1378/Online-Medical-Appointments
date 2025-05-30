@@ -54,6 +54,8 @@ export const ClinicInfoCard = ({
     doctor.clinic_info?.longitude || 69.2075,
   ]);
 
+  console.log("clinic", doctor.clinic_info);
+
   const initialValues = {
     clinic_name: doctor.clinic_info?.clinic_name || "",
     address: doctor.clinic_info?.address || "",

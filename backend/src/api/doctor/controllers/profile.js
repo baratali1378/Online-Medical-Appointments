@@ -22,6 +22,8 @@ module.exports = {
       clinic_info,
     } = doctor;
 
+    console.log(clinic_info);
+
     return ctx.send({
       data: {
         id,

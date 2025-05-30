@@ -35,6 +35,7 @@ module.exports = (config, { strapi }) => {
             populate: ["file"],
           },
           security: true,
+          clinic_info: true,
         },
       });
 
