@@ -1,9 +1,15 @@
-'use strict';
+// src/api/review/routes/review.js
 
-/**
- * review router
- */
-
-const { createCoreRouter } = require('@strapi/strapi').factories;
-
-module.exports = createCoreRouter('api::review.review');
+module.exports = {
+  routes: [
+    {
+      method: "GET",
+      path: "/reviews/doctor/",
+      handler: "review.findReviewsByDoctor",
+      config: {
+        auth: false,
+        middlewares: ["api::doctor.auth"],
+      },
+    },
+  ],
+};

@@ -18,10 +18,9 @@ module.exports = {
       });
     } catch (error) {
       strapi.log.error("JWT verify error:", error);
-      if (error.name === "TokenExpiredError") {
-        return ctx.unauthorized("Token expired");
-      }
-      return ctx.unauthorized("Invalid token");
+      return ctx.internalServerError(
+        "An error occurred during sending profile"
+      );
     }
   },
 };

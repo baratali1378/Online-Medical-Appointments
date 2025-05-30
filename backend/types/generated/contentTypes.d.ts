@@ -431,6 +431,7 @@ export interface ApiAppointmentAppointment extends Struct.CollectionTypeSchema {
     notes: Schema.Attribute.Text;
     patient: Schema.Attribute.Relation<'manyToOne', 'api::patient.patient'>;
     publishedAt: Schema.Attribute.DateTime;
+    review: Schema.Attribute.Relation<'oneToOne', 'api::review.review'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -732,6 +733,7 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
 export interface ApiReviewReview extends Struct.CollectionTypeSchema {
   collectionName: 'reviews';
   info: {
+    description: '';
     displayName: 'Review';
     pluralName: 'reviews';
     singularName: 'review';
@@ -740,6 +742,10 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    appointment: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::appointment.appointment'
+    >;
     comment: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
