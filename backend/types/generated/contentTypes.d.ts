@@ -424,6 +424,10 @@ export interface ApiAppointmentAppointment extends Struct.CollectionTypeSchema {
       'api::appointment.appointment'
     > &
       Schema.Attribute.Private;
+    medical_record: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::medical-record.medical-record'
+    >;
     notes: Schema.Attribute.Text;
     patient: Schema.Attribute.Relation<'manyToOne', 'api::patient.patient'>;
     publishedAt: Schema.Attribute.DateTime;
@@ -549,6 +553,10 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     >;
     biography: Schema.Attribute.Text;
     city: Schema.Attribute.Relation<'manyToOne', 'api::city.city'>;
+    clinic_info: Schema.Attribute.Component<
+      'contact.clinic-information',
+      false
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -559,6 +567,10 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
       'api::doctor.doctor'
     > &
       Schema.Attribute.Private;
+    medical_records: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::medical-record.medical-record'
+    >;
     password: Schema.Attribute.Password &
       Schema.Attribute.Required &
       Schema.Attribute.Private;
@@ -566,7 +578,6 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
       'personal-info.personal-info',
       false
     >;
-    phone_number: Schema.Attribute.Component<'contact.phone-number', true>;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Decimal;
     reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
@@ -622,6 +633,51 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiMedicalRecordMedicalRecord
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'medical_records';
+  info: {
+    description: '';
+    displayName: 'Medical Records';
+    pluralName: 'medical-records';
+    singularName: 'medical-record';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    appointment: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::appointment.appointment'
+    >;
+    chief_complaint: Schema.Attribute.Text & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    diagnoses: Schema.Attribute.Text;
+    doctor: Schema.Attribute.Relation<'manyToOne', 'api::doctor.doctor'>;
+    files: Schema.Attribute.Media<'images' | 'files', true>;
+    follow_up_date: Schema.Attribute.Date;
+    follow_up_required: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::medical-record.medical-record'
+    > &
+      Schema.Attribute.Private;
+    notes: Schema.Attribute.Text;
+    patient: Schema.Attribute.Relation<'manyToOne', 'api::patient.patient'>;
+    prescription: Schema.Attribute.RichText;
+    publishedAt: Schema.Attribute.DateTime;
+    symptoms: Schema.Attribute.Text;
+    treatment_plan: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
   collectionName: 'patients';
   info: {
@@ -652,6 +708,10 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
       'api::patient.patient'
     > &
       Schema.Attribute.Private;
+    medical_records: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::medical-record.medical-record'
+    >;
     password: Schema.Attribute.Password &
       Schema.Attribute.Required &
       Schema.Attribute.Private;
@@ -1249,6 +1309,7 @@ declare module '@strapi/strapi' {
       'api::contact.contact': ApiContactContact;
       'api::doctor.doctor': ApiDoctorDoctor;
       'api::footer.footer': ApiFooterFooter;
+      'api::medical-record.medical-record': ApiMedicalRecordMedicalRecord;
       'api::patient.patient': ApiPatientPatient;
       'api::review.review': ApiReviewReview;
       'api::specialty.specialty': ApiSpecialtySpecialty;

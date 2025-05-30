@@ -1,6 +1,8 @@
 "use client";
 
 import "./globals.css";
+import "leaflet/dist/leaflet.css";
+
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../utils/theme";
 import { Box, CssBaseline } from "@mui/material";

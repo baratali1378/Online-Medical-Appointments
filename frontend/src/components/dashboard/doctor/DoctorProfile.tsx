@@ -5,11 +5,11 @@ import { useState, useEffect } from "react";
 import { Doctor } from "@/types/doctor";
 import { ProfileImageCard } from "../common/ProfileImageCard";
 import { PersonalInfoCard } from "./PersonalInfo";
-import { PhoneNumbersCard } from "./phone_number/PhoneNumber";
 import { SpecialtiesCard } from "./specialty/SpecialtyCard";
 import { AvailableSlotsCard } from "./timeSlots/AvailableSlotsCard";
 import { AnimatedGridItem } from "@/components/common/AnimatedGridItem"; // <-- Import animation component
 import { VerificationCard } from "./verification/VerificationCard";
+import { ClinicInfoCard } from "./clinic_info/ClinicInfoCard";
 
 interface DoctorProfileViewProps {
   doctor: Doctor;
@@ -143,8 +143,7 @@ export const DoctorProfileView = ({
 
         <Grid2>
           <AnimatedGridItem direction="left" delay={0.2}>
-            <PhoneNumbersCard
-              phoneNumbers={doctor.phone_number}
+            <ClinicInfoCard
               doctor={doctor}
               onUpdate={handleUpdateProfile}
               loading={isUpdating}

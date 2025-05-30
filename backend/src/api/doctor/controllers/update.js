@@ -38,22 +38,25 @@ module.exports = {
         );
 
         return ctx.send({ data: updatedDoctor, meta: {} });
-      } else if (data && data.phone_number) {
+      } else if (data && data.clinic_info) {
+        const { clinic_name, address, phone, latitude, longitude } =
+          data.clinic_info;
+
         const updatedDoctor = await strapi.entityService.update(
           "api::doctor.doctor",
           doctor.id,
           {
             data: {
-              phone_number: data.phone_number.map((phone) => {
-                if (phone.id) {
-                  return { id: phone.id, text: phone.text };
-                } else {
-                  return { text: phone.text }; // new entry
-                }
-              }),
+              clinic_info: {
+                clinic_name,
+                address,
+                phone,
+                latitude,
+                longitude,
+              },
             },
             populate: {
-              phone_number: true,
+              clinic_info: true,
             },
           }
         );

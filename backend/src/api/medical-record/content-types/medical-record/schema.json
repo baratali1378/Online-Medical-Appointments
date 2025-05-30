@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "medical_records",
+  "info": {
+    "singularName": "medical-record",
+    "pluralName": "medical-records",
+    "displayName": "Medical Records",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "chief_complaint": {
+      "type": "text",
+      "required": true
+    },
+    "symptoms": {
+      "type": "text"
+    },
+    "diagnoses": {
+      "type": "text"
+    },
+    "treatment_plan": {
+      "type": "text"
+    },
+    "prescription": {
+      "type": "richtext"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "follow_up_required": {
+      "type": "boolean",
+      "default": false
+    },
+    "follow_up_date": {
+      "type": "date"
+    },
+    "files": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "appointment": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::appointment.appointment",
+      "inversedBy": "medical_record"
+    },
+    "doctor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::doctor.doctor",
+      "inversedBy": "medical_records"
+    },
+    "patient": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::patient.patient",
+      "inversedBy": "medical_records"
+    }
+  }
+}

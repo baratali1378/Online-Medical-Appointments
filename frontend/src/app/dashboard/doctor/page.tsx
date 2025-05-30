@@ -50,10 +50,10 @@ export default function DoctorProfilePage() {
           Pick<
             Doctor,
             | "personal_info"
-            | "phone_number"
             | "city"
             | "biography"
             | "experience"
+            | "clinic_info"
           >
         >
       ) => {

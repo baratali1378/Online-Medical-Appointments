@@ -19,13 +19,14 @@ module.exports = {
       available_slots,
       verification,
       security,
+      clinic_info,
     } = doctor;
 
     return ctx.send({
       data: {
         id,
         personal_info,
-        phone_number,
+        clinic_info,
         city,
         specialties,
         biography,

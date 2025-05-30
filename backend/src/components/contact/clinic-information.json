@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_contact_clinic_informations",
+  "info": {
+    "displayName": "Clinic Information",
+    "icon": "pinMap",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "phone": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "latitude": {
+      "type": "decimal"
+    },
+    "longitude": {
+      "type": "decimal"
+    },
+    "clinic_name": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

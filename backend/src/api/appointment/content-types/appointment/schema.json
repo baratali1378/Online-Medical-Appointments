@@ -40,6 +40,12 @@
     },
     "notes": {
       "type": "text"
+    },
+    "medical_record": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::medical-record.medical-record",
+      "mappedBy": "appointment"
     }
   }
 }

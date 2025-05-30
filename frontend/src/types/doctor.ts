@@ -17,23 +17,18 @@ export interface SignUpResonpose {
   role: string;
 }
 
-export interface Phone {
-  id?: number;
-  text: string;
-}
-
 export interface Doctor {
   id: number;
   biography?: string;
   experience: string;
   rating?: number;
   personal_info: PersonalInfo;
-  phone_number: Phone[];
   city?: City;
   specialties: Specialty[];
   available_slots: AvailableSlot[];
   verification: VerificationDocument[];
   is_verified: boolean;
+  clinic_info?: ClinicInfo;
 }
 
 export interface PersonalInfo {
@@ -45,6 +40,14 @@ export interface PersonalInfo {
 export interface City {
   id: number;
   name: string;
+}
+
+export interface ClinicInfo {
+  clinic_name: string;
+  address: string;
+  phone: string;
+  latitude: number;
+  longitude: number;
 }
 
 export interface Specialty {

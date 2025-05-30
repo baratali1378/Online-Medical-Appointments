@@ -40,11 +40,6 @@
       "target": "api::specialty.specialty",
       "inversedBy": "doctors"
     },
-    "phone_number": {
-      "type": "component",
-      "repeatable": true,
-      "component": "contact.phone-number"
-    },
     "city": {
       "type": "relation",
       "relation": "manyToOne",
@@ -75,6 +70,18 @@
       "type": "component",
       "repeatable": true,
       "component": "doctors.document-verification"
+    },
+    "medical_records": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::medical-record.medical-record",
+      "mappedBy": "doctor"
+    },
+    "clinic_info": {
+      "displayName": "Clinic Information",
+      "type": "component",
+      "repeatable": false,
+      "component": "contact.clinic-information"
     }
   }
 }

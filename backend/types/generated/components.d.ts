@@ -1,5 +1,23 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface ContactClinicInformation extends Struct.ComponentSchema {
+  collectionName: 'components_contact_clinic_informations';
+  info: {
+    description: '';
+    displayName: 'Clinic Information';
+    icon: 'pinMap';
+  };
+  attributes: {
+    address: Schema.Attribute.Text & Schema.Attribute.Required;
+    clinic_name: Schema.Attribute.Text & Schema.Attribute.Required;
+    latitude: Schema.Attribute.Decimal;
+    longitude: Schema.Attribute.Decimal;
+    phone: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+  };
+}
+
 export interface ContactContactDetails extends Struct.ComponentSchema {
   collectionName: 'components_contact_contact_details_s';
   info: {
@@ -134,6 +152,7 @@ export interface SystemsSecurityFields extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'contact.clinic-information': ContactClinicInformation;
       'contact.contact-details': ContactContactDetails;
       'contact.phone-number': ContactPhoneNumber;
       'doctors.available-slots': DoctorsAvailableSlots;

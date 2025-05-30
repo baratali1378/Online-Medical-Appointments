@@ -45,6 +45,12 @@
       "type": "password",
       "required": true,
       "private": true
+    },
+    "medical_records": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::medical-record.medical-record",
+      "mappedBy": "patient"
     }
   }
 }
