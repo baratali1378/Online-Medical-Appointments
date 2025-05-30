@@ -11,7 +11,7 @@ import {
   FormGridSelectField,
 } from "@/components/dashboard/common/FormFields";
 import { useCitiesQuery } from "@/hooks/useCitiesQuery";
-import { BrandButton } from "../common/BrandButton";
+import { BrandButton } from "../../common/BrandButton";
 
 interface PersonalInfoCardProps {
   doctor: Doctor;

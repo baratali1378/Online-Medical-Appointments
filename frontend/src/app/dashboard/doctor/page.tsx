@@ -5,9 +5,9 @@ import { Box } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useDoctor } from "@/hooks/profile/useDoctor";
 import { ErrorAlert } from "@/components/common/ErrorAlert";
-import { DoctorProfileView } from "@/components/dashboard/doctor/DoctorProfile";
+import { DoctorProfileView } from "@/components/dashboard/doctor/profile/DoctorProfile";
 import { Doctor } from "@/types/doctor";
-import Skelton from "@/components/dashboard/doctor/SkeltonLoading";
+import Skelton from "@/components/dashboard/doctor/profile/SkeltonLoading";
 
 export default function DoctorProfilePage() {
   const { data: session, status } = useSession();

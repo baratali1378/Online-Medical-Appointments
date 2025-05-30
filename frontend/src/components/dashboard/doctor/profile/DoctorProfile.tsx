@@ -3,7 +3,7 @@
 import { Alert, Box, Grid2 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Doctor } from "@/types/doctor";
-import { ProfileImageCard } from "../common/ProfileImageCard";
+import { ProfileImageCard } from "../../common/ProfileImageCard";
 import { PersonalInfoCard } from "./PersonalInfo";
 import { SpecialtiesCard } from "./specialty/SpecialtyCard";
 import { AvailableSlotsCard } from "./timeSlots/AvailableSlotsCard";

@@ -6,7 +6,7 @@ import { FieldArray, Formik, Form } from "formik";
 import { Add } from "@mui/icons-material";
 import { AvailableSlot, Doctor } from "@/types/doctor";
 import { timeSlotsValidationSchema } from "@/utils/validation";
-import { BrandButton } from "../../common/BrandButton";
+import { BrandButton } from "../../../common/BrandButton";
 import { useRef } from "react";
 import { TimeSlotField } from "./TimeSlotField";
 import { generateTimeOptions } from "@/utils/generateTime";

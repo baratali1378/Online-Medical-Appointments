@@ -13,7 +13,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Doctor } from "@/types/doctor";
 import { useSpecialtiesQuery } from "@/hooks/useSpecialtiesQuery";
-import { BrandButton } from "../../common/BrandButton";
+import { BrandButton } from "../../../common/BrandButton";
 import { SpecialtyItem } from "./SpecialtyItem"; // Make sure path is correct
 
 interface SpecialtiesCardProps {

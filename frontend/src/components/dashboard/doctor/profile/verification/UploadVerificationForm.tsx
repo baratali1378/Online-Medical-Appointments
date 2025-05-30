@@ -11,7 +11,7 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
-import { BrandButton } from "../../common/BrandButton";
+import { BrandButton } from "../../../common/BrandButton";
 
 interface UploadVerificationFormProps {
   onUpload: (file: File, type: string) => Promise<void>;
