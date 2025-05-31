@@ -1,3 +1,5 @@
+// path: src/api/doctor/controllers/update.js
+
 module.exports = {
   async updateMe(ctx) {
     const doctor = ctx.state.doctor;
@@ -8,94 +10,46 @@ module.exports = {
 
     try {
       const data = ctx.request.body?.data;
-
-      console.log("data", data);
-
-      if (data && data.personal_info) {
-        const { personal_info, city, biography, experience } = data;
-
-        const updatedDoctor = await strapi.entityService.update(
-          "api::doctor.doctor",
-          doctor.id,
-          {
-            data: {
-              personal_info: {
-                ...doctor.personal_info,
-                fullname: personal_info.fullname,
-                email: personal_info.email,
-              },
-              city: {
-                id: city.id,
-              },
-              biography: biography,
-              experience: experience,
-            },
-            populate: {
-              personal_info: true,
-              city: true,
-            },
-          }
-        );
-
-        return ctx.send({ data: updatedDoctor, meta: {} });
-      } else if (data && data.clinic_info) {
-        const { clinic_name, address, phone, latitude, longitude } =
-          data.clinic_info;
-
-        const updatedDoctor = await strapi.entityService.update(
-          "api::doctor.doctor",
-          doctor.id,
-          {
-            data: {
-              clinic_info: {
-                clinic_name,
-                address,
-                phone,
-                latitude,
-                longitude,
-              },
-            },
-            populate: {
-              clinic_info: true,
-            },
-          }
-        );
-
-        return ctx.send({ data: updatedDoctor, meta: {} });
-      } else if (data && data.specialties) {
-        const updatedDoctor = await strapi.entityService.update(
-          "api::doctor.doctor",
-          doctor.id,
-          {
-            data: {
-              specialties: data.specialties.map((s) => s.id),
-            },
-            populate: {
-              specialties: true,
-            },
-          }
-        );
-        return ctx.send({ data: updatedDoctor, meta: {} });
-      } else if (data && data.available_slots) {
-        const updatedDoctor = await strapi.entityService.update(
-          "api::doctor.doctor",
-          doctor.id,
-          {
-            data: {
-              available_slots: data.available_slots.map((slot) => ({
-                days: slot.days,
-                start_time: slot.start_time,
-                end_time: slot.end_time,
-              })),
-            },
-            populate: {
-              available_slots: true,
-            },
-          }
-        );
-
-        return ctx.send({ data: updatedDoctor, meta: {} });
+      if (!data) {
+        return ctx.badRequest("No data provided");
       }
+
+      const doctorService = strapi.service("api::doctor.update");
+
+      let updatedDoctor;
+
+      if (data.personal_info) {
+        const { personal_info, city, biography, experience } = data;
+        updatedDoctor = await doctorService.updatePersonalInfo(
+          doctor.id,
+          {
+            fullname: personal_info.fullname,
+            email: personal_info.email,
+          },
+          city,
+          biography,
+          experience
+        );
+      } else if (data.clinic_info) {
+        updatedDoctor = await doctorService.updateClinicInfo(
+          doctor.id,
+          data.clinic_info
+        );
+      } else if (data.specialties) {
+        updatedDoctor = await doctorService.updateSpecialties(
+          doctor.id,
+          data.specialties
+        );
+      } else if (data.available_slots) {
+        updatedDoctor = await doctorService.updateAvailableSlots(
+          doctor.id,
+          data.available_slots
+        );
+      } else {
+        return ctx.badRequest("No valid update data found");
+      }
+
+      return ctx.send({ data: updatedDoctor, meta: {} });
     } catch (error) {
       strapi.log.error("Can Update profile", error);
       return ctx.internalServerError(
@@ -118,32 +72,10 @@ module.exports = {
         return ctx.badRequest("No image file uploaded");
       }
 
-      const [uploadedImage] = await strapi
-        .plugin("upload")
-        .service("upload")
-        .upload({
-          data: {},
-          files: imageFile,
-        });
-
-      if (!uploadedImage?.id) {
-        return ctx.badRequest("Image upload failed");
-      }
-
-      const updatedDoctor = await strapi.entityService.update(
-        "api::doctor.doctor",
+      const doctorService = strapi.service("api::doctor.update");
+      const updatedDoctor = await doctorService.updateImage(
         doctor.id,
-        {
-          data: {
-            // @ts-ignore
-            personal_info: {
-              image: uploadedImage.id,
-            },
-          },
-          populate: {
-            personal_info: true,
-          },
-        }
+        imageFile
       );
 
       return ctx.send({ data: updatedDoctor, meta: {} });
@@ -151,6 +83,37 @@ module.exports = {
       strapi.log.error("Image update error:", error);
       return ctx.internalServerError(
         "An error occurred while updating the image"
+      );
+    }
+  },
+
+  async verification(ctx) {
+    const doctor = ctx.state.doctor;
+    if (!doctor) {
+      return ctx.unauthorized("No doctor data available");
+    }
+
+    try {
+      const { type } = ctx.request.body;
+      const file = ctx.request.files?.file;
+
+      const doctorService = strapi.service("api::doctor.update");
+
+      const updatedDoctor = await doctorService.addVerificationDocument(
+        doctor.id,
+        type,
+        file
+      );
+
+      return ctx.send({
+        message: "Verification document uploaded",
+        doctor: updatedDoctor,
+      });
+    } catch (error) {
+      strapi.log.error("Cannot update verification", error);
+      return ctx.internalServerError(
+        error.message ||
+          "An error occurred while uploading the verification document"
       );
     }
   },

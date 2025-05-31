@@ -15,29 +15,16 @@ module.exports = (config, { strapi }) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
       // @ts-ignore
       if (!decoded || !decoded.id) {
         return ctx.unauthorized("Invalid token");
       }
 
-      const doctor = await strapi.db.query("api::doctor.doctor").findOne({
+      const doctor = await strapi
+        .service("api::doctor.doctor-utils")
         // @ts-ignore
-        where: { id: decoded.id },
-        populate: {
-          personal_info: {
-            populate: ["image"],
-          },
-          phone_number: true,
-          city: true,
-          specialties: true,
-          available_slots: true,
-          verification: {
-            populate: ["file"],
-          },
-          security: true,
-          clinic_info: true,
-        },
-      });
+        .findDoctorById(decoded.id);
 
       if (!doctor) {
         return ctx.notFound("Doctor not found");

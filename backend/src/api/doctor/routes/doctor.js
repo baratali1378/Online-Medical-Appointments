@@ -3,7 +3,7 @@ module.exports = {
     {
       method: "POST",
       path: "/doctors/login",
-      handler: "login.login",
+      handler: "auth.login",
       config: {
         auth: false,
       },
@@ -21,7 +21,7 @@ module.exports = {
     {
       method: "POST",
       path: "/doctors/signup",
-      handler: "signup.signup",
+      handler: "auth.signup",
       config: {
         auth: false, // public access
         policies: [],
@@ -57,7 +57,7 @@ module.exports = {
     {
       method: "POST",
       path: "/doctor/verification",
-      handler: "verification.verification",
+      handler: "update.verification",
       config: {
         auth: false,
         middlewares: ["api::doctor.auth"],
