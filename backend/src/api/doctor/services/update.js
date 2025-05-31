@@ -64,7 +64,7 @@ module.exports = () => ({
     });
   },
 
-  async updateImage(doctorId, imageFile) {
+  async updateImage(doctor, imageFile) {
     const [uploadedImage] = await strapi
       .plugin("upload")
       .service("upload")
@@ -77,10 +77,11 @@ module.exports = () => ({
       throw new Error("Image upload failed");
     }
 
-    return await strapi.entityService.update("api::doctor.doctor", doctorId, {
+    return await strapi.entityService.update("api::doctor.doctor", doctor.id, {
       data: {
         // @ts-ignore
         personal_info: {
+          ...doctor.personal_info,
           image: uploadedImage.id,
         },
       },

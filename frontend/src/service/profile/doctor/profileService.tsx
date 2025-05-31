@@ -45,10 +45,7 @@ export const DoctorService = {
   async updateDoctorProfile(
     token: string,
     doctorData: Partial<
-      Pick<
-        Doctor,
-        "personal_info" | "phone_number" | "city" | "biography" | "experience"
-      >
+      Pick<Doctor, "personal_info" | "city" | "biography" | "experience">
     >
   ): Promise<Doctor> {
     console.log("token", token);

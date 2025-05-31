@@ -1,6 +1,15 @@
 export interface ReviewResponse {
   data: {
     reviews: Review[];
+    totalReviews: number; // Note: This was "totalReview" in your example but "totalReviews" in the response
+    averageRating: number;
+    ratingBreakdown: {
+      1: number;
+      2: number;
+      3: number;
+      4: number;
+      5: number;
+    };
   };
 }
 
@@ -11,6 +20,6 @@ export interface Review {
   date: string; // ISO date string
   patient: {
     fullname: string;
-    image: string | null; // Can be null if no image is available
+    image: string; // In the response it's always a string, not null
   };
 }

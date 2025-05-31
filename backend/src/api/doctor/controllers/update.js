@@ -73,10 +73,7 @@ module.exports = {
       }
 
       const doctorService = strapi.service("api::doctor.update");
-      const updatedDoctor = await doctorService.updateImage(
-        doctor.id,
-        imageFile
-      );
+      const updatedDoctor = await doctorService.updateImage(doctor, imageFile);
 
       return ctx.send({ data: updatedDoctor, meta: {} });
     } catch (error) {
