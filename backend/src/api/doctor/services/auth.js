@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const doctorToken = require("../../../utils/service/auth-service");
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_TIME_MINUTES = 15;
@@ -69,11 +70,7 @@ module.exports = () => ({
       },
     });
 
-    const token = jwt.sign(
-      { id: doctor.id, email: doctor.personal_info.email, role: "doctor" },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const token = doctorToken.generateToken(doctor, "doctor");
 
     return {
       token,
@@ -131,11 +128,7 @@ module.exports = () => ({
       },
     });
 
-    const token = jwt.sign(
-      { id: newDoctor.id, email, role: "doctor" },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const token = doctorToken.generateToken(newDoctor, "doctor");
 
     return {
       token,
