@@ -1,8 +1,8 @@
 "use strict";
 
 const jwt = require("jsonwebtoken");
+const patientService = require("../services/patient-utils"); // Adjust path if needed
 
-// @ts-ignore
 module.exports = (config, { strapi }) => {
   return async (ctx, next) => {
     const authHeader = ctx.request.header.authorization;
@@ -20,23 +20,10 @@ module.exports = (config, { strapi }) => {
         return ctx.unauthorized("Invalid token");
       }
 
-      const patient = await strapi.db.query("api::patient.patient").findOne({
-        // @ts-ignore
-        where: { id: decoded.id },
-        populate: {
-          personal_info: {
-            populate: ["image"],
-          },
-          contact_details: {
-            populate: ["city"],
-          },
-          image: true,
-          security: true,
-        },
-      });
+      const patient = await patientService.findPatientById(decoded.id);
 
       if (!patient) {
-        return ctx.notFound("patient not found");
+        return ctx.notFound("Patient not found");
       }
 
       ctx.state.patient = patient;
