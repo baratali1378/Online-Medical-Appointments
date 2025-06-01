@@ -4,7 +4,7 @@
 import { Box } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { usePatient } from "@/hooks/profile/usePatient";
+import { usePatient } from "@/hooks/profile/patient/usePatient";
 import { PatientProfileView } from "@/components/dashboard/patient/PatientProfileView";
 import { ErrorAlert } from "@/components/common/ErrorAlert";
 import { useEffect } from "react";

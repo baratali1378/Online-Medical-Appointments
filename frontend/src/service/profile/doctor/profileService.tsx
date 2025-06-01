@@ -1,44 +1,18 @@
-import axios, { AxiosError } from "axios";
+// services/doctor/doctorService.ts
 import { Doctor } from "@/types/doctor";
 import { signIn } from "next-auth/react";
 import credentials from "next-auth/providers/credentials";
-
-const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
-
-export class DoctorServiceError extends Error {
-  status?: number;
-  details?: any;
-
-  constructor(message: string, status?: number, details?: any) {
-    super(message);
-    this.name = "DoctorServiceError";
-    this.status = status;
-    this.details = details;
-  }
-}
+import { createApiClient } from "@/lib/strapiClient";
+import { handleServiceError } from "@/lib/error";
 
 export const DoctorService = {
   async getDoctorProfile(token: string): Promise<Doctor> {
     try {
-      const response = await axios.get<{ data: Doctor }>(
-        `${API_URL}/api/doctor/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 10000,
-        }
-      );
+      const api = createApiClient(token);
+      const response = await api.get<{ data: Doctor }>("/api/doctor/profile");
       return response.data.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new DoctorServiceError(
-          error.response?.data?.message || "Failed to fetch doctor profile",
-          error.response?.status,
-          error.response?.data
-        );
-      }
-      throw new DoctorServiceError("Network error occurred");
+      handleServiceError(error, "Failed to fetch doctor profile");
     }
   },
 
@@ -48,28 +22,14 @@ export const DoctorService = {
       Pick<Doctor, "personal_info" | "city" | "biography" | "experience">
     >
   ): Promise<Doctor> {
-    console.log("token", token);
     try {
-      const response = await axios.put<{ data: Doctor }>(
-        `${API_URL}/api/doctor/profile`,
-        { data: doctorData },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 15000,
-        }
-      );
+      const api = createApiClient(token);
+      const response = await api.put<{ data: Doctor }>("/api/doctor/profile", {
+        data: doctorData,
+      });
       return response.data.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log("error", error);
-        throw new DoctorServiceError(
-          error.response?.data?.error?.message || "Failed to update profile"
-        );
-      }
-      throw new DoctorServiceError("Network error during update");
+      throw handleServiceError(error, "Failed to update profile");
     }
   },
 
@@ -78,55 +38,45 @@ export const DoctorService = {
     imageFile: File
   ): Promise<Doctor["personal_info"]["image"]> {
     try {
+      const api = createApiClient(token);
       const formData = new FormData();
       formData.append("files", imageFile);
 
-      const response = await axios.post<{
+      const response = await api.post<{
         data: Doctor["personal_info"]["image"];
-      }>(`${API_URL}/api/doctor/img`, formData, {
+      }>("/api/doctor/img", formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
         timeout: 20000,
       });
+
       await signIn("credentials", { redirect: false, ...credentials });
       return response.data.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          error.response?.data?.error?.message || "Upload failed"
-        );
-      }
-      throw new DoctorServiceError("Network error during image upload");
+      throw handleServiceError(error, "Failed to upload image");
     }
   },
+
   async uploadVerification(
     token: string,
     file: File,
     type: string
   ): Promise<void> {
     try {
+      const api = createApiClient(token);
       const formData = new FormData();
-      console.log("hhhh");
       formData.append("file", file);
       formData.append("type", type);
 
-      await axios.post(`${API_URL}/api/doctor/verification`, formData, {
+      await api.post("/api/doctor/verification", formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
         timeout: 20000,
       });
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new DoctorServiceError(
-          error.response?.data?.error?.message ||
-            "Failed to upload verification"
-        );
-      }
-      throw new DoctorServiceError("Network error during verification upload");
+      throw handleServiceError(error, "Failed to upload verification document");
     }
   },
 };

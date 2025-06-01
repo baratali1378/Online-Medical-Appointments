@@ -3,7 +3,7 @@
 
 import { Box } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { useDoctor } from "@/hooks/profile/useDoctor";
+import { useDoctor } from "@/hooks/profile/doctor/useDoctor";
 import { ErrorAlert } from "@/components/common/ErrorAlert";
 import { DoctorProfileView } from "@/components/dashboard/doctor/profile/DoctorProfile";
 import { Doctor } from "@/types/doctor";

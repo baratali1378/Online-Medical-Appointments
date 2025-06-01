@@ -10,6 +10,11 @@ module.exports = () => ({
             personal_info: {
               populate: { image: true },
             },
+            contact_details: {
+              populate: {
+                city: true,
+              },
+            },
           },
         },
       },
@@ -20,6 +25,8 @@ module.exports = () => ({
       // @ts-ignore
       const personalInfo = review.patient?.personal_info || {};
       const image = personalInfo.image;
+      // @ts-ignore
+      const contact_details = review.patient?.contact_details || {};
 
       return {
         id: review.id,
@@ -29,6 +36,7 @@ module.exports = () => ({
         patient: {
           fullname: personalInfo.fullname || "Anonymous",
           image: image?.formats?.thumbnail?.url || image?.url || null,
+          city: contact_details.city.name,
         },
       };
     });

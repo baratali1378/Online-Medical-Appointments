@@ -2,10 +2,10 @@ import {
   Person,
   MedicalServices,
   Event,
-  Dashboard,
   People,
   EventNote,
   Home,
+  Reviews,
 } from "@mui/icons-material";
 
 export const patientNavItems = [
@@ -38,9 +38,14 @@ export const patientNavItems = [
 
 export const doctorNavItems = [
   {
-    text: "Dashboard",
-    icon: <Dashboard />,
+    text: "Profile",
+    icon: <People />,
     path: "/dashboard/doctor",
+  },
+  {
+    text: "Reviews",
+    icon: <Reviews />,
+    path: "/dashboard/doctor/reviews",
   },
   {
     text: "Patients",

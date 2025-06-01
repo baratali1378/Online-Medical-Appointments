@@ -4,7 +4,7 @@ module.exports = {
   routes: [
     {
       method: "GET",
-      path: "/reviews/doctor/",
+      path: "/doctor/reviews",
       handler: "review.findReviewsByDoctor",
       config: {
         auth: false,

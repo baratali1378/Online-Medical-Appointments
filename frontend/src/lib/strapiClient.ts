@@ -28,3 +28,13 @@ export async function postData<T>(endpoint: string, data: any): Promise<T> {
     );
   }
 }
+
+export const createApiClient = (token: string) => {
+  return axios.create({
+    baseURL: API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    timeout: 15000, // Default timeout
+  });
+};

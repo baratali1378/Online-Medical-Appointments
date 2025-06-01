@@ -1,8 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  DoctorService,
-  DoctorServiceError,
-} from "@/service/profile/doctor/profileService";
+import { DoctorService } from "@/service/profile/doctor/profileService";
 import { Doctor } from "@/types/doctor";
 
 interface Prop {
@@ -12,29 +9,20 @@ interface Prop {
 export const useDoctor = ({ token }: Prop) => {
   const queryClient = useQueryClient();
 
-  const profileQuery = useQuery<Doctor, DoctorServiceError>({
+  const profileQuery = useQuery<Doctor>({
     queryKey: ["doctorProfile", token],
     queryFn: () => {
       if (!token) return Promise.reject("No token provided");
       return DoctorService.getDoctorProfile(token);
     },
     enabled: !!token,
-    retry: (failureCount, error) => {
-      if (error.status === 404 || error.status === 401) return false;
-      return failureCount < 3;
-    },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const updateMutation = useMutation<
     Doctor,
-    DoctorServiceError,
-    Partial<
-      Pick<
-        Doctor,
-        "personal_info" | "phone_number" | "city" | "biography" | "experience"
-      >
-    >
+    Error,
+    Partial<Pick<Doctor, "personal_info" | "city" | "biography" | "experience">>
   >({
     mutationFn: (data) => DoctorService.updateDoctorProfile(token || "", data),
     onSuccess: (updatedProfile) => {
@@ -48,7 +36,7 @@ export const useDoctor = ({ token }: Prop) => {
 
   const uploadImageMutation = useMutation<
     Doctor["personal_info"]["image"],
-    DoctorServiceError,
+    Error,
     File
   >({
     mutationFn: (file) => DoctorService.uploadDoctorImage(token || "", file),
@@ -67,9 +55,9 @@ export const useDoctor = ({ token }: Prop) => {
   });
 
   const uploadVerificationMutation = useMutation<
-    void,
-    DoctorServiceError,
-    { file: File; type: string }
+    void, // Success return type
+    Error, // Error type (optional)
+    { file: File; type: string } // Input variables to `mutationFn`
   >({
     mutationFn: ({ file, type }) =>
       DoctorService.uploadVerification(token || "", file, type),

@@ -1,5 +1,4 @@
 // service/profile/patient/profileService.ts
-import axios, { AxiosError } from "axios";
 import {
   PatientProfile,
   PatientImage,
@@ -7,43 +6,19 @@ import {
 } from "@/types/patient";
 import { signIn } from "next-auth/react";
 import credentials from "next-auth/providers/credentials";
-
-const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
-
-export class PatientServiceError extends Error {
-  status?: number;
-  details?: any;
-
-  constructor(message: string, status?: number, details?: any) {
-    super(message);
-    this.name = "PatientServiceError";
-    this.status = status;
-    this.details = details;
-  }
-}
+import { createApiClient } from "@/lib/strapiClient";
+import { handleServiceError } from "@/lib/error";
 
 export const PatientService = {
   async getPatientProfile(token: string): Promise<PatientProfile> {
     try {
-      const response = await axios.get<{ data: PatientProfile }>(
-        `${API_URL}/api/patient/me`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 10000, // 10 seconds timeout
-        }
+      const api = createApiClient(token); // 10s timeout
+      const response = await api.get<{ data: PatientProfile }>(
+        "/api/patient/me"
       );
       return response.data.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new PatientServiceError(
-          error.response?.data?.message || "Failed to fetch patient profile",
-          error.response?.status,
-          error.response?.data
-        );
-      }
-      throw new PatientServiceError("Network error occurred");
+      throw handleServiceError(error, "Failed to fetch patient profile");
     }
   },
 
@@ -52,6 +27,7 @@ export const PatientService = {
     patientData: Partial<PatientProfileFormValues>
   ): Promise<PatientProfile> {
     try {
+      const api = createApiClient(token); // 15s timeout
       const requestData = {
         personal_info: {
           fullname: patientData.fullname,
@@ -67,27 +43,13 @@ export const PatientService = {
         },
       };
 
-      const response = await axios.put<{ data: PatientProfile }>(
-        `${API_URL}/api/patient/me`,
-        { data: requestData },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 15000, // 15 seconds timeout for updates
-        }
+      const response = await api.put<{ data: PatientProfile }>(
+        "/api/patient/me",
+        { data: requestData }
       );
       return response.data.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new PatientServiceError(
-          error.response?.data?.message || "Failed to update profile",
-          error.response?.status,
-          error.response?.data
-        );
-      }
-      throw new PatientServiceError("Network error during update");
+      throw handleServiceError(error, "Failed to update profile");
     }
   },
 
@@ -96,27 +58,24 @@ export const PatientService = {
     imageFile: File
   ): Promise<PatientImage> {
     try {
+      const api = createApiClient(token); // 20s timeout
       const formData = new FormData();
       formData.append("files", imageFile);
 
-      const response = await axios.post<{ data: PatientImage }>(
-        `${API_URL}/api/patient/img`,
+      const response = await api.post<{ data: PatientImage }>(
+        "/api/patient/img",
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
-          timeout: 20000, // 20 seconds timeout for file uploads
         }
       );
+
       await signIn("credentials", { redirect: false, ...credentials });
       return response.data.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data.error.message);
-      }
-      throw new PatientServiceError("Network error during image upload");
+      throw handleServiceError(error, "Failed to upload image");
     }
   },
 };

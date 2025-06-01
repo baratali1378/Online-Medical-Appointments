@@ -1,8 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  PatientService,
-  PatientServiceError,
-} from "@/service/profile/patient/profileService";
+import { PatientService } from "@/service/profile/patient/profileService";
 import {
   PatientProfile,
   PatientImage,
@@ -16,23 +13,19 @@ interface Prop {
 export const usePatient = ({ token }: Prop) => {
   const queryClient = useQueryClient();
 
-  const profileQuery = useQuery<PatientProfile, PatientServiceError>({
+  const profileQuery = useQuery<PatientProfile>({
     queryKey: ["patientProfile", token], // ✅ Include token in queryKey
     queryFn: () => {
       if (!token) return Promise.reject("No token provided");
       return PatientService.getPatientProfile(token);
     },
     enabled: !!token, // Only enable if token exists
-    retry: (failureCount, error) => {
-      if (error.status === 404 || error.status === 401) return false;
-      return failureCount < 3;
-    },
     staleTime: 1000 * 60 * 5,
   });
   // Always call updateMutation hook
   const updateMutation = useMutation<
     PatientProfile,
-    PatientServiceError,
+    Error,
     Partial<PatientProfileFormValues>
   >({
     mutationFn: (data) =>
@@ -47,11 +40,7 @@ export const usePatient = ({ token }: Prop) => {
   });
 
   // Always call uploadImageMutation hook
-  const uploadImageMutation = useMutation<
-    PatientImage,
-    PatientServiceError,
-    File
-  >({
+  const uploadImageMutation = useMutation<PatientImage, Error, File>({
     mutationFn: (file) => PatientService.uploadPatientImage(token || "", file),
     onSuccess: (imageData) => {
       queryClient.setQueryData<PatientProfile>(["patientProfile"], (old) => {
