@@ -2,8 +2,8 @@
 const patientService = require("../../../utils/service/auth-service");
 const bcrypt = require("bcryptjs");
 
-const MAX_LOGIN_ATTEMPTS = 5;
-const LOCK_TIME_MINUTES = 15;
+const LOCK_TIME_MINUTES = parseInt(process.env.LOCK_TIME_MINUTES) || 15;
+const MAX_LOGIN_ATTEMPTS = parseInt(process.env.MAX_LOGIN_ATTEMPTS) || 5;
 
 module.exports = () => ({
   async login(email, password) {

@@ -6,7 +6,7 @@ module.exports = ({ strapi }) => ({
   async unlockExpiredAccounts() {
     return await unlockExpiredAccountsForCollection(
       strapi,
-      "api::patient.patient"
+      "api::doctor.doctor"
     );
   },
 });
