@@ -82,6 +82,12 @@
       "type": "component",
       "repeatable": false,
       "component": "contact.clinic-information"
+    },
+    "notifications": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::notification.notification",
+      "mappedBy": "doctor"
     }
   }
 }

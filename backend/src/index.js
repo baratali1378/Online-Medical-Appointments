@@ -1,4 +1,5 @@
-'use strict';
+"use strict";
+const redis = require("./utils/redis");
 
 module.exports = {
   /**
@@ -9,12 +10,9 @@ module.exports = {
    */
   register(/*{ strapi }*/) {},
 
-  /**
-   * An asynchronous bootstrap function that runs before
-   * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
-   */
-  bootstrap(/*{ strapi }*/) {},
+  bootstrap({ strapi }) {
+    strapi.redis = redis;
+
+    strapi.log.info("✅ Redis initialized in bootstrap");
+  },
 };

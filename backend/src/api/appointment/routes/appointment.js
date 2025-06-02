@@ -1,9 +1,16 @@
-'use strict';
-
-/**
- * appointment router
- */
-
-const { createCoreRouter } = require('@strapi/strapi').factories;
-
-module.exports = createCoreRouter('api::appointment.appointment');
+module.exports = {
+  routes: [
+    {
+      method: "GET",
+      path: "/appointments/doctor/:doctorId",
+      handler: "appointment.getDoctorAppointments",
+      config: {
+        policies: [],
+        auth: {
+          scope: ["api::appointment.appointment.find"],
+        },
+        middlewares: [],
+      },
+    },
+  ],
+};

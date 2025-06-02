@@ -572,6 +572,10 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::medical-record.medical-record'
     >;
+    notifications: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::notification.notification'
+    >;
     password: Schema.Attribute.Password &
       Schema.Attribute.Required &
       Schema.Attribute.Private;
@@ -679,6 +683,38 @@ export interface ApiMedicalRecordMedicalRecord
   };
 }
 
+export interface ApiNotificationNotification
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'notifications';
+  info: {
+    displayName: 'Notification';
+    pluralName: 'notifications';
+    singularName: 'notification';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    doctor: Schema.Attribute.Relation<'manyToOne', 'api::doctor.doctor'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::notification.notification'
+    > &
+      Schema.Attribute.Private;
+    message: Schema.Attribute.Text;
+    patient: Schema.Attribute.Relation<'manyToOne', 'api::patient.patient'>;
+    publishedAt: Schema.Attribute.DateTime;
+    read: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
   collectionName: 'patients';
   info: {
@@ -712,6 +748,10 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
     medical_records: Schema.Attribute.Relation<
       'oneToMany',
       'api::medical-record.medical-record'
+    >;
+    notifications: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::notification.notification'
     >;
     password: Schema.Attribute.Password &
       Schema.Attribute.Required &
@@ -1316,6 +1356,7 @@ declare module '@strapi/strapi' {
       'api::doctor.doctor': ApiDoctorDoctor;
       'api::footer.footer': ApiFooterFooter;
       'api::medical-record.medical-record': ApiMedicalRecordMedicalRecord;
+      'api::notification.notification': ApiNotificationNotification;
       'api::patient.patient': ApiPatientPatient;
       'api::review.review': ApiReviewReview;
       'api::specialty.specialty': ApiSpecialtySpecialty;
