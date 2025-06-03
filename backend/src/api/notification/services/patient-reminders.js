@@ -9,6 +9,10 @@ module.exports = ({ strapi }) => ({
         .service("api::appointment.patient-reminder")
         .getAppointmentsForReminders();
 
+      if (!appointments) {
+        return { appointments: 0 };
+      }
+
       for (const appointment of appointments) {
         try {
           // Create notification in Strapi DB
@@ -40,6 +44,8 @@ module.exports = ({ strapi }) => ({
           );
         }
       }
+      strapi.log.info("appointments ", appointments);
+      return { appointments: appointments.length };
     } catch (error) {
       strapi.log.error("Error fetching appointments for reminders:", error);
     }

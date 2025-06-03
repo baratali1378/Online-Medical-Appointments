@@ -21,6 +21,7 @@ module.exports = ({ strapi }) => ({
         populate: ["patient"],
       }
     );
+    console.log("hello", appointments);
 
     return appointments;
   },
