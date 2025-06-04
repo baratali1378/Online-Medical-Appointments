@@ -133,7 +133,7 @@ export const MobileDrawer = ({
         </>
       ) : (
         <Box sx={{ px: 3, py: 2 }}>
-          <ProfileMenu />
+          <ProfileMenu url={session.user.image || ""} />
         </Box>
       )}
     </Box>

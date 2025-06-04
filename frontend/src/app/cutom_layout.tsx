@@ -14,6 +14,16 @@ import { usePathname } from "next/navigation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
+// ✅ Import font
+import { Inter } from "next/font/google";
+
+// ✅ Configure font
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter", // Optional: CSS variable
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,23 +32,19 @@ export default function RootLayout({
   const pathname = usePathname();
   const isDashboard = pathname?.startsWith("/dashboard");
 
-  // Initialize QueryClient once
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <body>
         <SessionProvider>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider theme={theme}>
               <CssBaseline />
-
               {!isDashboard && <Header />}
-
               <Box sx={{ mt: !isDashboard ? 14 : 0 }}>
                 <ErrorBoundary>{children}</ErrorBoundary>
               </Box>
-
               {!isDashboard && <Footer />}
             </ThemeProvider>
           </QueryClientProvider>

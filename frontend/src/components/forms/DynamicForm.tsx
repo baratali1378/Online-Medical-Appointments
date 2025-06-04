@@ -34,7 +34,7 @@ export const DynamicForm = <T,>({
             <FormSelectField
               name={field.name}
               label={field.label}
-              options={field.options || []}
+              options={[]}
             />
           ) : (
             <FormTextField

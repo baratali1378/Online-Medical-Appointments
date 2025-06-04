@@ -15,7 +15,6 @@ export const ClinicFormFields = ({ isSubmitting }: ClinicFormFieldsProps) => {
         <FormTextField
           name="clinic_name"
           label="Clinic Name"
-          placeHolder="Enter clinic name"
           type="text"
           InputLabelProps={{
             shrink: true,

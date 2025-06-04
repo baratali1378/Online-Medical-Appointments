@@ -1,5 +1,6 @@
 export const genderOptions = ["Male", "Female", "Other"] as const;
 export type Gender = (typeof genderOptions)[number];
+import { City } from "./city";
 
 export interface SignupFormValues {
   name: string;
@@ -44,11 +45,6 @@ export interface PatientImage {
   updatedAt: string;
 }
 
-export interface City {
-  id: number;
-  name: string;
-}
-
 export interface ContactInfo {
   id: number;
   phone_number: string;
@@ -85,7 +81,7 @@ export interface PatientFormValues {
 
 export interface PatientProfileFormValues extends PatientFormValues {
   address?: string;
-  posta_code?: string;
+  postal_code?: string;
 }
 export interface PatientSignupResponse {
   token: string;

@@ -1,47 +1,69 @@
 "use strict";
-const { ApplicationError, NotFoundError } = require("@strapi/utils").errors;
 
 module.exports = ({ strapi }) => ({
-  async getDoctorAppointments(doctorId) {
-    if (!doctorId) {
-      throw new ApplicationError("Doctor ID is required");
+  async getDoctorAppointments(doctor, filters = {}) {
+    const { status, dateRange, search } = filters;
+
+    const baseFilters = {
+      doctor: Number(doctor.id),
+    };
+
+    if (dateRange) {
+      baseFilters.date = {
+        $gte: new Date(dateRange.start).toISOString(),
+        $lte: new Date(dateRange.end).toISOString(),
+      };
     }
 
-    // Check if doctor exists
-    const doctor = await strapi.entityService.findOne(
-      "api::doctor.doctor",
-      Number(doctorId)
-    );
-    if (!doctor) {
-      throw new NotFoundError(`Doctor with ID ${doctorId} not found`);
+    // ✅ Apply status filter only if it's not "all"
+    if (status && status.toLowerCase() !== "all") {
+      baseFilters.appointment_status = status;
     }
 
-    // Calculate date range: now to now + reminder window (e.g. 48h)
-    const now = new Date();
-    const endTime = new Date(now.getTime() + 48 * 60 * 60 * 1000); // 48 hours
+    // ✅ Search by patient name
+    if (search) {
+      baseFilters.patient = {
+        personal_info: {
+          fullname: {
+            $containsi: search,
+          },
+        },
+      };
+    }
 
-    // Fetch appointments filtered by doctor and date range
     const appointments = await strapi.entityService.findMany(
       "api::appointment.appointment",
       {
-        filters: {
-          doctor: Number(doctorId),
-          date: {
-            $gte: now.toISOString(),
-            $lte: endTime.toISOString(),
-          },
-        },
+        filters: baseFilters,
+        sort: { date: "asc" },
         populate: {
           patient: {
-            populate: ["personal_info"],
+            populate: {
+              personal_info: {
+                populate: {
+                  image: true,
+                },
+              },
+            },
           },
-          medical_record: true,
-          review: true,
-          doctor: true,
         },
       }
     );
 
-    return appointments;
+    // 🔒 Sanitize sensitive info
+    const sanitized = appointments.map((appointment) => {
+      if (appointment.patient) {
+        delete appointment.patient.password;
+
+        if (appointment.patient.personal_info) {
+          const { fullname, gender, birth, image } =
+            appointment.patient.personal_info;
+          appointment.patient = { fullname, gender, birth, image };
+        }
+      }
+      return appointment;
+    });
+
+    return sanitized;
   },
 });
