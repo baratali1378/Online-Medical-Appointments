@@ -80,12 +80,6 @@ module.exports = ({ strapi }) => ({
         throw new NotFoundError("Appointment not found");
       }
 
-      if (existingAppointment.doctor?.id !== doctor.id) {
-        return ctx.unauthorized(
-          "You are not allowed to update this appointment"
-        );
-      }
-
       // Perform the update using db.query
       const updatedAppointment = await strapi.db
         .query("api::appointment.appointment")
@@ -94,17 +88,9 @@ module.exports = ({ strapi }) => ({
           data: {
             appointment_status: status,
             updatedByDoctor: true,
-            updatedAt: new Date(), // Explicit timestamp
+            updatedAt: new Date(),
+            patientID: existingAppointment.patient?.id,
           },
-          populate: ["patient", "doctor"], // Populate relations if needed
-        });
-
-      // Trigger notification
-      await strapi
-        .service("api::notification.doctor-notification")
-        .createNotification({
-          message: `Doctor updated your appointment status to '${status}' at ${new Date().toString()}`,
-          patientId: existingAppointment.patient.id,
         });
 
       return ctx.send({
@@ -113,9 +99,7 @@ module.exports = ({ strapi }) => ({
       });
     } catch (error) {
       strapi.log.error("Error updating appointment status:", error);
-      if (error instanceof NotFoundError) {
-        return ctx.notFound(error.message);
-      }
+
       return ctx.internalServerError("Could not update appointment status");
     }
   },

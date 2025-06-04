@@ -15,12 +15,16 @@ import { ControlPanel } from "@/components/dashboard/doctor/appointments/Control
 import { AppointmentTabsWithCalendar } from "@/components/dashboard/doctor/appointments/AppointmentTabs";
 import { useSession } from "next-auth/react";
 import { AppointmentViews } from "@/components/dashboard/doctor/appointments/AppointmentViews";
+import { format, startOfDay, endOfDay } from "date-fns";
 
 export default function DoctorAppointmentsPage() {
   const [filters, setFilters] = useState<AppointmentFilters>({
     status: "All",
     search: "",
-    dateRange: undefined,
+    dateRange: {
+      start: format(startOfDay(new Date()), "yyyy-MM-dd"),
+      end: format(endOfDay(new Date()), "yyyy-MM-dd"),
+    },
   });
 
   const [view, setView] = useState<ViewMode>("Day View");

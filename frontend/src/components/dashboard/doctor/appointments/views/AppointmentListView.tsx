@@ -58,7 +58,7 @@ export const AppointmentListView = ({
 
   return (
     <Box mt={{ xs: 2, sm: 3 }}>
-      <Box display="flex" flexDirection="column" gap={0.9}>
+      <Box display="flex" flexDirection="column">
         {paginatedAppointments.map((appt) => (
           <AppointmentCard token={token} key={appt.id} appointment={appt} />
         ))}
