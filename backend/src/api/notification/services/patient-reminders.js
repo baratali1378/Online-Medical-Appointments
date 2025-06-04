@@ -9,42 +9,26 @@ module.exports = ({ strapi }) => ({
         .service("api::appointment.patient-reminder")
         .getAppointmentsForReminders();
 
-      if (!appointments) {
+      if (!appointments || appointments.length === 0) {
         return { appointments: 0 };
       }
 
       for (const appointment of appointments) {
         try {
-          // Create notification in Strapi DB
-          const notification = await strapi.entityService.create(
-            "api::notification.notification",
-            {
-              data: {
-                message: `You have an appointment scheduled on ${dayjs(appointment.date).format("YYYY-MM-DD HH:mm")}`,
-                // @ts-ignore
-                patient: appointment.patient.id,
-              },
-            }
-          );
+          await strapi.entityService.create("api::notification.notification", {
+            data: {
+              message: `You have an appointment scheduled on ${dayjs(appointment.date).format("YYYY-MM-DD HH:mm")}`,
+              patient: appointment.patient.id,
+            },
+          });
 
-          // Publish notification event to Redis
-          await strapi.redis.publish(
-            "notifications",
-            JSON.stringify({
-              id: notification.id,
-              userType: "patient",
-              userId: appointment.patient.id,
-              message: notification.message,
-            })
-          );
-        } catch (innerError) {
-          strapi.log.error(
-            "Error creating notification or publishing to Redis:",
-            innerError
-          );
+          // ✅ Redis publish is now handled in the lifecycle hook
+        } catch (err) {
+          strapi.log.error("Error creating notification:", err);
         }
       }
-      strapi.log.info("appointments ", appointments);
+
+      strapi.log.info(`Sent ${appointments.length} patient reminders.`);
       return { appointments: appointments.length };
     } catch (error) {
       strapi.log.error("Error fetching appointments for reminders:", error);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useDoctorAppointmentsQuery } from "@/hooks/profile/doctor/useDoctorAppointmentsQuery";
+import { useDoctorAppointmentsQuery } from "@/hooks/profile/doctor/appointment/useDoctorAppointmentsQuery";
 import { AppointmentFilters, ViewMode } from "@/types/appointments";
 import {
   Alert,
@@ -97,6 +97,7 @@ export default function DoctorAppointmentsPage() {
         appointments={data?.data || []}
         loading={isLoading}
         selectedView={view}
+        token={token}
       />
     </Container>
   );

@@ -6,15 +6,16 @@ import { JSX } from "react";
 
 export const viewFactory = (
   view: ViewMode,
-  appointments: Appointment[]
+  appointments: Appointment[],
+  token: string
 ): JSX.Element => {
   switch (view) {
     case "Day View":
-      return <DayView appointments={appointments} />;
+      return <DayView token={token} appointments={appointments} />;
     case "Week View":
-      return <WeekView appointments={appointments} />;
+      return <WeekView token={token} appointments={appointments} />;
     case "List View":
     default:
-      return <ListView appointments={appointments} />;
+      return <ListView token={token} appointments={appointments} />;
   }
 };

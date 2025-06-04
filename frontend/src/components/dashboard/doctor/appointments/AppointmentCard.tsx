@@ -1,4 +1,3 @@
-// components/AppointmentCard.tsx
 import {
   Box,
   Card,
@@ -7,14 +6,17 @@ import {
   Avatar,
   Button,
   Chip,
+  CircularProgress,
 } from "@mui/material";
 import { Appointment } from "@/types/appointments";
 import { format } from "date-fns";
 import { useState } from "react";
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog";
+import { useChangeAppointmentStatus } from "@/hooks/profile/doctor/appointment/useChangeAppointmentStatus";
 
 interface AppointmentCardProps {
   appointment: Appointment;
+  token: string;
 }
 
 const statusColors: Record<string, any> = {
@@ -24,9 +26,19 @@ const statusColors: Record<string, any> = {
   Cancelled: "default",
 };
 
-export const AppointmentCard = ({ appointment }: AppointmentCardProps) => {
+export const AppointmentCard = ({
+  appointment,
+  token,
+}: AppointmentCardProps) => {
   const [openDetails, setOpenDetails] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
+
+  const changeStatusMutation = useChangeAppointmentStatus(token);
+
+  const handleStatusChange = (newStatus: string) => {
+    changeStatusMutation.mutate({ id: appointment.id, status: newStatus });
+  };
+
   const { patient, date, appointment_status } = appointment;
   const age =
     new Date().getFullYear() - new Date(patient.birth || "2000").getFullYear();
@@ -86,13 +98,19 @@ export const AppointmentCard = ({ appointment }: AppointmentCardProps) => {
               <Button
                 size="small"
                 variant="contained"
+                disabled={changeStatusMutation.isPending}
+                onClick={() => handleStatusChange("Confirmed")}
                 sx={{
                   backgroundColor: "#FFA000",
                   color: "#fff",
                   "&:hover": { backgroundColor: "#FF8F00" },
                 }}
               >
-                Confirm
+                {changeStatusMutation.isPending ? (
+                  <CircularProgress size={18} color="inherit" />
+                ) : (
+                  "Confirm"
+                )}
               </Button>
             )}
 
@@ -101,13 +119,19 @@ export const AppointmentCard = ({ appointment }: AppointmentCardProps) => {
                 <Button
                   size="small"
                   variant="contained"
+                  disabled={changeStatusMutation.isPending}
+                  onClick={() => handleStatusChange("Cancelled")}
                   sx={{
-                    backgroundColor: "#D32F2F", // Red color
+                    backgroundColor: "#D32F2F",
                     color: "#fff",
-                    "&:hover": { backgroundColor: "#B71C1C" }, // Darker red on hover
+                    "&:hover": { backgroundColor: "#B71C1C" },
                   }}
                 >
-                  Cancel
+                  {changeStatusMutation.isPending ? (
+                    <CircularProgress size={18} color="inherit" />
+                  ) : (
+                    "Cancel"
+                  )}
                 </Button>
                 <Button size="small" variant="contained" color="success">
                   Start Consultation

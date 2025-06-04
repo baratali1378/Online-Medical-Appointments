@@ -8,11 +8,16 @@ interface Props {
   appointments: Appointment[];
   emptyMessage: string;
   onRefresh?: () => void;
+  token: string;
 }
 
 const ITEMS_PER_PAGE = 6;
 
-export const AppointmentListView = ({ appointments, emptyMessage }: Props) => {
+export const AppointmentListView = ({
+  appointments,
+  emptyMessage,
+  token,
+}: Props) => {
   const [page, setPage] = useState(1);
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
@@ -55,7 +60,7 @@ export const AppointmentListView = ({ appointments, emptyMessage }: Props) => {
     <Box mt={{ xs: 2, sm: 3 }}>
       <Box display="flex" flexDirection="column" gap={0.9}>
         {paginatedAppointments.map((appt) => (
-          <AppointmentCard key={appt.id} appointment={appt} />
+          <AppointmentCard token={token} key={appt.id} appointment={appt} />
         ))}
       </Box>
 

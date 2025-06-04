@@ -6,12 +6,14 @@ interface Props {
   appointments: Appointment[];
   selectedView: ViewMode;
   loading?: boolean;
+  token: string;
 }
 
 export const AppointmentViews = ({
   appointments,
   selectedView,
   loading = false,
+  token,
 }: Props) => {
   if (loading) {
     // Show 5 skeleton cards
@@ -24,5 +26,5 @@ export const AppointmentViews = ({
     );
   }
 
-  return <>{viewFactory(selectedView, appointments)}</>;
+  return <>{viewFactory(selectedView, appointments, token)}</>;
 };

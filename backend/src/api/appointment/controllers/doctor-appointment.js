@@ -68,31 +68,44 @@ module.exports = ({ strapi }) => ({
         return ctx.badRequest("Invalid appointment status");
       }
 
-      const appointment = await strapi.entityService.findOne(
-        "api::appointment.appointment",
-        id,
-        { populate: { doctor: true } }
-      );
+      // First verify the appointment exists and belongs to this doctor
+      const existingAppointment = await strapi.db
+        .query("api::appointment.appointment")
+        .findOne({
+          where: { id },
+          populate: ["doctor", "patient"],
+        });
 
-      if (!appointment) {
+      if (!existingAppointment) {
         throw new NotFoundError("Appointment not found");
       }
 
-      if (appointment.doctor?.id !== doctor.id) {
+      if (existingAppointment.doctor?.id !== doctor.id) {
         return ctx.unauthorized(
           "You are not allowed to update this appointment"
         );
       }
 
-      const updatedAppointment = await strapi.entityService.update(
-        "api::appointment.appointment",
-        id,
-        {
+      // Perform the update using db.query
+      const updatedAppointment = await strapi.db
+        .query("api::appointment.appointment")
+        .update({
+          where: { id },
           data: {
             appointment_status: status,
+            updatedByDoctor: true,
+            updatedAt: new Date(), // Explicit timestamp
           },
-        }
-      );
+          populate: ["patient", "doctor"], // Populate relations if needed
+        });
+
+      // Trigger notification
+      await strapi
+        .service("api::notification.doctor-notification")
+        .createNotification({
+          message: `Doctor updated your appointment status to '${status}' at ${new Date().toString()}`,
+          patientId: existingAppointment.patient.id,
+        });
 
       return ctx.send({
         message: "Appointment status updated successfully",

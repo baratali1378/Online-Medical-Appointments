@@ -35,3 +35,22 @@ export const getDoctorAppointments = async (
 
   return response.data;
 };
+
+// NEW method to update appointment status
+export const changeAppointmentStatus = async (
+  id: number | string,
+  status: string,
+  token: string
+): Promise<any> => {
+  const response = await axios.put(
+    `${API_URL}/api/appointments/doctor`,
+    { id, status },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
