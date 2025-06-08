@@ -68,7 +68,7 @@ module.exports = ({ strapi }) => ({
         return ctx.badRequest("Invalid appointment status");
       }
 
-      // First verify the appointment exists and belongs to this doctor
+      // Check appointment existence and ownership
       const existingAppointment = await strapi.db
         .query("api::appointment.appointment")
         .findOne({
@@ -80,7 +80,18 @@ module.exports = ({ strapi }) => ({
         throw new NotFoundError("Appointment not found");
       }
 
-      // Perform the update using db.query
+      // ⏱️ Time Restriction Logic (e.g. 24 hours before appointment)
+      const now = new Date();
+      const appointmentDate = new Date(existingAppointment.date);
+      const timeDiffHours = (appointmentDate - now) / (1000 * 60 * 60); // in hours
+
+      if (timeDiffHours < 24) {
+        return ctx.badRequest(
+          "You can only change or cancel appointments at least 24 hours in advance."
+        );
+      }
+
+      // ✅ Update appointment
       const updatedAppointment = await strapi.db
         .query("api::appointment.appointment")
         .update({
@@ -99,7 +110,6 @@ module.exports = ({ strapi }) => ({
       });
     } catch (error) {
       strapi.log.error("Error updating appointment status:", error);
-
       return ctx.internalServerError("Could not update appointment status");
     }
   },

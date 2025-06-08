@@ -13,6 +13,8 @@ import { SessionProvider } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 // ✅ Import font
 import { Inter } from "next/font/google";
@@ -45,6 +47,7 @@ export default function RootLayout({
               <Box sx={{ mt: !isDashboard ? 14 : 0 }}>
                 <ErrorBoundary>{children}</ErrorBoundary>
               </Box>
+              <ToastContainer position="top-right" autoClose={4000} />
               {!isDashboard && <Footer />}
             </ThemeProvider>
           </QueryClientProvider>
