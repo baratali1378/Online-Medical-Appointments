@@ -4,18 +4,11 @@ module.exports = {
   afterCreate: async (event) => {
     const { result, params } = event;
 
-    strapi.log.info("Notification lifecycle triggered");
-    strapi.log.info("result:", result);
-    strapi.log.info("params:", params);
+    const isPatient = params.data.patient?.set?.[0]?.id;
+    const isDoctor = params.data.doctor?.set?.[0]?.id;
 
-    // Determine the user type and ID
-    const userType = params.data.patient
-      ? "patient"
-      : params.data.doctor
-        ? "doctor"
-        : null;
-
-    const userId = params.data.patient || params.data.doctor;
+    const userType = isPatient ? "patient" : isDoctor ? "doctor" : null;
+    const userId = isPatient || isDoctor;
 
     if (!userType || !userId) {
       strapi.log.warn("Missing userType or userId in notification");
@@ -23,21 +16,21 @@ module.exports = {
     }
 
     try {
-      // Publish notification via Redis or other system
       // @ts-ignore
-      await strapi.redis.publish(
-        "notifications",
-        JSON.stringify({
-          id: result.id,
-          userType,
-          userId,
-          message: result.message,
-        })
+      await strapi.rabbitmq.publishToQueue({
+        id: result.id,
+        user_type: userType,
+        user_id: userId.toString(),
+        message_type: "message",
+        title: result.title || "New Notification",
+        content: result.message,
+        metadata: {},
+      });
+      strapi.log.info(
+        `📨 Notification sent via RabbitMQ for ${userType} ${userId}`
       );
-
-      strapi.log.info(`Notification published to ${userType} ${userId}`);
     } catch (err) {
-      strapi.log.error("Redis publish failed in notification lifecycle:", err);
+      strapi.log.error("❌ RabbitMQ publish failed:", err);
     }
   },
 };

@@ -1,5 +1,5 @@
 "use strict";
-const redis = require("./utils/redis");
+const rabbitmq = require("./utils/rabbitMq");
 
 module.exports = {
   /**
@@ -10,9 +10,9 @@ module.exports = {
    */
   register(/*{ strapi }*/) {},
 
-  bootstrap({ strapi }) {
-    strapi.redis = redis;
-
-    strapi.log.info("✅ Redis initialized in bootstrap");
+  async bootstrap({ strapi }) {
+    await rabbitmq.connect();
+    strapi.rabbitmq = rabbitmq;
+    strapi.log.info("✅ RabbitMQ initialized in bootstrap");
   },
 };

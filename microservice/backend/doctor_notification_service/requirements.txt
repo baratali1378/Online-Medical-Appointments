@@ -8,3 +8,6 @@ pydantic==1.10.7
 python-jose[cryptography]
 PyJWT==2.8.0
 redis~=6.2.0
+aio-pika==9.3.0
+pytest
+pytest-asyncio
