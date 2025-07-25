@@ -13,11 +13,15 @@ import {
 import { HeaderSection } from "@/components/dashboard/doctor/appointments/HeaderSection";
 import { ControlPanel } from "@/components/dashboard/doctor/appointments/ControlPanel";
 import { AppointmentTabsWithCalendar } from "@/components/dashboard/doctor/appointments/AppointmentTabs";
-import { useSession } from "next-auth/react";
 import { AppointmentViews } from "@/components/dashboard/doctor/appointments/AppointmentViews";
 import { format, startOfDay, endOfDay } from "date-fns";
+import { withAuth } from "@/components/dashboard/withAuth";
 
-export default function DoctorAppointmentsPage() {
+type Props = {
+  session: any;
+};
+
+function DoctorAppointmentsPage({ session }: Props) {
   const [filters, setFilters] = useState<AppointmentFilters>({
     status: "All",
     search: "",
@@ -29,7 +33,6 @@ export default function DoctorAppointmentsPage() {
 
   const [view, setView] = useState<ViewMode>("Day View");
 
-  const { data: session, status } = useSession();
   const token = session?.user?.token || "";
 
   const { data, isLoading, refetch } = useDoctorAppointmentsQuery({
@@ -45,7 +48,7 @@ export default function DoctorAppointmentsPage() {
     }
   }, [data, hasLoadedOnce]);
 
-  if (status === "loading" || (!hasLoadedOnce && isLoading)) {
+  if (!hasLoadedOnce && isLoading) {
     return (
       <Box
         display="flex"
@@ -58,17 +61,8 @@ export default function DoctorAppointmentsPage() {
     );
   }
 
-  if (!session || !token) {
-    return (
-      <Alert severity="error">
-        You must be logged in to view appointments.
-      </Alert>
-    );
-  }
-
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 4 } }}>
-      {/* Header */}
       <HeaderSection
         fullName={session.user.name || ""}
         url={session.user.image || ""}
@@ -77,7 +71,6 @@ export default function DoctorAppointmentsPage() {
 
       <Divider sx={{ my: { xs: 2, sm: 3 } }} />
 
-      {/* Tabs + Calendar */}
       <AppointmentTabsWithCalendar
         value={view}
         onViewChange={setView}
@@ -87,7 +80,6 @@ export default function DoctorAppointmentsPage() {
 
       <Divider sx={{ my: { xs: 2, sm: 3 } }} />
 
-      {/* Filters and search */}
       <ControlPanel
         filters={filters}
         onFilterChange={setFilters}
@@ -96,7 +88,6 @@ export default function DoctorAppointmentsPage() {
 
       <Divider sx={{ my: { xs: 2, sm: 3 } }} />
 
-      {/* Appointments content */}
       <AppointmentViews
         appointments={data?.data || []}
         loading={isLoading}
@@ -106,3 +97,5 @@ export default function DoctorAppointmentsPage() {
     </Container>
   );
 }
+
+export default withAuth(DoctorAppointmentsPage, "doctor");

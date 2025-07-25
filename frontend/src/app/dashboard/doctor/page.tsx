@@ -1,17 +1,18 @@
 "use client";
-///dashboard/doctor/page
 
 import { Box } from "@mui/material";
-import { useSession } from "next-auth/react";
 import { useDoctor } from "@/hooks/profile/doctor/useDoctor";
 import { ErrorAlert } from "@/components/common/ErrorAlert";
 import { DoctorProfileView } from "@/components/dashboard/doctor/profile/DoctorProfile";
 import { Doctor } from "@/types/doctor";
 import Skelton from "@/components/dashboard/doctor/profile/SkeltonLoading";
+import { withAuth } from "@/components/dashboard/withAuth";
 
-export default function DoctorProfilePage() {
-  const { data: session, status } = useSession();
+type Props = {
+  session: any;
+};
 
+function DoctorProfilePage({ session }: Props) {
   const {
     profile,
     isLoading,
@@ -22,7 +23,7 @@ export default function DoctorProfilePage() {
     refetch,
   } = useDoctor({ token: session?.user?.token || "" });
 
-  if (status == "loading" || isLoading) {
+  if (isLoading) {
     return <Skelton />;
   }
 
@@ -71,3 +72,5 @@ export default function DoctorProfilePage() {
     />
   );
 }
+
+export default withAuth(DoctorProfilePage, "doctor");
