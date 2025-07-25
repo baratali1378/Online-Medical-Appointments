@@ -3,10 +3,10 @@ from email.message import EmailMessage
 from app.config import EMAIL_USER, EMAIL_PASS
 
 
-def send_email(to_email: str, message: str):
+def send_email(to_email: str, message: str, subject: str):
     try:
         msg = EmailMessage()
-        msg["Subject"] = "Appointment Reminder"
+        msg["Subject"] = subject
         msg["From"] = EMAIL_USER
         msg["To"] = to_email
         msg.set_content(message)

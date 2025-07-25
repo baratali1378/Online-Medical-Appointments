@@ -9,6 +9,8 @@ module.exports = ({ strapi }) => ({
         .service("api::appointment.patient-reminder")
         .getAppointmentsForReminders();
 
+      console.log("appointments", appointments);
+
       if (!appointments || appointments.length === 0) {
         return { appointments: 0 };
       }
@@ -16,35 +18,42 @@ module.exports = ({ strapi }) => ({
       for (const appointment of appointments) {
         try {
           const patient = appointment.patient;
+          const doctor = appointment.doctor;
 
-          // Safely access the email from the personal_info component
+          // Get email from patient's personal_info
           const email = patient?.personal_info?.email;
+          const doctorName = doctor?.personal_info
+            ? `${doctor.personal_info.first_name} ${doctor.personal_info.last_name}`
+            : "your doctor";
 
           if (!email) {
             strapi.log.warn(`⚠️ No email found for patient ID ${patient?.id}`);
             continue;
           }
 
+          const formattedDate = dayjs(appointment.date).format(
+            "dddd, MMMM D, YYYY [at] HH:mm"
+          );
+
+          const message =
+            `Dear ${patient.personal_info?.first_name || "Patient"},\n\n` +
+            `This is a friendly reminder that you have an appointment with Dr. ${doctorName} on ${formattedDate}.\n\n` +
+            `Please make sure to be available on time. If you have any questions or need to reschedule, contact the clinic or your doctor in advance.\n\n` +
+            `Thank you,\nOnline Medical Appointment System`;
+
           await strapi.entityService.create("api::notification.notification", {
             data: {
-              email, // now correctly set
-              message: `You have an appointment scheduled on ${dayjs(appointment.date).format("YYYY-MM-DD HH:mm")}`,
+              email,
+              message,
               patient: patient.id,
             },
           });
 
-          // Optionally, send to RabbitMQ here too
-          await strapi.rabbitmq.channel.sendToQueue(
-            "notifications",
-            Buffer.from(
-              JSON.stringify({
-                email,
-                subject: "Appointment Reminder",
-                message: `You have an appointment scheduled on ${dayjs(appointment.date).format("YYYY-MM-DD HH:mm")}`,
-              })
-            ),
-            { persistent: true }
-          );
+          await strapi.rabbitmq.publishToQueue({
+            email,
+            subject: "Appointment Reminder",
+            content: message,
+          });
         } catch (err) {
           strapi.log.error(
             "Error creating notification or sending to queue:",

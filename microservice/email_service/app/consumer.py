@@ -8,9 +8,11 @@ def callback(ch, method, properties, body):
     try:
         data = json.loads(body)
         email = data.get("email")
-        message = data.get("message")
+        subject = data.get("subject", "Notification")
+        message = data.get("content")
+
         if email and message:
-            send_email(email, message)
+            send_email(email, message, subject=subject)
         else:
             print("⚠️ Invalid message format:", data)
     except Exception as e:

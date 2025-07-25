@@ -12,7 +12,7 @@ module.exports = {
   remindPatientsJob: {
     task: remindPatients,
     options: {
-      rule: "52 17 * * *",
+      rule: "58 11 * * *",
       tz: "Asia/Tehran",
     },
   },

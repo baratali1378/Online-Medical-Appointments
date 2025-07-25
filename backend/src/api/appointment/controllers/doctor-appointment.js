@@ -1,5 +1,6 @@
 "use strict";
 const { NotFoundError } = require("@strapi/utils").errors;
+const dayjs = require("dayjs");
 
 module.exports = ({ strapi }) => ({
   async getDoctorAppointments(ctx) {
@@ -81,11 +82,11 @@ module.exports = ({ strapi }) => ({
       }
 
       // ⏱️ Time Restriction Logic (e.g. 24 hours before appointment)
-      const now = new Date();
-      const appointmentDate = new Date(existingAppointment.date);
-      const timeDiffHours = (appointmentDate - now) / (1000 * 60 * 60); // in hours
+      const now = dayjs();
+      const appointmentDate = dayjs(existingAppointment.date);
 
-      if (timeDiffHours < 24) {
+      // Ensure at least 24 full hours difference
+      if (appointmentDate.diff(now, "hour") < 24) {
         return ctx.badRequest(
           "You can only change or cancel appointments at least 24 hours in advance."
         );

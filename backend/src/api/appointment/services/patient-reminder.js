@@ -22,6 +22,9 @@ module.exports = ({ strapi }) => ({
           patient: {
             populate: ["personal_info"], // ✅ this is key
           },
+          doctor: {
+            populate: ["personal_info"],
+          },
         },
       }
     );
