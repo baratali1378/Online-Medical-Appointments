@@ -18,10 +18,13 @@ module.exports = ({ strapi }) => ({
             $in: ["Pending", "Confirmed"],
           },
         },
-        populate: ["patient"],
+        populate: {
+          patient: {
+            populate: ["personal_info"], // ✅ this is key
+          },
+        },
       }
     );
-    console.log("hello", appointments);
 
     return appointments;
   },
