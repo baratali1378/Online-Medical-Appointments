@@ -6,6 +6,7 @@ import {
   EventNote,
   Home,
   Reviews,
+  Notifications,
 } from "@mui/icons-material";
 
 export const patientNavItems = [
@@ -61,6 +62,11 @@ export const doctorNavItems = [
     text: "Appointments",
     icon: <EventNote />,
     path: "/dashboard/doctor/appointments",
+  },
+  {
+    text: "Notifications",
+    icon: <Notifications />,
+    path: "/dashboard/doctor/notifications",
   },
   {
     text: "Go Home",
