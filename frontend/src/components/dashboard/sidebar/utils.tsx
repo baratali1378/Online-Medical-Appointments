@@ -54,11 +54,6 @@ export const doctorNavItems = [
     path: "/dashboard/doctor/patients",
   },
   {
-    text: "Medical Records",
-    icon: <MedicalServices />,
-    path: "/dashboard/doctor/medical-records",
-  },
-  {
     text: "Appointments",
     icon: <EventNote />,
     path: "/dashboard/doctor/appointments",

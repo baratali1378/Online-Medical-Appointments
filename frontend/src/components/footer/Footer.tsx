@@ -61,7 +61,7 @@ const Footer = () => {
             <FooterSection title="Useful Links">
               <UsefulLinks links={data.useful_links} />
             </FooterSection>
-            <FooterSection title="Social">
+            <FooterSection title="Social Medias">
               <SocialLinks links={data.social_links} />
             </FooterSection>
           </Grid2>
