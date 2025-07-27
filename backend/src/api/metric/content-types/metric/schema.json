@@ -1,0 +1,23 @@
+{
+  "kind": "singleType",
+  "collectionName": "metrics",
+  "info": {
+    "singularName": "metric",
+    "pluralName": "metrics",
+    "displayName": "metrics"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "totalCities": {
+      "type": "integer"
+    },
+    "totalDoctors": {
+      "type": "integer"
+    },
+    "successfulAppointments": {
+      "type": "integer"
+    }
+  }
+}

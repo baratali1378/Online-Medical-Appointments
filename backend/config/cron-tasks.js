@@ -1,5 +1,6 @@
 const { unlockAccountsJob } = require("../src/extensions/cron/unlockAccout");
 const { remindPatients } = require("../src/extensions/cron/remindPatient");
+const updateMetrics = require("../src/extensions/cron/updateMetrics");
 
 module.exports = {
   unlockAccountsJob: {
@@ -13,6 +14,13 @@ module.exports = {
     task: remindPatients,
     options: {
       rule: "58 11 * * *",
+      tz: "Asia/Tehran",
+    },
+  },
+  updateMetricsJob: {
+    task: updateMetrics,
+    options: {
+      rule: "0 * * * *", // Every hour at minute 0
       tz: "Asia/Tehran",
     },
   },
