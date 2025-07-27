@@ -2,43 +2,48 @@
 
 import React from "react";
 import { Box } from "@mui/material";
-import { HeaderSection } from "@/components/home/sections/heading";
+import { HeaderSection } from "@/components/home/sections/Heading";
+import { SearchContainer } from "@/components/home/sections/search/SearchContainer";
 
-const DoctorPage = () => {
-  const handleSearch = (query: string) => {
-    console.log("Searching for:", query);
-    // Implement search functionality
-  };
-
+const Page = () => {
   return (
     <Box
       sx={{
         minHeight: "100vh",
         display: "flex",
-        marginTop: "-14px",
         flexDirection: "column",
-        backgroundColor: "#F5F7FA", // Background for other sections
+        backgroundColor: "#F5F7FA",
+        marginTop: "-14px",
       }}
     >
-      <HeaderSection
-        title="HealthGate"
-        subtitle="Your Health, Our Priority - Seamless Care at Your Fingertips"
-      />
-      {/* <SearchSection onSearch={handleSearch} /> */}
+      {/* Unified Top Section (Header + Search) */}
+      <Box
+        sx={{
+          background: "linear-gradient(135deg, #DFF6FF, #B2EBF2)",
+          px: 2,
+          py: 6,
+        }}
+      >
+        <HeaderSection
+          title="HealthGate"
+          subtitle="Your Health, Our Priority - Seamless Care at Your Fingertips"
+        />
+        <SearchContainer />
+      </Box>
 
-      {/* Add other sections here with different background colors */}
+      {/* Content Section */}
       <Box
         sx={{
           py: 8,
           px: 2,
-          backgroundColor: "white",
+          backgroundColor: "#ffffff",
           flex: 1,
         }}
       >
-        {/* Content sections will go here */}
+        {/* Other sections will go here */}
       </Box>
     </Box>
   );
 };
 
-export default DoctorPage;
+export default Page;

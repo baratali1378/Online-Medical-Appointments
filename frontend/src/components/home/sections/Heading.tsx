@@ -2,18 +2,16 @@
 
 import React from "react";
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
-import { Playfair_Display } from "next/font/google";
-import { Inter } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
+import { motion } from "framer-motion";
 
-// Load Google Fonts (component-based)
 const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: "700",
 });
-
 const inter = Inter({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500"],
 });
 
 interface HeaderSectionProps {
@@ -23,50 +21,60 @@ interface HeaderSectionProps {
 
 export const HeaderSection = ({ title, subtitle }: HeaderSectionProps) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"), {
-    noSsr: true,
-  });
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"), { noSsr: true });
 
   return (
     <Box
       sx={{
-        py: isMobile ? 6 : 10,
-        px: 3,
-        background: "linear-gradient(135deg, #CBF1F5, #A6E3E9)",
-        color: "#1A374D",
-        width: "100%",
         textAlign: "center",
-        borderRadius: 2,
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
+        color: "#1A374D",
+        mb: isMobile ? 4 : 6,
+        px: 2,
+        overflow: "hidden", // Prevent scroll overflow during animation
       }}
     >
-      <Typography
-        variant={isMobile ? "h4" : "h2"}
-        component="h1"
-        className={playfair.className}
-        sx={{
-          fontWeight: 700,
-          mb: 2,
-          letterSpacing: "0.5px",
-          lineHeight: 1.3,
-        }}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        {title}
-      </Typography>
-      <Typography
-        variant={isMobile ? "body1" : "h6"}
-        component="h2"
-        className={inter.className}
-        sx={{
-          fontWeight: 400,
-          maxWidth: 720,
-          mx: "auto",
-          lineHeight: 1.6,
-          color: "#406882", // A complementary soft dark blue
-        }}
+        <Typography
+          variant={isMobile ? "h4" : "h2"}
+          component="h1"
+          className={playfair.className}
+          sx={{
+            fontWeight: 700,
+            mb: 2,
+            lineHeight: 1.3,
+            letterSpacing: "-0.5px",
+            fontSize: isMobile ? "2rem" : "3rem",
+          }}
+        >
+          <span style={{ color: "#406882" }}>{title}</span>
+        </Typography>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 1, ease: "easeOut" }}
       >
-        {subtitle}
-      </Typography>
+        <Typography
+          variant="body1"
+          component="p"
+          className={inter.className}
+          sx={{
+            fontSize: isMobile ? "1rem" : "1.125rem",
+            maxWidth: "700px",
+            mx: "auto",
+            color: "#406882",
+            fontWeight: 400,
+            lineHeight: 1.8,
+          }}
+        >
+          {subtitle}
+        </Typography>
+      </motion.div>
     </Box>
   );
 };
