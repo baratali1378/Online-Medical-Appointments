@@ -53,4 +53,73 @@ module.exports = {
       });
     }
   },
+  async autocomplete(ctx) {
+    try {
+      const { query } = ctx.query;
+
+      // Validate input
+      if (!query || query.length < 3) {
+        return ctx.send({
+          success: true,
+          data: [],
+          message: "Query too short (min 3 characters)",
+        });
+      }
+
+      // Fetch doctors with personal_info and specialties
+      const doctors = await strapi.entityService.findMany(
+        "api::doctor.doctor",
+        {
+          fields: ["id"],
+          populate: {
+            personal_info: {
+              fields: ["fullname"],
+              populate: { image: true },
+            },
+            specialties: {
+              fields: ["name"],
+            },
+          },
+          filters: {
+            personal_info: {
+              fullname: {
+                $containsi: query,
+              },
+            },
+          },
+          limit: 10,
+        }
+      );
+
+      // Format results
+      const results = doctors.map((doctor) => ({
+        id: doctor.id,
+        // @ts-ignore
+        name: doctor.personal_info?.fullname || "Unknown Doctor",
+        // @ts-ignore
+        image: doctor.personal_info?.image?.url
+          ? // @ts-ignore
+            `${doctor.personal_info.image.url}`
+          : "/default-doctor.png",
+        specialties:
+          // @ts-ignore
+          doctor.specialties?.map((s) => s.name) || [], // Return as array
+      }));
+
+      return ctx.send({
+        success: true,
+        data: results,
+      });
+    } catch (err) {
+      strapi.log.error("Doctor autocomplete error:", err);
+      return ctx.send(
+        {
+          success: false,
+          data: [],
+          message: "Failed to fetch results",
+        },
+        500
+      );
+    }
+  },
 };

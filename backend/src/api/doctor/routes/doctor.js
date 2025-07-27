@@ -12,6 +12,21 @@ module.exports = {
     },
     {
       method: "GET",
+      path: "/doctors/autocomplete",
+      handler: "search.autocomplete",
+      config: {
+        auth: false, // Make publicly accessible
+        policies: [],
+        middlewares: [],
+        description: "Autocomplete doctor names",
+        tag: {
+          name: "Doctor",
+          action: "read",
+        },
+      },
+    },
+    {
+      method: "GET",
       path: "/doctor/profile",
       handler: "profile.me",
       config: {

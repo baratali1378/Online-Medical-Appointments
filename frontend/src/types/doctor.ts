@@ -78,3 +78,16 @@ export interface Media {
   name: string;
   mime: string;
 }
+
+export interface DoctorAutocompleteResult {
+  id: number;
+  name: string;
+  image: string;
+  specialties: string[];
+}
+
+export interface DoctorAutocompleteResponse {
+  success: boolean;
+  data: DoctorAutocompleteResult[];
+  message?: string;
+}
