@@ -21,7 +21,7 @@ const Page = () => {
         sx={{
           background: "linear-gradient(135deg, #DFF6FF, #B2EBF2)",
           px: 2,
-          py: 6,
+          py: 3,
         }}
       >
         <HeaderSection
