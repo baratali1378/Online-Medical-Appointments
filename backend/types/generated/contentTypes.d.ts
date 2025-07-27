@@ -683,36 +683,6 @@ export interface ApiMedicalRecordMedicalRecord
   };
 }
 
-export interface ApiMetricMetric extends Struct.SingleTypeSchema {
-  collectionName: 'metrics';
-  info: {
-    displayName: 'metrics';
-    pluralName: 'metrics';
-    singularName: 'metric';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::metric.metric'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    successfulAppointments: Schema.Attribute.Integer;
-    totalCities: Schema.Attribute.Integer;
-    totalDoctors: Schema.Attribute.Integer;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiNotificationNotification
   extends Struct.CollectionTypeSchema {
   collectionName: 'notifications';
@@ -1386,7 +1356,6 @@ declare module '@strapi/strapi' {
       'api::doctor.doctor': ApiDoctorDoctor;
       'api::footer.footer': ApiFooterFooter;
       'api::medical-record.medical-record': ApiMedicalRecordMedicalRecord;
-      'api::metric.metric': ApiMetricMetric;
       'api::notification.notification': ApiNotificationNotification;
       'api::patient.patient': ApiPatientPatient;
       'api::review.review': ApiReviewReview;
