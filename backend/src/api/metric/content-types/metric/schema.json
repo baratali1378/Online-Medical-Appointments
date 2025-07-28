@@ -4,20 +4,24 @@
   "info": {
     "singularName": "metric",
     "pluralName": "metrics",
-    "displayName": "metrics"
+    "displayName": "metrics",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
     "totalCities": {
-      "type": "integer"
+      "type": "integer",
+      "default": 0
     },
     "totalDoctors": {
-      "type": "integer"
+      "type": "integer",
+      "default": 0
     },
     "successfulAppointments": {
-      "type": "integer"
+      "type": "integer",
+      "default": 0
     }
   }
 }

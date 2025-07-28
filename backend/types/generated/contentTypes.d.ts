@@ -686,6 +686,7 @@ export interface ApiMedicalRecordMedicalRecord
 export interface ApiMetricMetric extends Struct.SingleTypeSchema {
   collectionName: 'metrics';
   info: {
+    description: '';
     displayName: 'metrics';
     pluralName: 'metrics';
     singularName: 'metric';
@@ -704,9 +705,10 @@ export interface ApiMetricMetric extends Struct.SingleTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    successfulAppointments: Schema.Attribute.Integer;
-    totalCities: Schema.Attribute.Integer;
-    totalDoctors: Schema.Attribute.Integer;
+    successfulAppointments: Schema.Attribute.Integer &
+      Schema.Attribute.DefaultTo<0>;
+    totalCities: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    totalDoctors: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
