@@ -21,6 +21,18 @@
       "relation": "manyToMany",
       "target": "api::doctor.doctor",
       "mappedBy": "specialties"
+    },
+    "views": {
+      "type": "integer",
+      "default": 0
+    },
+    "icon": {
+      "allowedTypes": [
+        "files",
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

@@ -1,9 +1,31 @@
-'use strict';
+const { createCoreService } = require("@strapi/strapi").factories;
 
-/**
- * specialty service
- */
+module.exports = createCoreService(
+  "api::specialty.specialty",
+  ({ strapi }) => ({
+    async incrementViewByName(name) {
+      try {
+        // Find specialty by name (case-insensitive)
+        const specialty = await strapi.db
+          .query("api::specialty.specialty")
+          .findOne({
+            where: { name: name },
+            select: ["id", "views"],
+          });
 
-const { createCoreService } = require('@strapi/strapi').factories;
+        if (!specialty) {
+          throw new Error(`Specialty "${name}" not found`);
+        }
 
-module.exports = createCoreService('api::specialty.specialty');
+        // Update views
+        return await strapi.db.query("api::specialty.specialty").update({
+          where: { id: specialty.id },
+          data: { views: specialty.views + 1 },
+        });
+      } catch (err) {
+        strapi.log.error("Error incrementing views by name:", err);
+        throw err;
+      }
+    },
+  })
+);
