@@ -13,7 +13,7 @@ export const patientNavItems = [
   {
     text: "Profile",
     icon: <People />,
-    path: "/dashboard/patient/profile",
+    path: "/dashboard/patient",
   },
   {
     text: "Appointments",
@@ -21,14 +21,14 @@ export const patientNavItems = [
     path: "/dashboard/patient/appointments",
   },
   {
-    text: "Doctors",
-    icon: <Person />,
-    path: "/dashboard/patient/doctors",
-  },
-  {
     text: "Medical Records",
     icon: <MedicalServices />,
     path: "/dashboard/patient/records",
+  },
+  {
+    text: "Notifications",
+    icon: <Notifications />,
+    path: "/dashboard/patient/notifications",
   },
   {
     text: "Go Home",
