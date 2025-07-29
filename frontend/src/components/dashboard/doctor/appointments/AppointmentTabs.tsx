@@ -23,14 +23,14 @@ import {
   isSameDay,
 } from "date-fns";
 import { useMemo, useState } from "react";
-import { ViewMode, AppointmentFilters } from "@/types/appointments";
+import { ViewMode, DoctorAppointmentFilters } from "@/types/appointments";
 import { CalendarMonth, ArrowDropDown } from "@mui/icons-material";
 
 interface Props {
   value: ViewMode;
   onViewChange: (view: ViewMode) => void;
-  filters: AppointmentFilters;
-  onFilterChange: (filters: AppointmentFilters) => void;
+  filters: DoctorAppointmentFilters;
+  onFilterChange: (filters: DoctorAppointmentFilters) => void;
 }
 
 export const AppointmentTabsWithCalendar = ({

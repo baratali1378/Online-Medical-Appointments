@@ -1,0 +1,26 @@
+import { createApiClient, getWithFilters, putData } from "@/lib/strapiClient";
+import {
+  PatientAppointmentsResponse,
+  AppointmentFilters,
+} from "@/types/appointments";
+
+export const getPatientAppointments = (
+  filters: AppointmentFilters,
+  token: string
+) => {
+  const client = createApiClient(token);
+  return getWithFilters<PatientAppointmentsResponse>(
+    client,
+    "api/appointments/patient",
+    filters
+  );
+};
+
+export const changePatientAppointmentStatus = (
+  id: number | string,
+  status: string,
+  token: string
+) => {
+  const client = createApiClient(token);
+  return putData(client, "api/appointments/patient", { id, status });
+};

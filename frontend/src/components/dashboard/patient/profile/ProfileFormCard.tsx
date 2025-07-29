@@ -11,9 +11,9 @@ import {
 import { Save, Cancel, Edit } from "@mui/icons-material";
 import { Formik, Form } from "formik";
 import { PatientProfile, PatientProfileFormValues } from "@/types/patient";
-import { BaseCard } from "../common/Card";
+import { BaseCard } from "../../common/Card";
 import { ProfileValidation } from "@/utils/validation";
-import { FormTextField, FormGridSelectField } from "../common/FormFields";
+import { FormTextField, FormGridSelectField } from "../../common/FormFields";
 import { useCitiesQuery } from "@/hooks/useCitiesQuery";
 
 interface PatientFormCardProps {

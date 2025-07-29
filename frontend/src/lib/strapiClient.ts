@@ -38,3 +38,48 @@ export const createApiClient = (token: string) => {
     timeout: 15000, // Default timeout
   });
 };
+
+// 🔹 Generic GET with filters
+export async function getWithFilters<T>(
+  client: ReturnType<typeof createApiClient>,
+  endpoint: string,
+  filters: Record<string, any> = {}
+): Promise<T> {
+  try {
+    const params: Record<string, any> = {};
+
+    if (filters.status && filters.status !== "All")
+      params.status = filters.status;
+    if (filters.dateRange) {
+      params.startDate = filters.dateRange.start;
+      params.endDate = filters.dateRange.end;
+    }
+    if (filters.search) params.search = filters.search;
+
+    const { data } = await client.get<T>(endpoint, { params });
+    return data;
+  } catch (error: any) {
+    throw {
+      message: error.response?.data?.message || `Failed to fetch ${endpoint}`,
+      status: error.response?.status || 500,
+    };
+  }
+}
+
+// 🔹 Generic PUT
+export async function putData<T>(
+  client: ReturnType<typeof createApiClient>,
+  endpoint: string,
+  payload: Record<string, any>
+): Promise<T> {
+  try {
+    const { data } = await client.put<T>(endpoint, payload);
+    return data;
+  } catch (error: any) {
+    throw {
+      message:
+        error.response?.data?.error?.message || `Failed to update ${endpoint}`,
+      status: error.response?.status || 500,
+    };
+  }
+}

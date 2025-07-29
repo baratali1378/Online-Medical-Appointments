@@ -7,7 +7,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import { Appointment } from "@/types/appointments";
+import { DoctorAppointment } from "@/types/appointments";
 import { useState } from "react";
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog";
 import { useChangeAppointmentStatus } from "@/hooks/profile/doctor/appointment/useChangeAppointmentStatus";
@@ -16,7 +16,7 @@ import { AppointmentStatus } from "./AppointmentStatus";
 import { PatientInfo } from "./PatientInfo";
 
 interface AppointmentCardProps {
-  appointment: Appointment;
+  appointment: DoctorAppointment;
   token: string;
 }
 

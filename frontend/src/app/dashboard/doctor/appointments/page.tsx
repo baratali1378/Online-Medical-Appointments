@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useDoctorAppointmentsQuery } from "@/hooks/profile/doctor/appointment/useDoctorAppointmentsQuery";
-import { AppointmentFilters, ViewMode } from "@/types/appointments";
+import { DoctorAppointmentFilters, ViewMode } from "@/types/appointments";
 import {
   Alert,
   Box,
@@ -22,7 +22,7 @@ type Props = {
 };
 
 function DoctorAppointmentsPage({ session }: Props) {
-  const [filters, setFilters] = useState<AppointmentFilters>({
+  const [filters, setFilters] = useState<DoctorAppointmentFilters>({
     status: "All",
     search: "",
     dateRange: {

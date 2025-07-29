@@ -1,4 +1,4 @@
-import { Appointment } from "@/types/appointments";
+import { DoctorAppointment } from "@/types/appointments";
 import { Avatar, Box, Stack, Typography } from "@mui/material";
 
 // Patient info display
@@ -6,7 +6,7 @@ export const PatientInfo = ({
   patient,
   apiUrl,
 }: {
-  patient: Appointment["patient"];
+  patient: DoctorAppointment["patient"];
   apiUrl: string | undefined;
 }) => {
   const age =

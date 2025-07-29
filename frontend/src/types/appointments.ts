@@ -33,18 +33,35 @@ export interface Appointment {
   appointment_status: AppointmentStatus;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface DoctorAppointment extends Appointment {
   patient: Patient;
 }
 
+export interface PatientAppointment extends Appointment {
+  doctor: Doctor;
+}
 export interface AppointmentFilters {
   status?: AppointmentStatus | "All";
-  dateRange?: { start: string; end: string };
   search?: string;
 }
 
-export interface AppointmentsResponse {
-  data: Appointment[];
+export interface DoctorAppointmentFilters extends AppointmentFilters {
+  dateRange?: { start: string; end: string };
+}
+
+export interface DoctorAppointmentsResponse {
+  data: DoctorAppointment[];
   doctor: Doctor;
+  meta: {
+    count: number;
+    filters: Record<string, unknown>;
+  };
+}
+
+export interface PatientAppointmentsResponse {
+  data: PatientAppointment[];
   meta: {
     count: number;
     filters: Record<string, unknown>;
