@@ -2,30 +2,24 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  Typography,
-  Box,
-  Avatar,
-  Chip,
   IconButton,
-  Button,
-  Stack,
-  TextField,
-  Divider,
   useTheme,
   useMediaQuery,
+  Grid,
+  Box,
+  Button,
+  Stack,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { PatientAppointment } from "@/types/appointments";
-import { format } from "date-fns";
-import { useState } from "react";
+import { usePatientAvailableSlotsQuery } from "@/hooks/profile/doctor/available-slots/useSlotsQuery";
+import { useAppointmentReschedule } from "@/hooks/profile/patient/appointment/useAppointmentReschedule";
+import { AppointmentDetailsCard } from "./AppointmentDetailsCard";
+import { TimeSlotSelector } from "./TimeSlotSelector";
 import { useChangePatientAppointmentStatus } from "@/hooks/profile/patient/appointment/useChangeAppointmentStatus";
 
-const statusColors = {
-  Pending: "warning",
-  Confirmed: "success",
-  Completed: "info",
-  Cancelled: "default",
-} as const;
+const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
 interface Props {
   open: boolean;
@@ -33,8 +27,6 @@ interface Props {
   appointment: PatientAppointment;
   token: string;
 }
-
-const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
 export const AppointmentDetailsDialog = ({
   open,
@@ -46,18 +38,30 @@ export const AppointmentDetailsDialog = ({
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const changeStatusMutation = useChangePatientAppointmentStatus(token);
 
-  const [newDate, setNewDate] = useState(appointment.date);
+  // Fetch available slots
+  const { data: availableSlots, isLoading: slotsLoading } =
+    usePatientAvailableSlotsQuery(appointment.doctor.id, token);
+
+  // Reschedule logic
+  const {
+    selectedDate,
+    setSelectedDate,
+    selectedSlot,
+    setSelectedSlot,
+    slotsByDay,
+    filteredSlots,
+  } = useAppointmentReschedule(appointment.date, availableSlots?.data);
 
   const handleReschedule = () => {
+    if (!selectedSlot) return;
+
     changeStatusMutation.mutate({
       id: appointment.id,
-      status: "Pending", // keep status pending when rescheduling
+      status: "Pending",
+      date: selectedDate,
     });
-    // API call to update date should be added here
     onClose();
   };
-
-  if (!appointment) return null;
 
   return (
     <Dialog
@@ -65,100 +69,80 @@ export const AppointmentDetailsDialog = ({
       onClose={onClose}
       fullWidth
       fullScreen={fullScreen}
-      maxWidth="sm"
-      PaperProps={{ sx: { borderRadius: 3 } }}
+      maxWidth="md"
+      PaperProps={{
+        sx: {
+          borderRadius: 4,
+          background: theme.palette.background.paper,
+          boxShadow: theme.shadows[10],
+        },
+      }}
     >
       <DialogTitle
         sx={{
           m: 0,
-          p: 2,
+          p: 3,
+          bgcolor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        Appointment Details
-        <IconButton onClick={onClose} size="small">
+        <Typography variant="h5" fontWeight={600}>
+          Reschedule Appointment
+        </Typography>
+        <IconButton
+          onClick={onClose}
+          size="small"
+          sx={{ color: theme.palette.primary.contrastText }}
+        >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ px: 3, py: 2 }}>
-        <Stack spacing={3}>
-          {/* Doctor Info */}
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Avatar
-              src={API_URL + "" + appointment.doctor?.image}
-              alt={appointment.doctor.fullname}
-              sx={{ width: 64, height: 64 }}
+      <DialogContent dividers sx={{ px: 4, py: 3 }}>
+        <Grid container spacing={4}>
+          {/* Current Appointment */}
+          <Grid item xs={12} md={5}>
+            <AppointmentDetailsCard
+              appointment={appointment}
+              imageUrl={API_URL + "" + appointment.doctor?.image}
             />
-            <Box>
-              <Typography variant="h6" fontWeight={600}>
-                Dr. {appointment.doctor.fullname}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {appointment.doctor.email}
-              </Typography>
+          </Grid>
+
+          {/* Reschedule Section */}
+          <Grid item xs={12} md={7}>
+            <TimeSlotSelector
+              slotsByDay={slotsByDay}
+              filteredSlots={filteredSlots}
+              selectedDate={selectedDate}
+              selectedSlot={selectedSlot}
+              isLoading={slotsLoading}
+              onDateChange={setSelectedDate}
+              onSlotSelect={setSelectedSlot}
+            />
+
+            {/* Action Buttons */}
+            <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
+              <Button
+                variant="outlined"
+                onClick={onClose}
+                sx={{ px: 4, py: 1, borderRadius: 2 }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleReschedule}
+                disabled={!selectedSlot}
+                sx={{ px: 4, py: 1, borderRadius: 2, fontWeight: 600 }}
+              >
+                Confirm Reschedule
+              </Button>
             </Box>
-          </Stack>
-
-          <Divider />
-
-          {/* Status */}
-          <Stack spacing={1}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Status
-            </Typography>
-            <Chip
-              label={appointment.appointment_status}
-              color={statusColors[appointment.appointment_status]}
-              size="small"
-            />
-          </Stack>
-
-          {/* Appointment Date + Reschedule */}
-          <Stack spacing={1}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Appointment Date
-            </Typography>
-            <TextField
-              type="datetime-local"
-              fullWidth
-              size="small"
-              value={format(new Date(newDate), "yyyy-MM-dd'T'HH:mm")}
-              onChange={(e) => setNewDate(e.target.value)}
-            />
-            <Button variant="outlined" onClick={handleReschedule}>
-              Reschedule
-            </Button>
-          </Stack>
-
-          {/* Notes */}
-          {appointment.notes && (
-            <Stack spacing={1}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Notes
-              </Typography>
-              <Typography variant="body2">{appointment.notes}</Typography>
-            </Stack>
-          )}
-
-          {/* Cancel Button */}
-          {appointment.appointment_status === "Pending" && (
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() =>
-                changeStatusMutation.mutate({
-                  id: appointment.id,
-                  status: "Cancelled",
-                })
-              }
-            >
-              Cancel Appointment
-            </Button>
-          )}
-        </Stack>
+          </Grid>
+        </Grid>
       </DialogContent>
     </Dialog>
   );

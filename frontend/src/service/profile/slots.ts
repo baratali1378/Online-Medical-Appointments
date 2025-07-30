@@ -23,7 +23,20 @@ export class DoctorAvailableSlotsService {
   async getSlotsByDoctorId(
     doctorId: number | string
   ): Promise<AvailableSlotResponse> {
-    return this.fetchSlots(`api/patient/available-slots/${doctorId}`);
+    try {
+      const { data } = await this.client.get<AvailableSlotResponse>(
+        `api/doctor/available-slots/${doctorId}`
+      );
+      console.log("Fetched slots for doctor", doctorId, ":", data);
+      return data;
+    } catch (error: any) {
+      console.error("Error fetching slots for doctor", doctorId, ":", error);
+      throw {
+        message:
+          error.response?.data?.message || "Failed to fetch available slots",
+        status: error.response?.status || 500,
+      };
+    }
   }
 
   // 📌 Create a new slot

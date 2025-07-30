@@ -16,6 +16,7 @@ export interface Doctor {
   image?: {
     url: string;
   };
+  specialty: string;
 }
 
 export type ViewMode = "Day View" | "Week View" | "List View";

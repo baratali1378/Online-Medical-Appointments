@@ -18,11 +18,40 @@ export const useDoctorAvailableSlotsQuery = (token: string, enabled = true) => {
     queryKey: ["doctorAvailableSlots"],
     queryFn: () => new DoctorAvailableSlotsService(token).getSlots(),
     enabled: !!token && enabled,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
     retry: 1,
   });
 };
 
+export const usePatientAvailableSlotsQuery = (
+  doctorId: number | string,
+  token?: string,
+  enabled = true
+) => {
+  console.log(
+    "Query params - doctorId:",
+    doctorId,
+    "token exists:",
+    !!token,
+    "enabled:",
+    enabled
+  );
+
+  return useQuery<AvailableSlotResponse, Error>({
+    queryKey: ["patientAvailableSlots", doctorId],
+    queryFn: async () => {
+      if (!token) throw new Error("Token is required");
+      const service = new DoctorAvailableSlotsService(token);
+      const result = await service.getSlotsByDoctorId(doctorId);
+      console.log("Query result:", result);
+      return result;
+    },
+    enabled: !!doctorId && !!token && enabled,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    // Remove the onError from here
+  });
+};
 export const useDoctorAvailableSlotsMutation = (token: string) => {
   const queryClient = useQueryClient();
 
@@ -42,6 +71,7 @@ export const useDoctorAvailableSlotsMutation = (token: string) => {
     onSuccess: (_, variables) => {
       toast.success(toastMessages[variables.type]);
       queryClient.invalidateQueries({ queryKey: ["doctorAvailableSlots"] });
+      queryClient.invalidateQueries({ queryKey: ["patientAvailableSlots"] });
     },
     onError: (error: any) => {
       toast.error(error.message || "Operation failed on available slots");
