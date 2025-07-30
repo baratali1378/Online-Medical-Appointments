@@ -2,9 +2,9 @@
 
 export interface AvailableSlot {
   id: number;
-  date: string; // ISO date string (e.g. "2025-07-23")
-  start_time: string; // ISO time string (e.g. "00:15:00.000")
-  end_time: string; // ISO time string (e.g. "00:30:00.000")
+  date: string; // ISO date
+  start_time: string; // HH:mm:ss
+  end_time: string; // HH:mm:ss
   capacity: number;
   is_active: boolean;
 }
@@ -15,6 +15,12 @@ export interface AvailableSlotResponse {
     count: number;
   };
 }
+
+// For creating a slot (id excluded, some fields optional)
+export type SlotCreateInput = Omit<AvailableSlot, "id">;
+
+// For updating a slot (all optional)
+export type SlotUpdateInput = Partial<Omit<AvailableSlot, "id">>;
 
 export interface TimeOption {
   value: string;
