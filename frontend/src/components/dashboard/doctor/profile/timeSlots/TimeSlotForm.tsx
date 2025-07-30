@@ -1,7 +1,14 @@
 "use client";
 
 import { Formik, Form, FieldArray } from "formik";
-import { Box, Fab, Divider, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Box,
+  Fab,
+  Divider,
+  useMediaQuery,
+  useTheme,
+  Button,
+} from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { TimeSlotField } from "./TimeSlotField";
 import { TimeSlotFormProps } from "@/types/slots";
@@ -40,7 +47,7 @@ export const TimeSlotForm = ({
             ({ tempId, ...slot }) => slot
           ),
         };
-        await onSubmit(sanitizedValues);
+        await onSubmit(sanitizedValues); // ✅ no need for initialValues from formikHelpers
       }}
     >
       {({ values, handleChange, setFieldValue, dirty }) => (
@@ -70,7 +77,6 @@ export const TimeSlotForm = ({
                   ))
                 )}
 
-                {/* Floating Add Button (Mobile) */}
                 {isMobile && (
                   <Fab
                     color="primary"
@@ -96,7 +102,35 @@ export const TimeSlotForm = ({
                   </Fab>
                 )}
 
-                {/* Sticky Save Button (Mobile) */}
+                {/* Desktop Add Button */}
+                {!isMobile && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      mb: 2,
+                    }}
+                  >
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      onClick={() =>
+                        push({
+                          id: 0,
+                          tempId: uuidv4(),
+                          date: new Date().toISOString().split("T")[0],
+                          start_time: "09:00:00.000",
+                          end_time: "17:00:00.000",
+                          capacity: 1,
+                          is_active: true,
+                        })
+                      }
+                    >
+                      Add Time Slot
+                    </Button>
+                  </Box>
+                )}
+
                 {values.available_slots.length > 0 && (
                   <>
                     {!isMobile && <Divider sx={{ my: 3 }} />}
@@ -105,14 +139,12 @@ export const TimeSlotForm = ({
                         marginTop: 2,
                         display: "flex",
                         justifyContent: "flex-end",
-                        width: { xs: "auto", sm: "auto" }, // no 90% width on mobile
                       }}
                     >
                       <BrandButton
                         type="submit"
                         loading={isSubmitting}
                         disabled={!dirty || isSubmitting}
-                        fullWidth={false} // keep fixed button small on mobile
                       >
                         Save Changes
                       </BrandButton>

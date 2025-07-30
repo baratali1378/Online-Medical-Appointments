@@ -54,6 +54,7 @@ module.exports = ({ strapi }) => ({
 
       const { id } = ctx.params;
       const updates = ctx.request.body;
+      console.log("update", updates);
 
       const slot = await strapi.db
         .query("api::available-slot.available-slot")

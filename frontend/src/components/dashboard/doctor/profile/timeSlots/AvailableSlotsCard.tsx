@@ -20,31 +20,27 @@ export const AvailableSlotsCard = ({ token }: AvailableSlotsCardProps) => {
 
   const slots = data?.data ?? [];
 
-  const handleSave = async (values: { available_slots: AvailableSlot[] }) => {
+  const handleSave = async (
+    values: { available_slots: AvailableSlot[] },
+    originalSlots: AvailableSlot[]
+  ) => {
     try {
       for (const slot of values.available_slots) {
+        const original = originalSlots.find((s) => s.id === slot.id);
+        console.log(slot);
+        // Create new slot
         if (slot.id === 0) {
-          await mutation.mutateAsync({
-            type: "create",
-            data: {
-              date: slot.date,
-              start_time: slot.start_time,
-              end_time: slot.end_time,
-              capacity: slot.capacity,
-              is_active: slot.is_active,
-            },
-          });
-        } else if (slot.id) {
+          await mutation.mutateAsync({ type: "create", data: slot });
+        }
+        // Update changed slots
+        else if (
+          original &&
+          JSON.stringify(original) !== JSON.stringify(slot)
+        ) {
           await mutation.mutateAsync({
             type: "update",
             id: slot.id,
-            data: {
-              date: slot.date,
-              start_time: slot.start_time,
-              end_time: slot.end_time,
-              capacity: slot.capacity,
-              is_active: slot.is_active,
-            },
+            data: slot,
           });
         }
       }
@@ -74,7 +70,7 @@ export const AvailableSlotsCard = ({ token }: AvailableSlotsCardProps) => {
       <BaseCard title="Manage Availability">
         <TimeSlotForm
           initialSlots={slots}
-          onSubmit={handleSave}
+          onSubmit={(values) => handleSave(values, slots)} // ✅ pass slots for comparison
           onDelete={handleDelete}
           isSubmitting={mutation.isPending}
           isLoading={queryLoading}

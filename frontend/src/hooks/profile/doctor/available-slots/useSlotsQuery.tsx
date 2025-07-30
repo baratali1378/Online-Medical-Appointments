@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { DoctorAvailableSlotsService } from "@/service/profile/slots";
+import { DoctorAvailableSlotsService } from "../../../../service/profile/slots";
 import { toast } from "react-toastify";
 import {
   AvailableSlotResponse,
