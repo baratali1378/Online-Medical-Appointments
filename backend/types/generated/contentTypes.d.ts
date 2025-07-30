@@ -413,6 +413,10 @@ export interface ApiAppointmentAppointment extends Struct.CollectionTypeSchema {
     appointment_status: Schema.Attribute.Enumeration<
       ['Pending', 'Confirmed', 'Completed', 'Cancelled']
     >;
+    available_slot: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::available-slot.available-slot'
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -432,6 +436,45 @@ export interface ApiAppointmentAppointment extends Struct.CollectionTypeSchema {
     patient: Schema.Attribute.Relation<'manyToOne', 'api::patient.patient'>;
     publishedAt: Schema.Attribute.DateTime;
     review: Schema.Attribute.Relation<'oneToOne', 'api::review.review'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiAvailableSlotAvailableSlot
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'available_slots';
+  info: {
+    description: '';
+    displayName: 'available_slots';
+    pluralName: 'available-slots';
+    singularName: 'available-slot';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    appointments: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::appointment.appointment'
+    >;
+    capacity: Schema.Attribute.Integer;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date: Schema.Attribute.Date & Schema.Attribute.Required;
+    doctor: Schema.Attribute.Relation<'manyToOne', 'api::doctor.doctor'>;
+    end_time: Schema.Attribute.Time & Schema.Attribute.Required;
+    is_active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::available-slot.available-slot'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    start_time: Schema.Attribute.Time & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -548,9 +591,9 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::appointment.appointment'
     >;
-    available_slots: Schema.Attribute.Component<
-      'doctors.available-slots',
-      true
+    available_slots: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::available-slot.available-slot'
     >;
     biography: Schema.Attribute.Text;
     city: Schema.Attribute.Relation<'manyToOne', 'api::city.city'>;
@@ -1384,6 +1427,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
       'api::appointment.appointment': ApiAppointmentAppointment;
+      'api::available-slot.available-slot': ApiAvailableSlotAvailableSlot;
       'api::city.city': ApiCityCity;
       'api::contact-message.contact-message': ApiContactMessageContactMessage;
       'api::contact.contact': ApiContactContact;

@@ -52,6 +52,12 @@
       "relation": "oneToOne",
       "target": "api::review.review",
       "mappedBy": "appointment"
+    },
+    "available_slot": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::available-slot.available-slot",
+      "inversedBy": "appointments"
     }
   }
 }

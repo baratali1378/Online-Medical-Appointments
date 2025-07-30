@@ -56,11 +56,6 @@
       "required": true,
       "private": true
     },
-    "available_slots": {
-      "type": "component",
-      "repeatable": true,
-      "component": "doctors.available-slots"
-    },
     "security": {
       "type": "component",
       "repeatable": false,
@@ -87,6 +82,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::notification.notification",
+      "mappedBy": "doctor"
+    },
+    "available_slots": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::available-slot.available-slot",
       "mappedBy": "doctor"
     }
   }

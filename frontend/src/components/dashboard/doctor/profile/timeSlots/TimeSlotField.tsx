@@ -1,36 +1,21 @@
 "use client";
 
 import {
-  Grid2,
+  Grid,
   TextField,
   MenuItem,
   IconButton,
+  Switch,
+  FormControlLabel,
+  Box,
+  Typography,
+  Card,
+  CardContent,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
-
-interface TimeOption {
-  value: string;
-  label: string;
-  shortLabel: string;
-}
-
-interface TimeSlotFieldProps {
-  index: number;
-  slot: {
-    days: string;
-    start_time: string;
-    end_time: string;
-  };
-  timeOptions: TimeOption[];
-  daysOfWeek: { value: string; label: string }[];
-  handleChange: (e: React.ChangeEvent<any>) => void;
-  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
-  remove: (index: number) => void;
-  loading: boolean;
-  isLastSlot: boolean;
-}
+import { TimeSlotFieldProps } from "@/types/slots";
 
 export const TimeSlotField = ({
   index,
@@ -47,92 +32,123 @@ export const TimeSlotField = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Grid2
-      container
-      mt={1}
-      spacing={2}
-      alignItems="center"
+    <Card
       sx={{
         mb: 2,
-        p: 2,
-        border: "1px solid #e0e0e0",
-        borderRadius: 2,
-        backgroundColor: "#fafafa",
+        borderRadius: 3,
+        boxShadow: theme.shadows[1],
+        backgroundColor: "background.paper",
       }}
     >
-      <Grid2 size={{ xs: 12, sm: 3 }}>
-        <TextField
-          select
-          fullWidth
-          label={isMobile ? "Day" : "Select Day"}
-          name={`available_slots[${index}].days`}
-          value={slot.days}
-          onChange={handleChange}
-          size="small"
-          disabled={loading}
+      <CardContent>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
         >
-          {daysOfWeek.map((day) => (
-            <MenuItem key={day.value} value={day.value}>
-              {day.label}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Grid2>
+          <Typography variant="subtitle2" color="text.secondary">
+            Time Slot #{index + 1}
+          </Typography>
+          <IconButton
+            color="error"
+            onClick={() => remove(index)}
+            disabled={isLastSlot || loading}
+          >
+            <Delete />
+          </IconButton>
+        </Box>
 
-      <Grid2 size={{ xs: 6, sm: 3 }}>
-        <TextField
-          select
-          fullWidth
-          label={isMobile ? "Start" : "Start Time"}
-          name={`available_slots[${index}].start_time`}
-          value={slot.start_time}
-          onChange={(e) =>
-            setFieldValue(
-              `available_slots[${index}].start_time`,
-              e.target.value
-            )
-          }
-          size="small"
-          disabled={loading}
-        >
-          {timeOptions.map((time) => (
-            <MenuItem key={time.value} value={time.value}>
-              {isMobile ? time.shortLabel : time.label}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Grid2>
+        <Grid container spacing={2} direction={isMobile ? "column" : "row"}>
+          {/* Date */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              type="date"
+              fullWidth
+              label="Date"
+              name={`available_slots[${index}].date`}
+              value={slot.date}
+              onChange={handleChange}
+              size="small"
+              disabled={loading}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
 
-      <Grid2 size={{ xs: 6, sm: 3 }}>
-        <TextField
-          select
-          fullWidth
-          label={isMobile ? "End" : "End Time"}
-          name={`available_slots[${index}].end_time`}
-          value={slot.end_time}
-          onChange={(e) =>
-            setFieldValue(`available_slots[${index}].end_time`, e.target.value)
-          }
-          size="small"
-          disabled={loading}
-        >
-          {timeOptions.map((time) => (
-            <MenuItem key={time.value} value={time.value}>
-              {isMobile ? time.shortLabel : time.label}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Grid2>
+          {/* Start Time */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              type="time"
+              fullWidth
+              label="Start Time"
+              name={`available_slots[${index}].start_time`}
+              value={slot.start_time}
+              onChange={(e) =>
+                setFieldValue(
+                  `available_slots[${index}].start_time`,
+                  e.target.value
+                )
+              }
+              size="small"
+              disabled={loading}
+            />
+          </Grid>
 
-      <Grid2 size={{ xs: 12, sm: 3 }} display="flex" justifyContent="flex-end">
-        <IconButton
-          color="error"
-          onClick={() => remove(index)}
-          disabled={isLastSlot || loading}
-        >
-          <Delete />
-        </IconButton>
-      </Grid2>
-    </Grid2>
+          {/* End Time */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              type="time"
+              fullWidth
+              label="End Time"
+              name={`available_slots[${index}].end_time`}
+              value={slot.end_time}
+              onChange={(e) =>
+                setFieldValue(
+                  `available_slots[${index}].end_time`,
+                  e.target.value
+                )
+              }
+              size="small"
+              disabled={loading}
+            />
+          </Grid>
+
+          {/* Capacity */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              type="number"
+              fullWidth
+              label="Capacity"
+              name={`available_slots[${index}].capacity`}
+              value={slot.capacity ?? 1}
+              onChange={handleChange}
+              size="small"
+              inputProps={{ min: 1 }}
+              disabled={loading}
+            />
+          </Grid>
+
+          {/* Active Toggle */}
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={slot.is_active ?? true}
+                  onChange={(e) =>
+                    setFieldValue(
+                      `available_slots[${index}].is_active`,
+                      e.target.checked
+                    )
+                  }
+                  disabled={loading}
+                  color="info"
+                />
+              }
+              label="Active"
+            />
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
   );
 };

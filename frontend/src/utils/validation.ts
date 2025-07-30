@@ -98,22 +98,36 @@ export const doctorPersonalInfoValidation = Yup.object({
 });
 
 export const timeSlotsValidationSchema = Yup.object({
-  available_slots: Yup.array().of(
-    Yup.object().shape({
-      days: Yup.string().required("Day is required"),
-      start_time: Yup.string().required("Start time is required"),
-      end_time: Yup.string()
-        .required("End time is required")
-        .test(
-          "is-after-start",
-          "End time must be after start time",
-          function (end_time) {
-            const { start_time } = this.parent;
-            return end_time > start_time;
-          }
-        ),
-    })
-  ),
+  available_slots: Yup.array()
+    .of(
+      Yup.object().shape({
+        date: Yup.string().required("Day is required"),
+
+        start_time: Yup.string().required("Start time is required"),
+
+        end_time: Yup.string()
+          .required("End time is required")
+          .test(
+            "is-after-start",
+            "End time must be after start time",
+            function (end_time) {
+              const { start_time } = this.parent;
+              return !!end_time && !!start_time && end_time > start_time;
+            }
+          ),
+
+        capacity: Yup.number()
+          .typeError("Capacity must be a number")
+          .integer("Capacity must be an integer")
+          .min(1, "Capacity must be at least 1")
+          .required("Capacity is required"),
+
+        is_active: Yup.boolean()
+          .required("Status is required")
+          .oneOf([true, false], "Invalid status"),
+      })
+    )
+    .min(1, "At least one time slot is required"),
 });
 
 const phoneRegex = /^\+?[1-9]\d{1,3}[-.\s]?(\d{1,4}[-.\s]?){1,4}\d{1,4}$/;

@@ -40,11 +40,6 @@ module.exports = {
           doctor.id,
           data.specialties
         );
-      } else if (data.available_slots) {
-        updatedDoctor = await doctorService.updateAvailableSlots(
-          doctor.id,
-          data.available_slots
-        );
       } else {
         return ctx.badRequest("No valid update data found");
       }

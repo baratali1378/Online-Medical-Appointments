@@ -9,7 +9,6 @@ const strapi = axios.create({
 export async function fetchData<T>(endpoint: string): Promise<T> {
   try {
     const response = await strapi.get(endpoint);
-    console.log(response.data);
     return response.data.data;
   } catch (error: any) {
     throw new Error(

@@ -46,6 +46,7 @@ function DoctorProfilePage({ session }: Props) {
   return (
     <DoctorProfileView
       doctor={profile}
+      token={session?.user?.token}
       onUpdate={async (
         data: Partial<
           Pick<
