@@ -46,32 +46,48 @@ module.exports = ({ strapi }) => ({
     }
   },
 
-  // 📌 Doctor: Update Available Slot
   async updateAvailableSlot(ctx) {
     try {
       const doctor = ctx.state.doctor;
       if (!doctor) throw new NotFoundError("Doctor profile not found");
 
       const { id } = ctx.params;
-      const updates = ctx.request.body;
-      console.log("update", updates);
+      const { data } = ctx.request.body;
 
-      const slot = await strapi.db
+      if (!data) return ctx.badRequest("Data payload is required");
+
+      // Verify the slot exists and belongs to this doctor
+      const existingSlot = await strapi.db
         .query("api::available-slot.available-slot")
         .findOne({
           where: { id, doctor: doctor.id },
         });
 
-      if (!slot) throw new NotFoundError("Slot not found");
+      if (!existingSlot) throw new NotFoundError("Slot not found");
 
-      const updated = await strapi.db
+      // Extract only allowed fields to update
+      const { date, start_time, end_time, capacity, is_active } = data;
+
+      const updateData = {
+        ...(date && { date }),
+        ...(start_time && { start_time }),
+        ...(end_time && { end_time }),
+        ...(capacity && { capacity }),
+        ...(is_active !== undefined && { is_active }),
+      };
+
+      // Perform the update
+      const updatedSlot = await strapi.db
         .query("api::available-slot.available-slot")
         .update({
           where: { id },
-          data: updates,
+          data: updateData,
         });
 
-      return ctx.send({ message: "Slot updated", data: updated });
+      return ctx.send({
+        message: "Slot updated successfully",
+        data: updatedSlot,
+      });
     } catch (error) {
       strapi.log.error("Error updating available slot:", error);
       return ctx.internalServerError("Could not update slot");

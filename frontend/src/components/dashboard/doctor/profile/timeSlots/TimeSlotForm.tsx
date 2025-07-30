@@ -17,6 +17,13 @@ import { EmptyState } from "./EmptyState";
 import { BrandButton } from "@/components/dashboard/common/BrandButton";
 import { v4 as uuidv4 } from "uuid";
 
+// Helper function to format time for backend
+const formatTimeForBackend = (timeString: string) => {
+  if (!timeString) return "00:00:00.000";
+  if (timeString.includes(".")) return timeString; // Already formatted
+  return `${timeString}:00.000`; // Convert HH:mm to HH:mm:00.000
+};
+
 export const TimeSlotForm = ({
   initialSlots,
   onSubmit,
@@ -44,10 +51,14 @@ export const TimeSlotForm = ({
       onSubmit={async (values) => {
         const sanitizedValues = {
           available_slots: values.available_slots.map(
-            ({ tempId, ...slot }) => slot
+            ({ tempId, ...slot }) => ({
+              ...slot,
+              start_time: formatTimeForBackend(slot.start_time),
+              end_time: formatTimeForBackend(slot.end_time),
+            })
           ),
         };
-        await onSubmit(sanitizedValues); // ✅ no need for initialValues from formikHelpers
+        await onSubmit(sanitizedValues);
       }}
     >
       {({ values, handleChange, setFieldValue, dirty }) => (
@@ -78,31 +89,27 @@ export const TimeSlotForm = ({
                 )}
 
                 {isMobile && (
-                  <Fab
-                    color="primary"
-                    onClick={() =>
-                      push({
-                        id: 0,
-                        tempId: uuidv4(),
-                        date: new Date().toISOString().split("T")[0],
-                        start_time: "09:00:00.000",
-                        end_time: "17:00:00.000",
-                        capacity: 1,
-                        is_active: true,
-                      })
-                    }
-                    sx={{
-                      position: "fixed",
-                      bottom: 90,
-                      right: 16,
-                      zIndex: 1200,
-                    }}
-                  >
-                    <Add />
-                  </Fab>
+                  <Box display={"flex"} justifyContent={"flex-start"}>
+                    <Fab
+                      color="info"
+                      onClick={() =>
+                        push({
+                          id: 0,
+                          tempId: uuidv4(),
+                          date: new Date().toISOString().split("T")[0],
+                          start_time: "09:00",
+                          end_time: "17:00",
+                          capacity: 1,
+                          is_active: true,
+                        })
+                      }
+                      disabled={isLoading || isSubmitting}
+                    >
+                      <Add />
+                    </Fab>
+                  </Box>
                 )}
 
-                {/* Desktop Add Button */}
                 {!isMobile && (
                   <Box
                     sx={{
@@ -119,12 +126,14 @@ export const TimeSlotForm = ({
                           id: 0,
                           tempId: uuidv4(),
                           date: new Date().toISOString().split("T")[0],
-                          start_time: "09:00:00.000",
-                          end_time: "17:00:00.000",
+                          start_time: "09:00",
+                          end_time: "17:00",
                           capacity: 1,
                           is_active: true,
                         })
                       }
+                      disabled={isLoading || isSubmitting}
+                      startIcon={<Add />}
                     >
                       Add Time Slot
                     </Button>

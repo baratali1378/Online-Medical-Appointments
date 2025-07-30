@@ -31,6 +31,11 @@ export const TimeSlotField = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // Convert backend time format (HH:mm:ss.SSS) to input format (HH:mm)
+  const formatTimeForInput = (timeString: string) => {
+    return timeString ? timeString.slice(0, 5) : "";
+  };
+
   return (
     <Card
       sx={{
@@ -72,6 +77,9 @@ export const TimeSlotField = ({
               size="small"
               disabled={loading}
               InputLabelProps={{ shrink: true }}
+              inputProps={{
+                max: "2099-12-31", // Prevent dates too far in the future
+              }}
             />
           </Grid>
 
@@ -82,7 +90,7 @@ export const TimeSlotField = ({
               fullWidth
               label="Start Time"
               name={`available_slots[${index}].start_time`}
-              value={slot.start_time}
+              value={formatTimeForInput(slot.start_time)}
               onChange={(e) =>
                 setFieldValue(
                   `available_slots[${index}].start_time`,
@@ -91,6 +99,9 @@ export const TimeSlotField = ({
               }
               size="small"
               disabled={loading}
+              inputProps={{
+                step: 900, // 15 minute intervals
+              }}
             />
           </Grid>
 
@@ -101,7 +112,7 @@ export const TimeSlotField = ({
               fullWidth
               label="End Time"
               name={`available_slots[${index}].end_time`}
-              value={slot.end_time}
+              value={formatTimeForInput(slot.end_time)}
               onChange={(e) =>
                 setFieldValue(
                   `available_slots[${index}].end_time`,
@@ -110,6 +121,9 @@ export const TimeSlotField = ({
               }
               size="small"
               disabled={loading}
+              inputProps={{
+                step: 900, // 15 minute intervals
+              }}
             />
           </Grid>
 
@@ -123,7 +137,7 @@ export const TimeSlotField = ({
               value={slot.capacity ?? 1}
               onChange={handleChange}
               size="small"
-              inputProps={{ min: 1 }}
+              inputProps={{ min: 1, max: 100 }}
               disabled={loading}
             />
           </Grid>
