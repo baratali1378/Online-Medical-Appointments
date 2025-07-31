@@ -8,8 +8,8 @@ import {
   Grid,
   Box,
   Button,
-  Stack,
   Typography,
+  Alert,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { PatientAppointment } from "@/types/appointments";
@@ -38,6 +38,9 @@ export const AppointmentDetailsDialog = ({
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const changeStatusMutation = useChangePatientAppointmentStatus(token);
 
+  // Check if appointment is pending
+  const canReschedule = appointment.appointment_status === "Pending";
+
   // Fetch available slots
   const { data: availableSlots, isLoading: slotsLoading } =
     usePatientAvailableSlotsQuery(appointment.doctor.id, token);
@@ -53,7 +56,7 @@ export const AppointmentDetailsDialog = ({
   } = useAppointmentReschedule(appointment.date, availableSlots?.data);
 
   const handleReschedule = () => {
-    if (!selectedSlot) return;
+    if (!canReschedule || !selectedSlot) return; // Block non-pending reschedules
 
     changeStatusMutation.mutate({
       id: appointment.id,
@@ -82,7 +85,7 @@ export const AppointmentDetailsDialog = ({
         sx={{
           m: 0,
           p: 3,
-          bgcolor: theme.palette.primary.main,
+          bgcolor: "#71C9CE",
           color: theme.palette.primary.contrastText,
           display: "flex",
           alignItems: "center",
@@ -113,34 +116,49 @@ export const AppointmentDetailsDialog = ({
 
           {/* Reschedule Section */}
           <Grid item xs={12} md={7}>
-            <TimeSlotSelector
-              slotsByDay={slotsByDay}
-              filteredSlots={filteredSlots}
-              selectedDate={selectedDate}
-              selectedSlot={selectedSlot}
-              isLoading={slotsLoading}
-              onDateChange={setSelectedDate}
-              onSlotSelect={setSelectedSlot}
-            />
+            {canReschedule ? (
+              <>
+                <TimeSlotSelector
+                  slotsByDay={slotsByDay}
+                  selectedDate={selectedDate}
+                  selectedSlot={selectedSlot}
+                  isLoading={slotsLoading}
+                  onDateChange={setSelectedDate}
+                  onSlotSelect={setSelectedSlot}
+                />
 
-            {/* Action Buttons */}
-            <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
-              <Button
-                variant="outlined"
-                onClick={onClose}
-                sx={{ px: 4, py: 1, borderRadius: 2 }}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleReschedule}
-                disabled={!selectedSlot}
-                sx={{ px: 4, py: 1, borderRadius: 2, fontWeight: 600 }}
-              >
-                Confirm Reschedule
-              </Button>
-            </Box>
+                {/* Action Buttons */}
+                <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
+                  <Button
+                    variant="outlined"
+                    onClick={onClose}
+                    sx={{ px: 4, py: 1, borderRadius: 2 }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleReschedule}
+                    disabled={!selectedSlot}
+                    sx={{
+                      px: 4,
+                      py: 1,
+                      borderRadius: 2,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Confirm Reschedule
+                  </Button>
+                </Box>
+              </>
+            ) : (
+              <Box mt={2}>
+                <Alert severity="warning" variant="filled">
+                  This appointment cannot be rescheduled because it is{" "}
+                  {appointment.appointment_status.toLowerCase()}.
+                </Alert>
+              </Box>
+            )}
           </Grid>
         </Grid>
       </DialogContent>
