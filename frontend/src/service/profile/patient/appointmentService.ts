@@ -25,9 +25,10 @@ export const changePatientAppointmentStatus = (
 ) => {
   const client = createApiClient(token);
   const updates: any = { appointment_status: status };
+  updates.id = id;
 
   if (date) updates.date = date;
   if (available_slot) updates.available_slot = available_slot;
 
-  return putData(client, `api/appointments/${id}`, { data: updates });
+  return putData(client, `api/appointments/patient`, { data: updates });
 };

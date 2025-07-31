@@ -13,7 +13,7 @@ module.exports = {
     {
       method: "PUT",
       path: "/appointments/patient",
-      handler: "patient-appointment.changeAppointmentStatus",
+      handler: "patient-appointment.updateAppointment",
       config: {
         auth: false,
         policies: [],

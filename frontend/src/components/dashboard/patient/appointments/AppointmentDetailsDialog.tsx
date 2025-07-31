@@ -18,8 +18,7 @@ import { useAppointmentReschedule } from "@/hooks/profile/patient/appointment/us
 import { AppointmentDetailsCard } from "./AppointmentDetailsCard";
 import { TimeSlotSelector } from "./TimeSlotSelector";
 import { useChangePatientAppointmentStatus } from "@/hooks/profile/patient/appointment/useChangeAppointmentStatus";
-
-const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
+import { BrandButton } from "../../common/BrandButton";
 
 interface Props {
   open: boolean;
@@ -27,6 +26,8 @@ interface Props {
   appointment: PatientAppointment;
   token: string;
 }
+
+const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
 export const AppointmentDetailsDialog = ({
   open,
@@ -36,32 +37,22 @@ export const AppointmentDetailsDialog = ({
 }: Props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const changeStatusMutation = useChangePatientAppointmentStatus(token);
 
-  // Check if appointment is pending
+  const changeStatusMutation = useChangePatientAppointmentStatus(token);
   const canReschedule = appointment.appointment_status === "Pending";
 
-  // Fetch available slots
   const { data: availableSlots, isLoading: slotsLoading } =
     usePatientAvailableSlotsQuery(appointment.doctor.id, token);
 
-  // Reschedule logic
-  const {
-    selectedDate,
-    setSelectedDate,
-    selectedSlot,
-    setSelectedSlot,
-    slotsByDay,
-    filteredSlots,
-  } = useAppointmentReschedule(appointment.date, availableSlots?.data);
+  const { selectedDate, setSelectedDate, selectedSlot, setSelectedSlot } =
+    useAppointmentReschedule(appointment.date, availableSlots?.data);
 
   const handleReschedule = () => {
-    if (!canReschedule || !selectedSlot) return; // Block non-pending reschedules
-
+    if (!canReschedule || !selectedSlot) return;
     changeStatusMutation.mutate({
       id: appointment.id,
       status: "Pending",
-      date: selectedDate,
+      available_slot: selectedSlot,
     });
     onClose();
   };
@@ -73,26 +64,16 @@ export const AppointmentDetailsDialog = ({
       fullWidth
       fullScreen={fullScreen}
       maxWidth="md"
-      PaperProps={{
-        sx: {
-          borderRadius: 4,
-          background: theme.palette.background.paper,
-          boxShadow: theme.shadows[10],
-        },
-      }}
     >
       <DialogTitle
         sx={{
-          m: 0,
-          p: 3,
           bgcolor: "#71C9CE",
           color: theme.palette.primary.contrastText,
           display: "flex",
-          alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <Typography variant="h5" fontWeight={600}>
+        <Typography variant="h6" component={"span"} fontWeight={600}>
           Reschedule Appointment
         </Typography>
         <IconButton
@@ -104,9 +85,8 @@ export const AppointmentDetailsDialog = ({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ px: 4, py: 3 }}>
-        <Grid container spacing={4}>
-          {/* Current Appointment */}
+      <DialogContent dividers>
+        <Grid container spacing={3}>
           <Grid item xs={12} md={5}>
             <AppointmentDetailsCard
               appointment={appointment}
@@ -114,50 +94,35 @@ export const AppointmentDetailsDialog = ({
             />
           </Grid>
 
-          {/* Reschedule Section */}
           <Grid item xs={12} md={7}>
             {canReschedule ? (
               <>
                 <TimeSlotSelector
-                  slotsByDay={slotsByDay}
+                  slots={availableSlots?.data || []}
                   selectedDate={selectedDate}
                   selectedSlot={selectedSlot}
                   isLoading={slotsLoading}
                   onDateChange={setSelectedDate}
                   onSlotSelect={setSelectedSlot}
                 />
-
-                {/* Action Buttons */}
-                <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
-                  <Button
-                    variant="outlined"
-                    onClick={onClose}
-                    sx={{ px: 4, py: 1, borderRadius: 2 }}
-                  >
+                <Box mt={3} display="flex" justifyContent="flex-end" gap={2}>
+                  <Button variant="outlined" onClick={onClose} color="error">
                     Cancel
                   </Button>
-                  <Button
+                  <BrandButton
                     variant="contained"
                     onClick={handleReschedule}
                     disabled={!selectedSlot}
-                    sx={{
-                      px: 4,
-                      py: 1,
-                      borderRadius: 2,
-                      fontWeight: 600,
-                    }}
                   >
                     Confirm Reschedule
-                  </Button>
+                  </BrandButton>
                 </Box>
               </>
             ) : (
-              <Box mt={2}>
-                <Alert severity="warning" variant="filled">
-                  This appointment cannot be rescheduled because it is{" "}
-                  {appointment.appointment_status.toLowerCase()}.
-                </Alert>
-              </Box>
+              <Alert severity="warning" variant="filled">
+                This appointment cannot be rescheduled because it is{" "}
+                {appointment.appointment_status.toLowerCase()}.
+              </Alert>
             )}
           </Grid>
         </Grid>
