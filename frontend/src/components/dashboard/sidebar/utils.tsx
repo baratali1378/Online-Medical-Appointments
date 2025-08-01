@@ -23,7 +23,7 @@ export const patientNavItems = [
   {
     text: "Medical Records",
     icon: <MedicalServices />,
-    path: "/dashboard/patient/records",
+    path: "/dashboard/patient/medical-records",
   },
   {
     text: "Notifications",

@@ -1,6 +1,7 @@
 import { Appointment } from "./appointments";
 import { PersonalInfo } from "./doctor";
 
+// ===== Full Medical Record =====
 export interface MedicalRecord {
   id: number;
   documentId: string;
@@ -14,24 +15,65 @@ export interface MedicalRecord {
   follow_up_date: string | null;
   createdAt: string;
   updatedAt: string;
+
   patient: {
     personal_info: PersonalInfo;
   };
-  appointment: Appointment;
-  files: FileAttachment[] | null;
+
+  doctor?: {
+    id: number;
+    personal_info: PersonalInfo;
+  };
+
+  appointment?: Appointment | null;
+  files: {
+    id: number;
+    url: string;
+    size: number;
+  } | null;
 }
 
-export interface DoctorMedicalResponse {
-  data: MedicalRecord[];
+// ===== Derived List View =====
+export type MedicalRecordListItem = Pick<
+  MedicalRecord,
+  | "id"
+  | "chief_complaint"
+  | "diagnoses"
+  | "follow_up_required"
+  | "follow_up_date"
+  | "createdAt"
+> & {
+  doctor?: {
+    id: number;
+    personal_info: Pick<PersonalInfo, "fullname">;
+  };
+  appointment?: Pick<Appointment, "id" | "date"> | null;
+};
+
+// ===== Generic Response Types =====
+export interface PaginatedResponse<T> {
+  data: T[];
   meta: {
     total: number;
-    coutn: number;
+    page: number;
+    pageSize: number;
+    pageCount: number;
   };
 }
 
-export interface FileAttachment {
-  id: number;
-  name: string;
-  url: string;
-  size: number;
+export interface CountResponse<T> {
+  data: T[];
+  meta: {
+    total: number;
+    count: number;
+  };
+}
+
+// ===== Specific API Responses =====
+export type DoctorMedicalResponse = CountResponse<MedicalRecord>;
+export type PatientMedicalRecordListResponse =
+  PaginatedResponse<MedicalRecordListItem>;
+
+export interface PatientMedicalRecordDetailResponse {
+  data: MedicalRecord;
 }
