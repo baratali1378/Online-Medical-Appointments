@@ -35,11 +35,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ id, fullname, email }) => {
         transition: "0.3s ease",
       }}
     >
-      <Link
-        href={`/dashboard/doctor/${id}`}
-        passHref
-        style={{ textDecoration: "none" }}
-      >
+      <Link href={`/doctors/${id}`} passHref style={{ textDecoration: "none" }}>
         <CardActionArea>
           <CardContent>
             <Stack direction="row" spacing={2} alignItems="center">
