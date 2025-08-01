@@ -1,11 +1,11 @@
 import { Box, Typography, Pagination } from "@mui/material";
-import { Appointment } from "@/types/appointments";
+import { DoctorAppointment } from "@/types/appointments";
 import { AppointmentCard } from "../AppointmentCard";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useState } from "react";
 
 interface Props {
-  appointments: Appointment[];
+  appointments: DoctorAppointment[];
   emptyMessage: string;
   onRefresh?: () => void;
   token: string;

@@ -142,3 +142,5 @@ export const DoctorProfileView = ({
     </Box>
   );
 };
+
+export default DoctorProfileView;

@@ -12,13 +12,13 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Appointment } from "@/types/appointments";
+import { DoctorAppointment } from "@/types/appointments";
 import { format } from "date-fns";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  appointment: Appointment | null;
+  appointment: DoctorAppointment | null;
 }
 
 const statusColors: Record<

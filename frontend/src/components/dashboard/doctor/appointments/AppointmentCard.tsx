@@ -12,7 +12,7 @@ import { useState } from "react";
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog";
 import { useChangeAppointmentStatus } from "@/hooks/profile/doctor/appointment/useChangeAppointmentStatus";
 import { AppointmentActions } from "./AppointmentAction";
-import { AppointmentStatus } from "./AppointmentStatus";
+import { AppointmentStatus } from "@/components/dashboard/common/AppointmentStatus";
 import { PatientInfo } from "./PatientInfo";
 
 interface AppointmentCardProps {

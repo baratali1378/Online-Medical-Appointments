@@ -7,6 +7,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
+import { Dayjs } from "dayjs";
 
 interface Props {
   ratingFilter: string;
@@ -16,6 +17,11 @@ interface Props {
   onSortChange: (value: string) => void;
   onDateChange: (range: [Date | null, Date | null]) => void;
   isMobile: boolean;
+}
+
+function toDateSafe(value: Date | Dayjs | null): Date | null {
+  if (!value) return null;
+  return value instanceof Date ? value : value.toDate();
 }
 
 export default function FilterPanel({
@@ -71,7 +77,9 @@ export default function FilterPanel({
         <DatePicker
           label="From"
           value={dateRange[0]}
-          onChange={(newValue) => onDateChange([newValue, dateRange[1]])}
+          onChange={(newValue) =>
+            onDateChange([toDateSafe(newValue), dateRange[1]])
+          }
           slotProps={{
             textField: {
               fullWidth: true,
@@ -87,7 +95,9 @@ export default function FilterPanel({
         <DatePicker
           label="To"
           value={dateRange[1]}
-          onChange={(newValue) => onDateChange([dateRange[0], newValue])}
+          onChange={(newValue) =>
+            onDateChange([dateRange[0], toDateSafe(newValue)])
+          }
           slotProps={{
             textField: {
               fullWidth: true,

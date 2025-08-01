@@ -1,12 +1,12 @@
 // DayView.tsx
 import { AppointmentListView } from "./AppointmentListView";
-import { Appointment } from "@/types/appointments";
+import { DoctorAppointment } from "@/types/appointments";
 
 export const DayView = ({
   appointments,
   token,
 }: {
-  appointments: Appointment[];
+  appointments: DoctorAppointment[];
   token: string;
 }) => (
   <AppointmentListView

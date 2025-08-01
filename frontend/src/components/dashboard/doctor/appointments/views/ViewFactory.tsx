@@ -1,4 +1,4 @@
-import { Appointment, ViewMode } from "@/types/appointments";
+import { Appointment, DoctorAppointment, ViewMode } from "@/types/appointments";
 import { DayView } from "./DayView";
 import { WeekView } from "./WeekView";
 import { ListView } from "./ListView";
@@ -6,7 +6,7 @@ import { JSX } from "react";
 
 export const viewFactory = (
   view: ViewMode,
-  appointments: Appointment[],
+  appointments: DoctorAppointment[],
   token: string
 ): JSX.Element => {
   switch (view) {

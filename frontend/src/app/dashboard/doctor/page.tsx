@@ -1,12 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Box } from "@mui/material";
 import { useDoctor } from "@/hooks/profile/doctor/useDoctor";
 import { ErrorAlert } from "@/components/common/ErrorAlert";
-import { DoctorProfileView } from "@/components/dashboard/doctor/profile/DoctorProfile";
 import { Doctor } from "@/types/doctor";
 import Skelton from "@/components/dashboard/doctor/profile/SkeltonLoading";
 import { withAuth } from "@/components/dashboard/withAuth";
+
+const DoctorProfileView = dynamic(
+  () => import("@/components/dashboard/doctor/profile/DoctorProfile"),
+  { ssr: false }
+);
 
 type Props = {
   session: any;

@@ -1,12 +1,12 @@
 // WeekView.tsx
 import { AppointmentListView } from "./AppointmentListView";
-import { Appointment } from "@/types/appointments";
+import { Appointment, DoctorAppointment } from "@/types/appointments";
 
 export const WeekView = ({
   appointments,
   token,
 }: {
-  appointments: Appointment[];
+  appointments: DoctorAppointment[];
   token: string;
 }) => (
   <AppointmentListView

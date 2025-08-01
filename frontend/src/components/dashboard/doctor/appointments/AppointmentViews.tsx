@@ -1,9 +1,9 @@
-import { Appointment, ViewMode } from "@/types/appointments";
+import { Appointment, DoctorAppointment, ViewMode } from "@/types/appointments";
 import { AppointmentSkeleton } from "./views/AppointmentSkeleton";
 import { viewFactory } from "./views/ViewFactory";
 
 interface Props {
-  appointments: Appointment[];
+  appointments: DoctorAppointment[];
   selectedView: ViewMode;
   loading?: boolean;
   token: string;

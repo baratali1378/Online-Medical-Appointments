@@ -6,11 +6,15 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export function withAuth<T>(
-  Component: React.ComponentType<T>,
+type WithAuthProps = {
+  session: any;
+};
+
+export function withAuth<P extends object>(
+  Component: React.ComponentType<P & WithAuthProps>,
   requiredRole?: string
 ) {
-  return function AuthenticatedComponent(props: T) {
+  return function AuthenticatedComponent(props: P) {
     const { data: session, status } = useSession();
     const router = useRouter();
 
@@ -34,6 +38,7 @@ export function withAuth<T>(
       );
     }
 
+    // ✅ Explicitly tell TS we’re adding `session`
     return <Component {...props} session={session} />;
   };
 }

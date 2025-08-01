@@ -1,7 +1,10 @@
 // hooks/useDoctorAppointmentsQuery.ts
 import { useQuery } from "@tanstack/react-query";
 import { getDoctorAppointments } from "@/service/profile/doctor/appointment";
-import { AppointmentFilters, AppointmentsResponse } from "@/types/appointments";
+import {
+  AppointmentFilters,
+  DoctorAppointmentsResponse,
+} from "@/types/appointments";
 
 interface UseDoctorAppointmentsQueryOptions {
   token: string;
@@ -14,7 +17,7 @@ export const useDoctorAppointmentsQuery = ({
   filters = {},
   enabled = true,
 }: UseDoctorAppointmentsQueryOptions) => {
-  return useQuery<AppointmentsResponse, Error>({
+  return useQuery<DoctorAppointmentsResponse, Error>({
     queryKey: ["doctorAppointments", filters],
     queryFn: () => getDoctorAppointments(filters, token),
     enabled: !!token && enabled,
