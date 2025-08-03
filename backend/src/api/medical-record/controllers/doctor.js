@@ -47,11 +47,21 @@ module.exports = ({ strapi }) => {
     async find(ctx) {
       try {
         const doctor = ctx.state.doctor;
+        const { patientId } = ctx.query;
 
+        // Validate patientId
+        if (!patientId) {
+          return ctx.badRequest("Patient ID is required");
+        }
+
+        // Fetch records for doctor & patient
         const [records, total] = await Promise.all([
-          recordService.findByDoctor(doctor.id),
+          recordService.findByDoctorAndPatient(doctor.id, Number(patientId)),
           strapi.db.query("api::medical-record.medical-record").count({
-            where: { doctor: doctor.id },
+            where: {
+              doctor: doctor.id,
+              patient: Number(patientId),
+            },
           }),
         ]);
 
@@ -71,7 +81,6 @@ module.exports = ({ strapi }) => {
         ctx.throw(500, error.message || "Failed to fetch records");
       }
     },
-
     async findOne(ctx) {
       try {
         const doctor = ctx.state.doctor;

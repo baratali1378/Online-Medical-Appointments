@@ -4,22 +4,24 @@ import { MedicalRecord, DoctorMedicalResponse } from "@/types/medical-record";
 
 export const MedicalRecordService = {
   doctor: {
-    async getAll(token: string): Promise<DoctorMedicalResponse> {
+    async getAll(
+      token: string,
+      patientId: number
+    ): Promise<DoctorMedicalResponse> {
       try {
         const api = createApiClient(token);
         const response = await api.get<DoctorMedicalResponse>(
-          "/api/doctor/medical-records"
+          `/api/doctor/medical-records`,
+          {
+            params: { patientId }, // Pass as query parameter
+          }
         );
 
         return response.data;
       } catch (error) {
-        throw handleServiceError(
-          error,
-          "Failed to fetch doctor medical records"
-        );
+        throw handleServiceError(error, "Failed to fetch medical records");
       }
     },
-
     async getByPatient(
       token: string,
       patientId: number

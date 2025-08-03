@@ -8,11 +8,15 @@ import { EnhancedRecordsTable } from "./RecordsTable";
 
 interface Props {
   token: string;
+  patientId: number;
 }
 
-export const MedicalRecordsContainer: React.FC<Props> = ({ token }) => {
+export const MedicalRecordsContainer: React.FC<Props> = ({
+  token,
+  patientId,
+}) => {
   const { useGetMedicalRecords } = useMedical(token);
-  const { data, isLoading, isError } = useGetMedicalRecords();
+  const { data, isLoading, isError } = useGetMedicalRecords(patientId);
 
   const [search, setSearch] = useState("");
   const [filterDate, setFilterDate] = useState("all");
