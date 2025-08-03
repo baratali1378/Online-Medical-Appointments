@@ -36,12 +36,17 @@ module.exports = ({ strapi }) => ({
       {
         filters: baseFilters,
         sort: { date: "asc" },
+        fields: ["id", "date", "appointment_status", "notes"],
         populate: {
           patient: {
+            fields: ["id"],
             populate: {
               personal_info: {
+                fields: ["fullname", "birth", "gender"],
                 populate: {
-                  image: true,
+                  image: {
+                    fields: ["url"],
+                  },
                 },
               },
             },
@@ -50,20 +55,6 @@ module.exports = ({ strapi }) => ({
       }
     );
 
-    // 🔒 Sanitize sensitive info
-    const sanitized = appointments.map((appointment) => {
-      if (appointment.patient) {
-        delete appointment.patient.password;
-
-        if (appointment.patient.personal_info) {
-          const { fullname, gender, birth, image } =
-            appointment.patient.personal_info;
-          appointment.patient = { fullname, gender, birth, image };
-        }
-      }
-      return appointment;
-    });
-
-    return sanitized;
+    return appointments;
   },
 });

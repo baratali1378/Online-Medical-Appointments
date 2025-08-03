@@ -30,7 +30,6 @@ module.exports = ({ strapi }) => ({
 
       return ctx.send({
         data: appointments,
-        doctor: doctor.personal_info,
         meta: {
           count: appointments.length,
           filters: {

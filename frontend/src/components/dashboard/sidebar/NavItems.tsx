@@ -34,7 +34,14 @@ export default function NavItems({ items, onItemClick }: Props) {
   return (
     <List>
       {items.map(({ text, icon, path }, index) => {
-        const isActive = pathname === path;
+        // Split the path into segments (e.g. /dashboard/doctor → ["dashboard","doctor"])
+        const segments = path.split("/").filter(Boolean);
+        const isRootDashboard = segments.length === 2; // Profile-level item
+
+        // Check active status
+        const isActive = isRootDashboard
+          ? pathname === path // Exact match for root profile
+          : pathname === path || pathname.startsWith(`${path}/`); // Nested matches
 
         return (
           <ListItemButton

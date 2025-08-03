@@ -1,10 +1,12 @@
 export interface Patient {
-  birth: string;
   id: number;
-  fullname: string;
-  gender?: string;
-  image?: {
-    url: string;
+  personal_info: {
+    fullname: string;
+    gender?: string;
+    birth?: string;
+    image?: {
+      url: string;
+    };
   };
 }
 
