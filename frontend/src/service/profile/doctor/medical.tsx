@@ -60,5 +60,23 @@ export const MedicalRecordService = {
         throw handleServiceError(error, "Failed to create medical record");
       }
     },
+    async getAll(
+      token: string,
+      patientId: number
+    ): Promise<DoctorMedicalResponse> {
+      try {
+        const api = createApiClient(token);
+        const response = await api.get<DoctorMedicalResponse>(
+          `/api/doctor/medical-records`,
+          {
+            params: { patientId }, // Pass as query parameter
+          }
+        );
+
+        return response.data;
+      } catch (error) {
+        throw handleServiceError(error, "Failed to fetch medical records");
+      }
+    },
   },
 };
