@@ -716,7 +716,7 @@ export interface ApiMedicalRecordMedicalRecord
       Schema.Attribute.Private;
     notes: Schema.Attribute.Text;
     patient: Schema.Attribute.Relation<'manyToOne', 'api::patient.patient'>;
-    prescription: Schema.Attribute.RichText;
+    prescription: Schema.Attribute.Text;
     publishedAt: Schema.Attribute.DateTime;
     symptoms: Schema.Attribute.Text;
     treatment_plan: Schema.Attribute.Text;

@@ -63,7 +63,7 @@ export const AppointmentDetailsDialog = ({
 
   const handleAddMedicalRecord = () => {
     router.push(
-      `/dashboard/doctor/medical-records/new?patientId=${patient.id}&appointmentId=${appointmentId}`
+      `/dashboard/doctor/medical-records/new/${patient.id}/${appointmentId}`
     );
   };
 

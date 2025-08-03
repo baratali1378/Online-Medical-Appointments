@@ -6,6 +6,8 @@ interface FormTextFieldProps {
   name: string;
   label: string;
   type?: string;
+  multiline?: boolean;
+  rows?: number;
   [key: string]: any;
 }
 
@@ -13,9 +15,14 @@ export const FormTextField = ({
   name,
   label,
   type = "text",
+  multiline,
+  rows,
   ...props
 }: FormTextFieldProps) => {
   const [field, meta] = useField(name);
+
+  // Default to multiline if type is "text" (to support Strapi text fields)
+  const isMultiline = multiline ?? type === "text";
 
   return (
     <Field
@@ -28,6 +35,8 @@ export const FormTextField = ({
       margin="normal"
       error={meta.touched && Boolean(meta.error)}
       helperText={meta.touched && meta.error}
+      multiline={isMultiline}
+      rows={rows ?? (isMultiline ? 3 : 1)}
       {...props}
     />
   );

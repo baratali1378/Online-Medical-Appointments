@@ -1,7 +1,6 @@
 import { Appointment } from "./appointments";
 import { PersonalInfo } from "./doctor";
 
-// ===== Full Medical Record =====
 export interface MedicalRecord {
   id: number;
   documentId: string;
@@ -61,19 +60,28 @@ export interface PaginatedResponse<T> {
   };
 }
 
-export interface CountResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    count: number;
-  };
-}
-
-// ===== Specific API Responses =====
-export type DoctorMedicalResponse = CountResponse<MedicalRecord>;
 export type PatientMedicalRecordListResponse =
   PaginatedResponse<MedicalRecordListItem>;
 
 export interface PatientMedicalRecordDetailResponse {
+  data: MedicalRecord;
+}
+
+export type CreateMedicalRecordPayload = Omit<
+  MedicalRecord,
+  | "id"
+  | "documentId"
+  | "createdAt"
+  | "updatedAt"
+  | "patient"
+  | "doctor"
+  | "appointment"
+  | "files"
+> & {
+  files?: File[];
+};
+
+export interface DoctorMedicalResponse {
+  message: string;
   data: MedicalRecord;
 }

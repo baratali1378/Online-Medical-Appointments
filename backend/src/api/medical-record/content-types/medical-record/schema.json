@@ -24,9 +24,6 @@
     "treatment_plan": {
       "type": "text"
     },
-    "prescription": {
-      "type": "richtext"
-    },
     "notes": {
       "type": "text"
     },
@@ -63,6 +60,9 @@
       "relation": "manyToOne",
       "target": "api::patient.patient",
       "inversedBy": "medical_records"
+    },
+    "prescription": {
+      "type": "text"
     }
   }
 }

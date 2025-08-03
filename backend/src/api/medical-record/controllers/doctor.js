@@ -10,33 +10,100 @@ module.exports = ({ strapi }) => {
         const doctor = ctx.state.doctor;
         if (!doctor) throw new NotFoundError("Doctor not found");
 
-        const data = { ...ctx.request.body, doctor: doctor.id };
-        const created = await recordService.create(data);
+        const { appointmentId, patientId } = ctx.query;
+
+        // Validate query params
+        if (!appointmentId || !patientId) {
+          throw new ApplicationError(
+            "appointmentId and patientId are required in query params"
+          );
+        }
+
+        // Verify appointment belongs to doctor + patient & is confirmed
+        const appointment = await strapi.db
+          .query("api::appointment.appointment")
+          .findOne({
+            where: {
+              id: appointmentId,
+              doctor: doctor.id,
+              patient: patientId,
+            },
+            populate: ["doctor", "patient"],
+          });
+
+        if (!appointment) {
+          throw new NotFoundError(
+            "Appointment not found or you are not authorized"
+          );
+        }
+
+        if (appointment.appointment_status !== "Confirmed") {
+          throw new ApplicationError(
+            "Medical record can only be created for confirmed appointments"
+          );
+        }
+
+        // Extract body data (excluding files)
+        const { files, ...bodyData } = ctx.request.body;
+
+        // Create medical record without files first
+        const createdRecord = await recordService.create({
+          ...bodyData,
+          doctor: doctor.id,
+          patient: patientId,
+          appointment: appointmentId,
+        });
+
+        // If files are uploaded, attach them
+        if (ctx.request.files && ctx.request.files.files) {
+          const uploadedFiles = Array.isArray(ctx.request.files.files)
+            ? ctx.request.files.files
+            : [ctx.request.files.files];
+
+          await Promise.all(
+            uploadedFiles.map((file) =>
+              strapi
+                .plugin("upload")
+                .service("upload")
+                .upload({
+                  data: {
+                    refId: createdRecord.id,
+                    ref: "api::medical-record.medical-record",
+                    field: "files",
+                  },
+                  files: file,
+                })
+            )
+          );
+        }
 
         return ctx.send({
           message: "Record created",
-          data: await sanitizeOutput(created, strapi),
+          data: {
+            id: createdRecord.id,
+          },
         });
       } catch (error) {
         strapi.log.error("Error creating medical record:", error);
         ctx.throw(500, error.message || "Failed to create record");
       }
     },
-
     async update(ctx) {
       try {
         const doctor = ctx.state.doctor;
         const { id } = ctx.params;
 
-        const existing = await recordService.findOne(id);
-        if (!existing || existing.doctor.id !== doctor.id) {
+        const existing = await recordService.findOne(id, {
+          doctorId: doctor.id,
+        });
+        if (!existing) {
           throw new NotFoundError("Record not found or unauthorized");
         }
 
         const updated = await recordService.update(id, ctx.request.body);
         return ctx.send({
           message: "Updated",
-          data: sanitizeOutput(updated, strapi),
+          data: await sanitizeOutput(updated, strapi),
         });
       } catch (error) {
         strapi.log.error("Error updating medical record:", error);
@@ -77,9 +144,7 @@ module.exports = ({ strapi }) => {
         const doctor = ctx.state.doctor;
         const { id } = ctx.params;
 
-        const record = await recordService.findOne(id, {
-          doctorId: doctor.id,
-        });
+        const record = await recordService.findOne(id, { doctorId: doctor.id });
 
         return ctx.send({
           data: await sanitizeOutput(record, strapi),
