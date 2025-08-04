@@ -34,6 +34,8 @@ module.exports = () => ({
         comment: review.comment,
         date: review.date,
         patient: {
+          // @ts-ignore
+          id: review.patient?.id,
           fullname: personalInfo.fullname || "Anonymous",
           image: image?.formats?.thumbnail?.url || image?.url || null,
           city: contact_details.city.name,

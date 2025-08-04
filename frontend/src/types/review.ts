@@ -20,6 +20,7 @@ export interface Review {
   comment: string;
   date: string; // ISO date string
   patient: {
+    id?: number;
     fullname: string;
     image: string; // In the response it's always a string, not null
     city?: string;

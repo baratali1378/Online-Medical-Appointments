@@ -57,6 +57,12 @@
       "relation": "oneToMany",
       "target": "api::notification.notification",
       "mappedBy": "patient"
+    },
+    "doctors": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::doctor.doctor",
+      "mappedBy": "patients"
     }
   }
 }

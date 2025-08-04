@@ -89,6 +89,12 @@
       "relation": "oneToMany",
       "target": "api::available-slot.available-slot",
       "mappedBy": "doctor"
+    },
+    "patients": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::patient.patient",
+      "inversedBy": "doctors"
     }
   }
 }

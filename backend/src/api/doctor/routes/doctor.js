@@ -70,5 +70,14 @@ module.exports = {
         middlewares: ["api::doctor.auth"],
       },
     },
+    {
+      method: "GET",
+      path: "/doctor/patients/:id",
+      handler: "patient.getPatientById",
+      config: {
+        auth: false,
+        middlewares: ["api::doctor.auth"],
+      },
+    },
   ],
 };

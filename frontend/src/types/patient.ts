@@ -96,7 +96,7 @@ export interface ApiPersonalInfo extends PersonalInfo {
 
 // Extend ContactInfo but only pick fields you need (avoid id if you want)
 export interface ApiContactDetails
-  extends Pick<ContactInfo, "phone_number" | "postal_code"> {}
+  extends Pick<ContactInfo, "phone_number" | "postal_code" | "city"> {}
 
 export interface ApiPatient {
   id: number;
@@ -106,4 +106,8 @@ export interface ApiPatient {
 
 export interface ApiPatientListResponse {
   data: ApiPatient[];
+}
+
+export interface ApiPatientResponse {
+  data: ApiPatient;
 }

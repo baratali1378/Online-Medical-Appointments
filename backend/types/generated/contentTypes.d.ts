@@ -622,6 +622,7 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     password: Schema.Attribute.Password &
       Schema.Attribute.Required &
       Schema.Attribute.Private;
+    patients: Schema.Attribute.Relation<'manyToMany', 'api::patient.patient'>;
     personal_info: Schema.Attribute.Component<
       'personal-info.personal-info',
       false
@@ -814,6 +815,7 @@ export interface ApiPatientPatient extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    doctors: Schema.Attribute.Relation<'manyToMany', 'api::doctor.doctor'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

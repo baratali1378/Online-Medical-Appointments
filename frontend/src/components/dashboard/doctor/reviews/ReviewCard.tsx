@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { Review } from "@/types/review";
 import RoomIcon from "@mui/icons-material/Room";
 import StarRating from "./StarRating";
+import Link from "next/link";
 
 interface ReviewCardProps {
   review: Review;
@@ -45,24 +46,28 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
         spacing={isMobile ? 2 : 0}
         mb={2}
       >
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Avatar
-            src={`${API_URL}${review.patient.image}`}
-            alt={review.patient.fullname}
-            sx={{ width: 56, height: 56, bgcolor: theme.palette.grey[200] }}
-          >
-            {review.patient.fullname.charAt(0)}
-          </Avatar>
-          <Box>
-            <Typography variant="subtitle1" fontWeight={600}>
-              {review.patient.fullname}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {format(new Date(review.date), "MMMM d, yyyy")}
-            </Typography>
-          </Box>
-        </Stack>
-
+        <Link
+          href={`/dashboard/doctor/patients/${review.patient.id}`}
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Avatar
+              src={`${API_URL}${review.patient.image}`}
+              alt={review.patient.fullname}
+              sx={{ width: 56, height: 56, bgcolor: theme.palette.grey[200] }}
+            >
+              {review.patient.fullname.charAt(0)}
+            </Avatar>
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600}>
+                {review.patient.fullname}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {format(new Date(review.date), "MMMM d, yyyy")}
+              </Typography>
+            </Box>
+          </Stack>
+        </Link>
         <StarRating rating={review.rating} />
       </Stack>
 
