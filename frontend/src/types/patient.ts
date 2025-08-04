@@ -87,3 +87,23 @@ export interface PatientSignupResponse {
   token: string;
   role: string;
 }
+
+// Extend PersonalInfo to add gender
+export interface ApiPersonalInfo extends PersonalInfo {
+  gender: Gender; // from your genderOptions type
+  birth: string;
+}
+
+// Extend ContactInfo but only pick fields you need (avoid id if you want)
+export interface ApiContactDetails
+  extends Pick<ContactInfo, "phone_number" | "postal_code"> {}
+
+export interface ApiPatient {
+  id: number;
+  personal_info: ApiPersonalInfo;
+  contact_details: ApiContactDetails;
+}
+
+export interface ApiPatientListResponse {
+  data: ApiPatient[];
+}
