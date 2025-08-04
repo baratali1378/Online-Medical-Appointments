@@ -47,14 +47,6 @@ export const PatientDetailsDialog: React.FC<PatientDetailsDialogProps> = ({
     ? `${apiUrl}${personal_info.image.url}`
     : undefined;
 
-  // Handlers for buttons
-  const handleViewMedicalRecords = (patientId: string | number) => {};
-
-  const handleViewAppointments = (patientId: string | number) => {
-    console.log("View appointments for", patientId);
-    // Could navigate to /patients/[id]/appointments or open another dialog
-  };
-
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       {/* Header with Close X */}
