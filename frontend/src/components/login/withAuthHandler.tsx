@@ -12,6 +12,7 @@ const withAuthHandler = (
   WrappedComponent: React.FC<{
     handleSubmit: (values: { email: string; password: string }) => Promise<any>;
     signupLink: string;
+    role: string;
   }>
 ) => {
   return function AuthenticatedComponent({ role }: AuthHandlerProps) {
@@ -25,8 +26,6 @@ const withAuthHandler = (
       // Inject role here
       const result = await postData({ ...values, role });
 
-      console.log("hello hi", values.email);
-
       if (result.success) {
         router.push("/dashboard");
       }
@@ -37,7 +36,11 @@ const withAuthHandler = (
     const signupLink = role === "doctor" ? "/signup/doctor" : "/signup/patient";
 
     return (
-      <WrappedComponent handleSubmit={handleSubmit} signupLink={signupLink} />
+      <WrappedComponent
+        handleSubmit={handleSubmit}
+        signupLink={signupLink}
+        role={role}
+      />
     );
   };
 };

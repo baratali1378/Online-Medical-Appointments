@@ -15,7 +15,7 @@ export const FormTextField = ({
   name,
   label,
   type = "text",
-  multiline,
+  multiline = false,
   rows,
   ...props
 }: FormTextFieldProps) => {

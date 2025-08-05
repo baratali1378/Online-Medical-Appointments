@@ -32,7 +32,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isDashboard = pathname?.startsWith("/dashboard");
+  const isDashboard =
+    pathname?.startsWith("/dashboard") ||
+    pathname?.startsWith("/reset-password") ||
+    pathname?.startsWith("/forgot-password") ||
+    pathname.startsWith("/not-found");
 
   const [queryClient] = useState(() => new QueryClient());
 

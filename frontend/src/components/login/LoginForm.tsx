@@ -15,9 +15,16 @@ interface LoginFormProps {
     message?: string;
   }>;
   signupLink: string;
+  role: string;
+  forgotPasswordLink?: string; // <-- Optional prop for flexibility
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ handleSubmit, signupLink }) => {
+const LoginForm: React.FC<LoginFormProps> = ({
+  handleSubmit,
+  signupLink,
+  role,
+  forgotPasswordLink = `/forgot-password?role=${role}`,
+}) => {
   const theme = useTheme();
   const [result, setResult] = useState<{
     success: boolean;
@@ -56,7 +63,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleSubmit, signupLink }) => {
         gutterBottom
         sx={{ fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" } }}
       >
-        Login
+        Login As {role == "patient" ? "Patient" : "Doctor"}
       </Typography>
 
       <Typography
@@ -81,6 +88,26 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleSubmit, signupLink }) => {
               loading={formik.isSubmitting}
               buttonLabel="Login"
             />
+
+            {/* Forgot Password Link */}
+            <Typography
+              textAlign="right"
+              sx={{
+                mt: 1,
+                fontSize: { xs: "0.7rem", sm: "0.85rem" },
+              }}
+            >
+              <Link
+                href={forgotPasswordLink}
+                style={{
+                  color: theme.palette.primary.main,
+                  textDecoration: "none",
+                  fontWeight: "500",
+                }}
+              >
+                Forgot Password?
+              </Link>
+            </Typography>
 
             {result && !result.success && (
               <Typography

@@ -8,6 +8,7 @@ export const PasswordField: React.FC<FormFieldConfig> = ({
   name,
   label,
   placeholder = "",
+  mt,
 }) => {
   const [field, meta] = useField(name);
   const [show, setShow] = useState(false);
@@ -18,6 +19,9 @@ export const PasswordField: React.FC<FormFieldConfig> = ({
       label={label}
       type={show ? "text" : "password"}
       placeholder={placeholder}
+      sx={{
+        mt: mt,
+      }}
       {...field}
       error={meta.touched && Boolean(meta.error)}
       helperText={meta.touched ? meta.error : ""}
