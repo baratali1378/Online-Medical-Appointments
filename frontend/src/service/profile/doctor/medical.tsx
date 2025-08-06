@@ -3,6 +3,7 @@ import { createApiClient } from "@/lib/strapiClient";
 import {
   CreateMedicalRecordPayload,
   DoctorMedicalResponse,
+  MedicalRecord,
 } from "@/types/medical-record";
 
 export const MedicalRecordService = {
@@ -16,12 +17,11 @@ export const MedicalRecordService = {
       try {
         const api = createApiClient(token);
 
-        // If files are present in payload, send as FormData
         if (payload.files && payload.files.length > 0) {
           const formData = new FormData();
 
           for (const [key, value] of Object.entries(payload)) {
-            if (key === "files") continue; // skip files here
+            if (key === "files") continue;
 
             if (value !== undefined && value !== null) {
               if (typeof value === "object" && !(value instanceof File)) {
@@ -49,7 +49,6 @@ export const MedicalRecordService = {
           return response.data;
         }
 
-        // No files: send JSON normally
         const response = await api.post<DoctorMedicalResponse>(
           `/api/doctor/medical-records?patientId=${patientId}&appointmentId=${appointmentId}`,
           payload
@@ -58,6 +57,48 @@ export const MedicalRecordService = {
         return response.data;
       } catch (error) {
         throw handleServiceError(error, "Failed to create medical record");
+      }
+    },
+
+    async update(
+      token: string,
+      id: number,
+      payload: Partial<CreateMedicalRecordPayload> & { files?: File[] }
+    ): Promise<DoctorMedicalResponse> {
+      try {
+        const api = createApiClient(token);
+        const formData = new FormData();
+
+        // Always use form-data for consistency with backend
+        for (const [key, value] of Object.entries(payload)) {
+          if (key === "files") continue;
+
+          if (value !== undefined && value !== null) {
+            // Convert all values to strings (backend expects string values)
+            formData.append(key, String(value));
+          }
+        }
+
+        // Handle files if present
+        if (payload.files && payload.files.length > 0) {
+          payload.files.forEach((file) => {
+            formData.append("files", file);
+          });
+        }
+
+        const response = await api.put<DoctorMedicalResponse>(
+          `/api/doctor/medical-records/${id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        return response.data;
+      } catch (error) {
+        throw handleServiceError(error, "Failed to update medical record");
       }
     },
     async getAll(
@@ -69,13 +110,24 @@ export const MedicalRecordService = {
         const response = await api.get<DoctorMedicalResponse>(
           `/api/doctor/medical-records`,
           {
-            params: { patientId }, // Pass as query parameter
+            params: { patientId },
           }
         );
 
         return response.data;
       } catch (error) {
         throw handleServiceError(error, "Failed to fetch medical records");
+      }
+    },
+    async getById(token: string, id: number): Promise<MedicalRecord> {
+      try {
+        const api = createApiClient(token);
+        const response = await api.get<MedicalRecord>(
+          `/api/doctor/medical-records/${id}`
+        );
+        return response.data?.data;
+      } catch (error) {
+        throw handleServiceError(error, "Failed to fetch medical record");
       }
     },
   },

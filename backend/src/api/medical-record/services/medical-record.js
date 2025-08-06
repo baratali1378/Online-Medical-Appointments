@@ -94,7 +94,6 @@ module.exports = ({ strapi }) => ({
       }
     );
 
-    console.log("record", record);
     if (!record) {
       throw new Error("Record not found");
     }

@@ -1,7 +1,9 @@
+import { number } from "yup";
 import { Appointment } from "./appointments";
 import { PersonalInfo } from "./doctor";
 
 export interface MedicalRecord {
+  data: MedicalRecord | PromiseLike<MedicalRecord>;
   id: number;
   documentId: string;
   chief_complaint: string;
@@ -16,6 +18,7 @@ export interface MedicalRecord {
   updatedAt: string;
 
   patient: {
+    id?: number;
     personal_info: PersonalInfo;
   };
 
@@ -25,11 +28,7 @@ export interface MedicalRecord {
   };
 
   appointment?: Appointment | null;
-  files: {
-    id: number;
-    url: string;
-    size: number;
-  } | null;
+  files: File[];
 }
 
 // ===== Generic Response Types =====
@@ -77,6 +76,7 @@ export interface MedicalRecord {
   updatedAt: string;
 
   patient: {
+    id?: number;
     personal_info: PersonalInfo;
   };
 

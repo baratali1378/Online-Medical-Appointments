@@ -98,7 +98,11 @@ export const EnhancedRecordRow: React.FC<EnhancedRecordRowProps> = ({
           <Typography variant="caption" color="text.secondary">
             Created: {dayjs(record.createdAt).format("DD MMM YYYY")}
           </Typography>
-          <RecordActions recordId={record.id} onDelete={onDelete} />
+          <RecordActions
+            recordId={record.id}
+            patientId={record.patient.id || 0}
+            onDelete={onDelete}
+          />
         </Box>
       </Box>
     );
@@ -157,7 +161,11 @@ export const EnhancedRecordRow: React.FC<EnhancedRecordRowProps> = ({
       </TableCell>
 
       <TableCell>
-        <RecordActions recordId={record.id} onDelete={onDelete} />
+        <RecordActions
+          recordId={record.id}
+          patientId={record.patient.id || 0}
+          onDelete={onDelete}
+        />
       </TableCell>
     </TableRow>
   );

@@ -4,6 +4,25 @@ const { sanitizeOutput } = require("../utils/sanitize");
 module.exports = ({ strapi }) => {
   const recordService = strapi.service("api::medical-record.medical-record");
 
+  // Whitelist fields allowed for update/create
+  const allowedFields = [
+    "chief_complaint",
+    "symptoms",
+    "diagnoses",
+    "treatment_plan",
+    "notes",
+    "follow_up_required",
+    "follow_up_date",
+    "prescription",
+  ];
+
+  // Helper to pick allowed fields only
+  const pickAllowedFields = (obj) => {
+    return Object.fromEntries(
+      Object.entries(obj).filter(([key]) => allowedFields.includes(key))
+    );
+  };
+
   return {
     async createMedicalRecord(ctx) {
       try {
@@ -12,14 +31,12 @@ module.exports = ({ strapi }) => {
 
         const { appointmentId, patientId } = ctx.query;
 
-        // Validate query params
         if (!appointmentId || !patientId) {
           throw new ApplicationError(
             "appointmentId and patientId are required in query params"
           );
         }
 
-        // Verify appointment belongs to doctor + patient & is confirmed
         const appointment = await strapi.db
           .query("api::appointment.appointment")
           .findOne({
@@ -46,15 +63,18 @@ module.exports = ({ strapi }) => {
         // Extract body data (excluding files)
         const { files, ...bodyData } = ctx.request.body;
 
-        // Create medical record without files first
+        // Pick allowed fields only
+        const filteredData = pickAllowedFields(bodyData);
+
+        // Create record without files first
         const createdRecord = await recordService.create({
-          ...bodyData,
+          ...filteredData,
           doctor: doctor.id,
           patient: patientId,
           appointment: appointmentId,
         });
 
-        // If files are uploaded, attach them
+        // Attach uploaded files (if any)
         if (ctx.request.files && ctx.request.files.files) {
           const uploadedFiles = Array.isArray(ctx.request.files.files)
             ? ctx.request.files.files
@@ -88,19 +108,70 @@ module.exports = ({ strapi }) => {
         ctx.throw(500, error.message || "Failed to create record");
       }
     },
+
     async update(ctx) {
       try {
         const doctor = ctx.state.doctor;
         const { id } = ctx.params;
 
+        // Check record exists
         const existing = await recordService.findOne(id, {
           doctorId: doctor.id,
         });
-        if (!existing) {
+        if (!existing)
           throw new NotFoundError("Record not found or unauthorized");
+
+        // Parse form data fields
+        const filteredData = {};
+        for (const key of allowedFields) {
+          if (ctx.request.body[key] !== undefined) {
+            // Convert string values to appropriate types
+            if (key === "follow_up_required") {
+              filteredData[key] = ctx.request.body[key] === "true";
+            } else if (key === "follow_up_date") {
+              filteredData[key] = new Date(ctx.request.body[key]);
+            } else {
+              filteredData[key] = ctx.request.body[key];
+            }
+          }
         }
 
-        const updated = await recordService.update(id, ctx.request.body);
+        // Update text fields
+        await recordService.update(id, filteredData);
+
+        // Handle file uploads
+        const uploadedFiles = [];
+        if (ctx.request.files) {
+          for (const key in ctx.request.files) {
+            const fileOrFiles = ctx.request.files[key];
+            if (Array.isArray(fileOrFiles)) {
+              uploadedFiles.push(...fileOrFiles);
+            } else {
+              uploadedFiles.push(fileOrFiles);
+            }
+          }
+        }
+
+        if (uploadedFiles.length > 0) {
+          await Promise.all(
+            uploadedFiles.map((file) =>
+              strapi
+                .plugin("upload")
+                .service("upload")
+                .upload({
+                  data: {
+                    refId: id,
+                    ref: "api::medical-record.medical-record",
+                    field: "files",
+                  },
+                  files: file,
+                })
+            )
+          );
+        }
+
+        // Return updated record
+        const updated = await recordService.findOne(id);
         return ctx.send({
           message: "Updated",
           data: await sanitizeOutput(updated, strapi),
@@ -110,13 +181,11 @@ module.exports = ({ strapi }) => {
         return ctx.internalServerError("Failed to update the Medical Record");
       }
     },
-
     async find(ctx) {
       try {
         const doctor = ctx.state.doctor;
         const { patientId } = ctx.query;
 
-        // Validate patientId
         if (!patientId) {
           return ctx.badRequest("Patient ID is required");
         }
@@ -148,6 +217,7 @@ module.exports = ({ strapi }) => {
         ctx.throw(500, error.message || "Failed to fetch records");
       }
     },
+
     async findOne(ctx) {
       try {
         const doctor = ctx.state.doctor;

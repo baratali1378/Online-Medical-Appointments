@@ -10,6 +10,7 @@ import { MedicalRecordService } from "@/service/profile/doctor/medical";
 import {
   CreateMedicalRecordPayload,
   DoctorMedicalResponse,
+  MedicalRecord,
 } from "@/types/medical-record";
 
 export const useMedical = (token: string) => {
@@ -40,6 +41,25 @@ export const useMedical = (token: string) => {
     },
   });
 
+  // Mutation for updating medical record
+  const updateMedicalRecord = useMutation<
+    DoctorMedicalResponse,
+    Error,
+    {
+      id: number;
+      payload: Partial<CreateMedicalRecordPayload>;
+    }
+  >({
+    mutationFn: ({ id, payload }) =>
+      MedicalRecordService.doctor.update(token, id, payload),
+    onSuccess: (data) => {
+      toast.success("Medical record updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update medical record");
+    },
+  });
+
   // Get all medical records for a patient (doctor's view)
   const useGetMedicalRecords = (patientId: number) => {
     const options: UseQueryOptions<
@@ -51,7 +71,24 @@ export const useMedical = (token: string) => {
       queryKey: ["doctorMedicalRecords", patientId],
       queryFn: () => MedicalRecordService.doctor.getAll(token, patientId),
       enabled: !!patientId,
-      // ✅ Correct place for error handling
+      retry: false,
+    };
+
+    const query = useQuery(options);
+
+    if (query.error) {
+      toast.error(query.error.message);
+    }
+
+    return query;
+  };
+
+  // Get a single medical record by ID
+  const useGetMedicalRecordById = (id: number) => {
+    const options: UseQueryOptions<MedicalRecord, Error> = {
+      queryKey: ["doctorMedicalRecord", id],
+      queryFn: () => MedicalRecordService.doctor.getById(token, id),
+      enabled: !!id,
       retry: false,
     };
 
@@ -66,6 +103,8 @@ export const useMedical = (token: string) => {
 
   return {
     createMedicalRecord,
+    updateMedicalRecord,
     useGetMedicalRecords,
+    useGetMedicalRecordById,
   };
 };

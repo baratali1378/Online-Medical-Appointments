@@ -20,10 +20,15 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   recordId: number;
+  patientId: number;
   onDelete?: (id: number) => void;
 }
 
-export const RecordActions: React.FC<Props> = ({ recordId, onDelete }) => {
+export const RecordActions: React.FC<Props> = ({
+  recordId,
+  onDelete,
+  patientId,
+}) => {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openConfirm, setOpenConfirm] = React.useState(false);
@@ -40,7 +45,9 @@ export const RecordActions: React.FC<Props> = ({ recordId, onDelete }) => {
   };
 
   const handleEdit = () => {
-    router.push(`/dashboard/doctor/medical-records/${recordId}/edit`);
+    router.push(
+      `/dashboard/doctor/medical-records/${recordId}/${patientId}/edit`
+    );
     handleCloseMenu();
   };
 
