@@ -131,7 +131,7 @@ export function MedicalRecordForm({
               </Grid>
             </SectionPaper>
 
-            {existingFiles.length > 0 && (
+            {existingFiles?.length > 0 && (
               <SectionPaper title="Existing Files">
                 <List dense>
                   {existingFiles.map((file: any) => (

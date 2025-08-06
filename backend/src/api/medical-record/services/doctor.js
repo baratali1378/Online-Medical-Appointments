@@ -22,6 +22,7 @@ module.exports = ({ strapi }) => ({
       {
         filters: { doctor: doctorId },
         populate: ["patient", "appointment", "doctor"],
+        orderBy: { createdAt: "desc" },
       }
     );
   },
