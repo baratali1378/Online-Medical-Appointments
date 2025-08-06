@@ -22,6 +22,7 @@ import { FormTextField } from "@/components/forms/fields/FormTextField";
 import { BrandButton } from "@/components/dashboard/common/BrandButton";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useRouter } from "next/navigation";
 
 const validationSchema = Yup.object({
   chief_complaint: Yup.string()
@@ -79,6 +80,7 @@ export function MedicalRecordForm({
   submitLabel,
   existingFiles = [],
 }: MedicalRecordFormProps) {
+  const router = useRouter();
   const getFullFileUrl = (fileUrl: string) => {
     if (!fileUrl) return "";
     return fileUrl.startsWith("http")
@@ -241,7 +243,15 @@ export function MedicalRecordForm({
               )}
             </SectionPaper>
 
-            <Box display="flex" justifyContent="flex-end" mt={3}>
+            <Box display="flex" justifyContent="flex-end" gap={2} mt={3}>
+              <Button
+                variant="outlined"
+                color="error"
+                size="large"
+                onClick={() => router.back()}
+              >
+                Cancel
+              </Button>
               <BrandButton
                 type="submit"
                 variant="contained"
