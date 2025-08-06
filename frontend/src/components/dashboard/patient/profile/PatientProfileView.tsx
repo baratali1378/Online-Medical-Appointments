@@ -10,6 +10,7 @@ interface PatientProfileViewProps {
   onUpdate: (data: Partial<PatientFormValues>) => Promise<void>;
   onImageUpload: (file: File) => Promise<void>;
   onRefresh: () => Promise<void>;
+  token: string;
 }
 
 export const PatientProfileView = ({
@@ -17,6 +18,7 @@ export const PatientProfileView = ({
   onUpdate,
   onImageUpload,
   onRefresh,
+  token,
 }: PatientProfileViewProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -89,6 +91,7 @@ export const PatientProfileView = ({
         </Grid>
         <Grid item xs={12} md={8}>
           <PatientFormCard
+            token={token}
             patient={patient}
             onSubmit={handleUpdateProfile}
             loading={isUpdating}

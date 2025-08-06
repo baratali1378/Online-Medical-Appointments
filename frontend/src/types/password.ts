@@ -14,6 +14,11 @@ export interface ResetPasswordFormValues {
   token: string;
 }
 
+export interface ChangePasswordFormValues {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface ApiResponse {
   message: string;
 }

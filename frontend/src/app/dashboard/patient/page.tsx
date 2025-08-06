@@ -61,6 +61,7 @@ export default function ProfilePage() {
       onRefresh={async () => {
         await refetch();
       }}
+      token={session?.user.token || ""}
     />
   );
 }

@@ -1,4 +1,3 @@
-// components/patient/PatientFormCard.tsx
 import { useState } from "react";
 import {
   Button,
@@ -7,14 +6,18 @@ import {
   useMediaQuery,
   Grid,
   Alert,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
-import { Save, Cancel, Edit } from "@mui/icons-material";
+import { Save, Cancel, Edit, MoreVert, Lock } from "@mui/icons-material";
 import { Formik, Form } from "formik";
 import { PatientProfile, PatientProfileFormValues } from "@/types/patient";
 import { BaseCard } from "../../common/Card";
 import { ProfileValidation } from "@/utils/validation";
 import { FormTextField, FormGridSelectField } from "../../common/FormFields";
 import { useCitiesQuery } from "@/hooks/useCitiesQuery";
+import ChangePasswordDialog from "@/components/dashboard/common/ChangepasswordDialog";
 
 interface PatientFormCardProps {
   patient: PatientProfile;
@@ -22,6 +25,7 @@ interface PatientFormCardProps {
   loading?: boolean;
   error?: string;
   onEditToggle?: () => void;
+  token: string;
 }
 
 export const PatientFormCard = ({
@@ -30,10 +34,14 @@ export const PatientFormCard = ({
   loading,
   error,
   onEditToggle,
+  token,
 }: PatientFormCardProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [editMode, setEditMode] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+
   const { data: cities, isLoading } = useCitiesQuery();
 
   const cityOptions =
@@ -62,34 +70,92 @@ export const PatientFormCard = ({
     setEditMode(false);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  };
+
   return (
     <BaseCard
       title="Personal Information"
       loading={loading}
       headerActions={
         editMode ? (
-          <Box display="flex" gap={1}>
-            <Button
-              type="submit"
-              form="patient-form"
-              variant="contained"
-              color="primary"
-              startIcon={<Save />}
-              size={isMobile ? "small" : "medium"}
-              disabled={loading}
-            >
-              Save Changes
-            </Button>
-            <Button
-              variant="outlined"
-              color="inherit"
-              startIcon={<Cancel />}
-              onClick={toggleEditMode}
-              size={isMobile ? "small" : "medium"}
-              disabled={loading}
-            >
-              Cancel
-            </Button>
+          <Box display="flex" gap={1} alignItems="center">
+            {isMobile ? (
+              <>
+                <IconButton onClick={handleMenuOpen}>
+                  <MoreVert />
+                </IconButton>
+                <Menu
+                  anchorEl={menuAnchor}
+                  open={Boolean(menuAnchor)}
+                  onClose={handleMenuClose}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      setPasswordDialogOpen(true);
+                      handleMenuClose();
+                    }}
+                  >
+                    <Lock fontSize="small" sx={{ mr: 1 }} /> Change Password
+                  </MenuItem>
+                  <MenuItem onClick={toggleEditMode} disabled={loading}>
+                    <Cancel fontSize="small" sx={{ mr: 1 }} /> Cancel
+                  </MenuItem>
+                </Menu>
+                <Button
+                  type="submit"
+                  form="patient-form"
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Save />}
+                  size="small"
+                  disabled={loading}
+                >
+                  Save
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  type="submit"
+                  form="patient-form"
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Save />}
+                  disabled={loading}
+                >
+                  Save Changes
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<Cancel />}
+                  onClick={toggleEditMode}
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<Lock />}
+                  onClick={() => setPasswordDialogOpen(true)}
+                >
+                  Change Password
+                </Button>
+              </>
+            )}
+            <ChangePasswordDialog
+              open={passwordDialogOpen}
+              onClose={() => setPasswordDialogOpen(false)}
+              role="patient"
+              token={token}
+            />
           </Box>
         ) : (
           <Button
@@ -115,7 +181,7 @@ export const PatientFormCard = ({
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {({ values }) => (
+        {() => (
           <Form id="patient-form">
             <Grid container spacing={2}>
               <FormTextField
