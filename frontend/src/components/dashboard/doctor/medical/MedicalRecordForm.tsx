@@ -106,7 +106,7 @@ export function MedicalRecordForm({
         enableReinitialize
         onSubmit={onSubmit}
       >
-        {({ values, setFieldValue }) => (
+        {({ values, setFieldValue, dirty }) => (
           <Form>
             <SectionPaper title="Clinical Information">
               <Grid container spacing={3}>
@@ -255,7 +255,7 @@ export function MedicalRecordForm({
               <BrandButton
                 type="submit"
                 variant="contained"
-                disabled={isSubmitting || isPending}
+                disabled={!dirty || isSubmitting || isPending}
                 size="large"
               >
                 {isPending ? `${submitLabel}...` : submitLabel}

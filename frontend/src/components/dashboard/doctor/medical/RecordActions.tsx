@@ -24,11 +24,7 @@ interface Props {
   onDelete?: (id: number) => void;
 }
 
-export const RecordActions: React.FC<Props> = ({
-  recordId,
-  onDelete,
-  patientId,
-}) => {
+export const RecordActions: React.FC<Props> = ({ recordId, patientId }) => {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openConfirm, setOpenConfirm] = React.useState(false);
@@ -49,16 +45,6 @@ export const RecordActions: React.FC<Props> = ({
       `/dashboard/doctor/medical-records/${recordId}/${patientId}/edit`
     );
     handleCloseMenu();
-  };
-
-  const handleDeleteClick = () => {
-    setOpenConfirm(true);
-    handleCloseMenu();
-  };
-
-  const handleConfirmDelete = () => {
-    if (onDelete) onDelete(recordId);
-    setOpenConfirm(false);
   };
 
   return (
@@ -102,18 +88,6 @@ export const RecordActions: React.FC<Props> = ({
           </ListItemIcon>
           <ListItemText>Edit</ListItemText>
         </MenuItem>
-
-        <MenuItem
-          onClick={(e) => {
-            e.stopPropagation(); // 👈 prevent row click
-            handleDeleteClick();
-          }}
-        >
-          <ListItemIcon>
-            <Delete fontSize="small" color="error" />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
       </Menu>
 
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
@@ -122,16 +96,6 @@ export const RecordActions: React.FC<Props> = ({
           Are you sure you want to delete this medical record? This action
           cannot be undone.
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Cancel</Button>
-          <Button
-            onClick={handleConfirmDelete}
-            color="error"
-            variant="contained"
-          >
-            Delete
-          </Button>
-        </DialogActions>
       </Dialog>
     </>
   );
