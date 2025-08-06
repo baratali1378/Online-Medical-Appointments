@@ -1,4 +1,3 @@
-// components/dashboard/doctor/PersonalInfoCard.tsx
 "use client";
 
 import { BaseCard } from "@/components/dashboard/common/Card";
@@ -12,12 +11,15 @@ import {
 } from "@/components/dashboard/common/FormFields";
 import { useCitiesQuery } from "@/hooks/useCitiesQuery";
 import { BrandButton } from "../../common/BrandButton";
+import { useState } from "react";
+import ChangePasswordDialog from "@/components/dashboard/common/ChangepasswordDialog"; // same as in patient card
 
 interface PersonalInfoCardProps {
   doctor: Doctor;
   onUpdate: (data: Partial<Doctor>) => Promise<void>;
   onRefresh: () => Promise<void>;
   loading: boolean;
+  token: string; // added so we can pass token to dialog
 }
 
 const experienceYears = Array.from({ length: 50 }, (_, i) => ({
@@ -30,8 +32,10 @@ export const PersonalInfoCard = ({
   onUpdate,
   onRefresh,
   loading,
+  token,
 }: PersonalInfoCardProps) => {
   const { data: cities = [], isLoading: citiesLoading } = useCitiesQuery();
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
 
   const extractYears = (expStr: string) => {
     const match = expStr.match(/\d+/);
@@ -105,6 +109,15 @@ export const PersonalInfoCard = ({
               >
                 Cancel
               </Button>
+
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => setPasswordDialogOpen(true)}
+              >
+                Change Password
+              </Button>
+
               <BrandButton
                 type="submit"
                 loading={isSubmitting || loading}
@@ -113,6 +126,13 @@ export const PersonalInfoCard = ({
                 Save Changes
               </BrandButton>
             </Box>
+
+            <ChangePasswordDialog
+              open={passwordDialogOpen}
+              onClose={() => setPasswordDialogOpen(false)}
+              role="doctor"
+              token={token}
+            />
           </Form>
         )}
       </Formik>

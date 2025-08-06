@@ -95,6 +95,7 @@ export const DoctorProfileView = ({
         <Grid2>
           <AnimatedGridItem direction="left" delay={0.1}>
             <PersonalInfoCard
+              token={token}
               doctor={doctor}
               onUpdate={handleUpdateProfile}
               onRefresh={onRefresh}
