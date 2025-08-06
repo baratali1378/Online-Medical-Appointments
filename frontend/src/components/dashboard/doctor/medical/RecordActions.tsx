@@ -36,7 +36,9 @@ export const RecordActions: React.FC<Props> = ({ recordId, patientId }) => {
   const handleCloseMenu = () => setAnchorEl(null);
 
   const handleView = () => {
-    router.push(`/dashboard/doctor/medical-records/${recordId}`);
+    router.push(
+      `/dashboard/doctor/medical-records/${recordId}/${patientId}/view`
+    );
     handleCloseMenu();
   };
 
