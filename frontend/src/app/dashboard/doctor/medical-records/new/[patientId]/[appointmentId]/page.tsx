@@ -30,10 +30,17 @@ function NewMedicalRecordPage({ session }: { session: any }) {
       initialValues={initialValues}
       isSubmitting={false}
       isPending={createMedicalRecord.isPending}
-      onSubmit={(values: any) => {
+      onSubmit={(values: any, files) => {
+        const payload = {
+          ...values,
+          follow_up_date: values.follow_up_date
+            ? values.follow_up_date.toISOString()
+            : null,
+          files,
+        };
         createMedicalRecord.mutate(
           {
-            payload: values,
+            payload,
             patientId: Number(patientId),
             appointmentId: Number(appointmentId),
           },

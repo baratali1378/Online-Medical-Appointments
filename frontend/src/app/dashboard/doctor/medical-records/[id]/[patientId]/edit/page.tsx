@@ -56,12 +56,13 @@ function EditMedicalRecordPage({ session }: { session: any }) {
       existingFiles={medicalRecord.files}
       isSubmitting={false}
       isPending={updateMedicalRecord.isPending}
-      onSubmit={(values) => {
+      onSubmit={(values, files) => {
         const payload = {
           ...values,
           follow_up_date: values.follow_up_date
             ? values.follow_up_date.toISOString()
             : null,
+          files,
         };
         updateMedicalRecord.mutate(
           { id: Number(id), payload },

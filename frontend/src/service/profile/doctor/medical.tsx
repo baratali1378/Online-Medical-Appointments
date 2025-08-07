@@ -17,41 +17,35 @@ export const MedicalRecordService = {
       try {
         const api = createApiClient(token);
 
-        if (payload.files && payload.files.length > 0) {
-          const formData = new FormData();
+        // Always use FormData regardless of files presence
+        const formData = new FormData();
 
-          for (const [key, value] of Object.entries(payload)) {
-            if (key === "files") continue;
+        for (const [key, value] of Object.entries(payload)) {
+          if (key === "files") continue;
 
-            if (value !== undefined && value !== null) {
-              if (typeof value === "object" && !(value instanceof File)) {
-                formData.append(key, JSON.stringify(value));
-              } else {
-                formData.append(key, String(value));
-              }
+          if (value !== undefined && value !== null) {
+            if (typeof value === "object" && !(value instanceof File)) {
+              formData.append(key, JSON.stringify(value));
+            } else {
+              formData.append(key, String(value));
             }
           }
+        }
 
+        if (payload.files && payload.files.length > 0) {
           payload.files.forEach((file) => {
             formData.append("files", file);
           });
-
-          const response = await api.post<DoctorMedicalResponse>(
-            `/api/doctor/medical-records?patientId=${patientId}&appointmentId=${appointmentId}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-
-          return response.data;
         }
 
         const response = await api.post<DoctorMedicalResponse>(
           `/api/doctor/medical-records?patientId=${patientId}&appointmentId=${appointmentId}`,
-          payload
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
 
         return response.data;
@@ -69,17 +63,15 @@ export const MedicalRecordService = {
         const api = createApiClient(token);
         const formData = new FormData();
 
-        // Always use form-data for consistency with backend
         for (const [key, value] of Object.entries(payload)) {
           if (key === "files") continue;
 
           if (value !== undefined && value !== null) {
-            // Convert all values to strings (backend expects string values)
             formData.append(key, String(value));
           }
         }
 
-        // Handle files if present
+        console.log("file", payload.files);
         if (payload.files && payload.files.length > 0) {
           payload.files.forEach((file) => {
             formData.append("files", file);
