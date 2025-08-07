@@ -16,8 +16,11 @@ module.exports = {
       throw new Error("Image upload failed");
     }
 
-    const updatedPersonalInfo = {
-      ...patient.personal_info,
+    const personalInfoUpdate = {
+      fullname: patient.personal_info?.fullname || "",
+      email: patient.personal_info?.email || "",
+      gender: patient.personal_info?.gender || null,
+      birth: patient.personal_info?.birth || null,
       image: uploadedImage.id,
     };
 
@@ -26,7 +29,7 @@ module.exports = {
       patient.id,
       {
         data: {
-          personal_info: updatedPersonalInfo,
+          personal_info: personalInfoUpdate,
         },
         populate: {
           personal_info: true,
