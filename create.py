@@ -1,62 +1,81 @@
 import requests
-import io
+from faker import Faker
 import random
-import uuid
 
-BASE_URL_MEN = "https://randomuser.me/api/portraits/men/"
-BASE_URL_WOMEN = "https://randomuser.me/api/portraits/women/"
+fake = Faker()
 
 STRAPI_URL = "http://localhost:1337"
-TOKENS_FILE = "doctor_tokens.txt"
+SIGNUP_ENDPOINT = f"{STRAPI_URL}/api/patients/signup"
+CITIES_ENDPOINT = f"{STRAPI_URL}/api/cities"
+TOKEN_FILE = "patient_tokens.txt"
 
-def get_random_image_url():
-    gender = random.choice(['men', 'women'])
-    number = random.randint(0, 99)
-    if gender == 'men':
-        return f"{BASE_URL_MEN}{number}.jpg"
-    else:
-        return f"{BASE_URL_WOMEN}{number}.jpg"
+AFGHAN_CITIES = [
+    "Kabul", "Herat", "Kandahar", "Mazar-i-Sharif", "Jalalabad", "Kunduz",
+    "Ghazni", "Bamyan", "Lashkar Gah", "Faizabad", "Baghlan", "Taloqan"
+]
 
-def download_image(url):
-    print(f"Downloading image from {url}...")
-    resp = requests.get(url)
-    resp.raise_for_status()
-    return resp.content
+def get_valid_city_names():
+    """Fetch all cities and return valid Afghan city names."""
+    response = requests.get(CITIES_ENDPOINT)
+    response.raise_for_status()
+    data = response.json().get("data", [])
 
-def update_doctor_image(token, image_bytes):
-    url = f"{STRAPI_URL}/api/doctor/img"
-    headers = {
-        "Authorization": f"Bearer {token}",
+    city_names = []
+    for item in data:
+        # Support both REST default (item['attributes']['name']) and flat name
+        name = (
+            item.get("attributes", {}).get("name")
+            or item.get("name")
+        )
+        if name in AFGHAN_CITIES:
+            city_names.append(name)
+
+    if not city_names:
+        raise Exception("⚠️ No Afghan cities found in Strapi DB.")
+
+    return city_names
+
+def create_patient_payload(city_name):
+    return {
+        "name": fake.name(),
+        "email": fake.unique.email(),
+        "password": "Test1234!",
+        "phone": fake.msisdn()[:10],
+        "city": city_name,
+        "gender": random.choice(["Male", "Female", "Others"]),
     }
-
-    # Generate unique filename with uuid4
-    unique_filename = f"profile_{uuid.uuid4().hex}.jpg"
-
-    file_obj = io.BytesIO(image_bytes)
-    file_obj.name = unique_filename
-
-    files = {
-        "files": (file_obj.name, file_obj, "image/jpeg"),
-    }
-
-    print(f"Uploading image for token: {token[:8]} with filename {file_obj.name}...")
-    response = requests.post(url, headers=headers, files=files)
-    if response.status_code == 200:
-        print(f"Success: {response.json()}")
-    else:
-        print(f"Failed ({response.status_code}): {response.text}")
 
 def main():
-    with open(TOKENS_FILE, "r") as f:
-        tokens = [line.strip() for line in f if line.strip()]
+    city_names = get_valid_city_names()
+    tokens = []
 
-    for token in tokens:
+    for i in range(1, 21):
+        city_name = random.choice(city_names)
+        payload = { "data": create_patient_payload(city_name) }
+
         try:
-            image_url = get_random_image_url()
-            image_bytes = download_image(image_url)
-            update_doctor_image(token, image_bytes)
-        except Exception as e:
-            print(f"Error for token {token[:8]}: {e}")
+            res = requests.post(SIGNUP_ENDPOINT, json=payload)
+            res.raise_for_status()
+            result = res.json()
+
+            token = result.get("token")
+            if token:
+                print(f"✅ Patient {i} created.")
+                tokens.append(token)
+            else:
+                print(f"⚠️  Patient {i} created but token missing.")
+        except requests.exceptions.RequestException as err:
+            print(f"❌ Failed to create patient {i}: {err}")
+            try:
+                print("   ↪ Response:", res.json())
+            except:
+                print("   ↪ Raw response:", res.text)
+
+    with open(TOKEN_FILE, "w") as f:
+        for t in tokens:
+            f.write(t + "\n")
+
+    print(f"\n📦 Done. Saved {len(tokens)} tokens to '{TOKEN_FILE}'.")
 
 if __name__ == "__main__":
     main()
