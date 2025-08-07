@@ -7,7 +7,7 @@ BASE_URL_MEN = "https://randomuser.me/api/portraits/men/"
 BASE_URL_WOMEN = "https://randomuser.me/api/portraits/women/"
 
 STRAPI_URL = "http://localhost:1337"
-TOKENS_FILE = "doctor_tokens.txt"
+TOKENS_FILE = "patient_tokens.txt"
 
 def get_random_image_url():
     gender = random.choice(['men', 'women'])
