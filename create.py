@@ -24,7 +24,7 @@ def download_image(url):
     return resp.content
 
 def update_doctor_image(token, image_bytes):
-    url = f"{STRAPI_URL}/api/doctor/img"
+    url = f"{STRAPI_URL}/api/patient/img"
     headers = {
         "Authorization": f"Bearer {token}",
     }
