@@ -79,5 +79,21 @@ module.exports = {
         middlewares: ["api::doctor.auth"],
       },
     },
+    {
+      method: "GET",
+      path: "/doctors/top-rated",
+      handler: "top-rated.findTopRated",
+      config: {
+        auth: false, // public access
+        policies: [],
+        middlewares: [],
+        description:
+          "Get top 5 rated doctors with rating between 3 and 5 and more than 20 reviews",
+        tag: {
+          name: "Doctor",
+          action: "read",
+        },
+      },
+    },
   ],
 };

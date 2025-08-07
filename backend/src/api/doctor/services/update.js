@@ -65,30 +65,43 @@ module.exports = () => ({
   },
 
   async updateImage(doctor, imageFile) {
-    const [uploadedImage] = await strapi
-      .plugin("upload")
-      .service("upload")
-      .upload({
-        data: {},
-        files: imageFile,
-      });
+    try {
+      const [uploadedImage] = await strapi
+        .plugin("upload")
+        .service("upload")
+        .upload({
+          data: {},
+          files: imageFile,
+        });
 
-    if (!uploadedImage?.id) {
-      throw new Error("Image upload failed");
+      if (!uploadedImage?.id) {
+        throw new Error("Image upload failed");
+      }
+
+      const personalInfoUpdate = {
+        fullname: doctor.personal_info?.fullname || "",
+        email: doctor.personal_info?.email || "",
+        gender: doctor.personal_info?.gender || null,
+        birth: doctor.personal_info?.birth || null,
+        image: uploadedImage.id,
+      };
+
+      return await strapi.entityService.update(
+        "api::doctor.doctor",
+        doctor.id,
+        {
+          data: {
+            // @ts-ignore
+            personal_info: personalInfoUpdate,
+          },
+          populate: {
+            personal_info: true,
+          },
+        }
+      );
+    } catch (error) {
+      console.log("error", error);
     }
-
-    return await strapi.entityService.update("api::doctor.doctor", doctor.id, {
-      data: {
-        // @ts-ignore
-        personal_info: {
-          ...doctor.personal_info,
-          image: uploadedImage.id,
-        },
-      },
-      populate: {
-        personal_info: true,
-      },
-    });
   },
 
   async addVerificationDocument(doctorId, type, file) {

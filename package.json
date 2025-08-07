@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "file-type": "^21.0.0",
-    "react-dropzone": "^14.3.8"
-  }
-}
