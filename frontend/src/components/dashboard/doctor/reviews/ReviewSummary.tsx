@@ -92,7 +92,7 @@ const ReviewSummary = ({
       {/* Average Rating and Bar Chart */}
       <Box sx={{ flex: 1 }}>
         <Typography variant="h5" fontWeight="bold" mb={2}>
-          Customer Reviews
+          Patient Reviews
         </Typography>
 
         <Stack direction="row" alignItems="center" spacing={2} mb={2}>

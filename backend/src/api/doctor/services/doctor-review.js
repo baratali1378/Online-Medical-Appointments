@@ -20,6 +20,11 @@ module.exports = () => ({
       },
     });
 
+    // If no reviews found, return null (or any custom value you want)
+    if (!reviews || reviews.length === 0) {
+      return null; // or { reviews: [], totalReviews: 0, averageRating: null, ratingBreakdown: {} }
+    }
+
     // Sanitize and shape data
     const sanitizedReviews = reviews.map((review) => {
       // @ts-ignore
@@ -38,7 +43,7 @@ module.exports = () => ({
           id: review.patient?.id,
           fullname: personalInfo.fullname || "Anonymous",
           image: image?.formats?.thumbnail?.url || image?.url || null,
-          city: contact_details.city.name,
+          city: contact_details.city?.name || null,
         },
       };
     });
@@ -46,10 +51,7 @@ module.exports = () => ({
     // Stats
     const totalReviews = reviews.length;
     const sumRatings = reviews.reduce((acc, r) => acc + (r.rating || 0), 0);
-    const averageRating =
-      totalReviews > 0
-        ? parseFloat((sumRatings / totalReviews).toFixed(1))
-        : null;
+    const averageRating = parseFloat((sumRatings / totalReviews).toFixed(1));
 
     const ratingBreakdown = [1, 2, 3, 4, 5].reduce((acc, star) => {
       acc[star] = reviews.filter((r) => r.rating === star).length;
