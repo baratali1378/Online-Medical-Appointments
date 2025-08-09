@@ -629,6 +629,7 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Decimal;
+    reviewCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     security: Schema.Attribute.Component<'systems.security-fields', false>;
     specialties: Schema.Attribute.Relation<
@@ -894,7 +895,7 @@ export interface ApiSpecialtySpecialty extends Struct.CollectionTypeSchema {
     singularName: 'specialty';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;

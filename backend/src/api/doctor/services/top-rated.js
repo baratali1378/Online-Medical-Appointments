@@ -2,35 +2,31 @@
 
 module.exports = {
   async getTopRatedDoctors() {
-    // Fetch doctors with rating between 3 and 5, populate reviews (just IDs)
-    const doctors = await strapi.db.query("api::doctor.doctor").findMany({
+    const topDoctors = await strapi.db.query("api::doctor.doctor").findMany({
       where: {
-        rating: {
-          $gte: 3,
-          $lte: 5,
-        },
-        reviews: {
-          id: {
-            $notNull: true,
+        rating: { $gte: 3 },
+      },
+      orderBy: [{ rating: "desc" }, { reviewCount: "desc" }],
+      limit: 10,
+      select: ["id", "rating", "reviewCount"],
+      populate: {
+        personal_info: {
+          select: ["fullname"],
+          populate: {
+            select: [""],
+            image: {
+              select: ["url"],
+            },
           },
         },
-      },
-      orderBy: { rating: "desc" },
-      populate: {
-        personal_info: true,
-        specialties: true,
-        city: true,
-        reviews: {
-          fields: ["id"],
+        specialties: {
+          select: ["name"],
+        },
+        city: {
+          select: ["name"],
         },
       },
     });
-
-    // Filter doctors with more than 20 reviews, limit to top 5
-    const filteredDoctors = doctors
-      .filter((doctor) => doctor.reviews && doctor.reviews.length > 20)
-      .slice(0, 20);
-
-    return filteredDoctors;
+    return topDoctors;
   },
 };

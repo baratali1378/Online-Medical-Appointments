@@ -1,9 +1,14 @@
 "use strict";
 
-/**
- * metric router
- */
-
-const { createCoreRouter } = require("@strapi/strapi").factories;
-
-module.exports = createCoreRouter("api::metric.metric");
+module.exports = {
+  routes: [
+    {
+      method: "GET",
+      path: "/metrics/totals",
+      handler: "metric.getTotals",
+      config: {
+        auth: false, // set true if authentication is required
+      },
+    },
+  ],
+};

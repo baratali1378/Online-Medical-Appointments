@@ -153,12 +153,10 @@ module.exports = ({ strapi }) => ({
 
       const { note, doctorId, slotId } = ctx.request.body;
 
-      // Validate required params
       if (!doctorId || !slotId) {
         return ctx.badRequest("Doctor ID and Slot ID are required");
       }
 
-      // Find the available slot with doctor relation
       const slot = await strapi.db
         .query("api::available-slot.available-slot")
         .findOne({
@@ -173,7 +171,6 @@ module.exports = ({ strapi }) => ({
         return ctx.badRequest("Selected slot is full or already booked");
       }
 
-      // Combine date and start_time to a single datetime for appointment.date
       const dayjs = require("dayjs");
       const appointmentDateTime = dayjs(`${slot.date}T${slot.start_time}`);
 
@@ -189,18 +186,45 @@ module.exports = ({ strapi }) => ({
             start_time: slot.start_time,
             end_time: slot.end_time,
             note: note || "",
-            appointment_status: "Pending", // Initial status
+            appointment_status: "Pending",
           },
         });
 
-      // Update slot capacity and optionally mark it booked
+      // Update slot capacity and is_booked flag
       await strapi.db.query("api::available-slot.available-slot").update({
         where: { id: slotId },
         data: {
           capacity: slot.capacity - 1,
-          is_booked: slot.capacity - 1 <= 0 ? true : false,
+          is_booked: slot.capacity - 1 <= 0,
         },
       });
+
+      // === HERE: Update the patient-doctor many-to-many relationship ===
+      // Fetch current patient record with doctors relation populated
+      const patientWithDoctors = await strapi.db
+        .query("api::patient.patient")
+        .findOne({
+          where: { id: patient.id },
+          populate: ["doctors"],
+        });
+
+      // Check if doctor already exists in patient's doctors list
+      const alreadyRelated = patientWithDoctors.doctors.some(
+        (doc) => doc.id === doctorId
+      );
+
+      if (!alreadyRelated) {
+        // Add doctor to patient's doctors relation
+        await strapi.db.query("api::patient.patient").update({
+          where: { id: patient.id },
+          data: {
+            doctors: [
+              ...patientWithDoctors.doctors.map((doc) => doc.id),
+              doctorId,
+            ],
+          },
+        });
+      }
 
       return ctx.send({
         message: "Appointment created successfully",

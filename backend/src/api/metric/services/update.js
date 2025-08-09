@@ -33,11 +33,12 @@ module.exports = () => ({
         });
       } else {
         // Create new record
-        const newMetrics = await strapi.db.query("api::metric.metric").create({
+        await strapi.db.query("api::metric.metric").create({
           data: {
             totalDoctors: doctorsCount,
             totalCities: citiesCount,
             successfulAppointments: appointmentsCount,
+            publishedAt: new Date(),
           },
         });
       }
