@@ -407,7 +407,7 @@ export interface ApiAppointmentAppointment extends Struct.CollectionTypeSchema {
     singularName: 'appointment';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     appointment_status: Schema.Attribute.Enumeration<
@@ -452,7 +452,7 @@ export interface ApiAvailableSlotAvailableSlot
     singularName: 'available-slot';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     appointments: Schema.Attribute.Relation<
@@ -692,7 +692,7 @@ export interface ApiMedicalRecordMedicalRecord
     singularName: 'medical-record';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     appointment: Schema.Attribute.Relation<
@@ -763,12 +763,13 @@ export interface ApiNotificationNotification
   extends Struct.CollectionTypeSchema {
   collectionName: 'notifications';
   info: {
+    description: '';
     displayName: 'Notification';
     pluralName: 'notifications';
     singularName: 'notification';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -856,7 +857,7 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
     singularName: 'review';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     appointment: Schema.Attribute.Relation<
