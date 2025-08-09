@@ -145,4 +145,70 @@ module.exports = ({ strapi }) => ({
       return ctx.internalServerError("Could not update appointment status");
     }
   },
+
+  async createAppointment(ctx) {
+    try {
+      const patient = ctx.state.patient;
+      if (!patient) throw new NotFoundError("Patient profile not found");
+
+      const { note, doctorId, slotId } = ctx.request.body;
+
+      // Validate required params
+      if (!doctorId || !slotId) {
+        return ctx.badRequest("Doctor ID and Slot ID are required");
+      }
+
+      // Find the available slot with doctor relation
+      const slot = await strapi.db
+        .query("api::available-slot.available-slot")
+        .findOne({
+          where: { id: slotId, doctor: doctorId },
+        });
+
+      if (!slot) {
+        return ctx.badRequest("Invalid or unavailable slot");
+      }
+
+      if (slot.capacity <= 0) {
+        return ctx.badRequest("Selected slot is full or already booked");
+      }
+
+      // Combine date and start_time to a single datetime for appointment.date
+      const dayjs = require("dayjs");
+      const appointmentDateTime = dayjs(`${slot.date}T${slot.start_time}`);
+
+      // Create appointment record
+      const appointment = await strapi.db
+        .query("api::appointment.appointment")
+        .create({
+          data: {
+            patient: patient.id,
+            doctor: doctorId,
+            available_slot: slotId,
+            date: appointmentDateTime.toDate(),
+            start_time: slot.start_time,
+            end_time: slot.end_time,
+            note: note || "",
+            appointment_status: "Pending", // Initial status
+          },
+        });
+
+      // Update slot capacity and optionally mark it booked
+      await strapi.db.query("api::available-slot.available-slot").update({
+        where: { id: slotId },
+        data: {
+          capacity: slot.capacity - 1,
+          is_booked: slot.capacity - 1 <= 0 ? true : false,
+        },
+      });
+
+      return ctx.send({
+        message: "Appointment created successfully",
+        data: appointment,
+      });
+    } catch (error) {
+      strapi.log.error("Error creating appointment:", error);
+      return ctx.internalServerError("Could not create appointment");
+    }
+  },
 });

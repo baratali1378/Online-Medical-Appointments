@@ -1,62 +1,73 @@
+import json
 import requests
-import io
-import random
-import uuid
+from faker import Faker
 
-BASE_URL_MEN = "https://randomuser.me/api/portraits/men/"
-BASE_URL_WOMEN = "https://randomuser.me/api/portraits/women/"
+API_URL = "http://localhost:1337/api/doctor/available-slots"
+APPOINTMENT_URL = "http://localhost:1337/api/appointments/patient"
 
-STRAPI_URL = "http://localhost:1337"
-TOKENS_FILE = "patient_tokens.txt"
+fake = Faker()
 
-def get_random_image_url():
-    gender = random.choice(['men', 'women'])
-    number = random.randint(0, 99)
-    if gender == 'men':
-        return f"{BASE_URL_MEN}{number}.jpg"
-    else:
-        return f"{BASE_URL_WOMEN}{number}.jpg"
+def load_doctors(filename):
+    with open(filename, 'r') as f:
+        return json.load(f)
 
-def download_image(url):
-    print(f"Downloading image from {url}...")
-    resp = requests.get(url)
-    resp.raise_for_status()
-    return resp.content
+def load_patients(filename):
+    with open(filename, 'r') as f:
+        return json.load(f)
 
-def update_doctor_image(token, image_bytes):
-    url = f"{STRAPI_URL}/api/patient/img"
+def getIDAvailableSlots(token: str, doctor_id):
+    """Get all available slot IDs for a doctor."""
     headers = {
         "Authorization": f"Bearer {token}",
     }
-
-    # Generate unique filename with uuid4
-    unique_filename = f"profile_{uuid.uuid4().hex}.jpg"
-
-    file_obj = io.BytesIO(image_bytes)
-    file_obj.name = unique_filename
-
-    files = {
-        "files": (file_obj.name, file_obj, "image/jpeg"),
-    }
-
-    print(f"Uploading image for token: {token[:8]} with filename {file_obj.name}...")
-    response = requests.post(url, headers=headers, files=files)
-    if response.status_code == 200:
-        print(f"Success: {response.json()}")
+    response = requests.get(API_URL, headers=headers)
+    if response.ok:
+        data = response.json()
+        results = []
+        for x in data["data"]:
+            id = x["id"]
+            results.append(id)
+        return results
     else:
-        print(f"Failed ({response.status_code}): {response.text}")
+        print(f"Failed to fetch slots for doctor {doctor_id}: {response.status_code} {response.text}")
+        return []
+
+def createAppointment(patient_token, doctorId, slotId):
+    """Create a patient appointment for a given slot."""
+    headers = {
+        "Authorization": f"Bearer {patient_token}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "doctorId": doctorId,
+        "slotId": slotId,
+        "note": fake.sentence()
+    }
+    response = requests.post(APPOINTMENT_URL, json=payload, headers=headers)
+    if response.ok:
+        print(f"✅ Appointment created for Doctor {doctorId}, Slot {slotId}")
+    else:
+        print(f"❌ Failed to create appointment: {response.status_code} {response.text}")
 
 def main():
-    with open(TOKENS_FILE, "r") as f:
-        tokens = [line.strip() for line in f if line.strip()]
+    doctors = load_doctors('doctors_with_tokens.json')   # list of dicts with doctor.id and doctor.token
+    patients = load_patients('patient_with_tokens.json') # list of dicts with patient.id and patient.token
 
-    for token in tokens:
-        try:
-            image_url = get_random_image_url()
-            image_bytes = download_image(image_url)
-            update_doctor_image(token, image_bytes)
-        except Exception as e:
-            print(f"Error for token {token[:8]}: {e}")
+    for patient in patients:
+        patient_token = patient["token"]
+
+        for doctor in doctors:
+            doctor_id = doctor["id"]
+            doctor_token = doctor["token"]
+
+            # Get available slots from doctor's perspective
+            slots = getIDAvailableSlots(doctor_token, doctor_id)
+
+            # Take first 3 slots for this doctor
+            selected_slots = slots[:3]
+
+            for slot_id in selected_slots:
+                createAppointment(patient_token, doctor_id, slot_id)
 
 if __name__ == "__main__":
     main()

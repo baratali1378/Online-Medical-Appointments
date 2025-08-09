@@ -20,5 +20,15 @@ module.exports = {
         middlewares: ["api::patient.auth"],
       },
     },
+    {
+      method: "POST",
+      path: "/appointments/patient",
+      handler: "patient-appointment.createAppointment",
+      config: {
+        auth: false,
+        policies: [],
+        middlewares: ["api::patient.auth"],
+      },
+    },
   ],
 };

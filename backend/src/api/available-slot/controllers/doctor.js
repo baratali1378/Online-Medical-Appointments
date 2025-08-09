@@ -36,7 +36,14 @@ module.exports = ({ strapi }) => ({
       const slot = await strapi.db
         .query("api::available-slot.available-slot")
         .create({
-          data: { date, start_time, end_time, capacity, doctor: doctor.id },
+          data: {
+            date,
+            start_time,
+            end_time,
+            capacity,
+            doctor: doctor.id,
+            publishedAt: new Date(),
+          },
         });
 
       return ctx.send({ message: "Slot created successfully", data: slot });
