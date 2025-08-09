@@ -6,6 +6,7 @@ import { HeaderSection } from "@/components/home/sections/Heading";
 import { SearchContainer } from "@/components/home/sections/search/SearchContainer";
 import MetricDisplay from "@/components/home/sections/metric/MetricDisplay";
 import TopSpecialtiesSection from "@/components/home/sections/topSpecialist/TopSpecialtiesSection";
+import DoctorList from "@/components/home/sections/topRated/DoctorList";
 
 const Page = () => {
   return (
@@ -39,6 +40,9 @@ const Page = () => {
       {/* Content Section */}
       <Box sx={{ backgroundColor: "#ffffff", flex: 1 }}>
         {/* Most Viewed Specialties */}
+        <Box sx={{ mt: 2 }}>
+          <DoctorList />
+        </Box>
         <TopSpecialtiesSection />
       </Box>
     </Box>

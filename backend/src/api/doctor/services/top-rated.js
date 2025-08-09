@@ -13,7 +13,6 @@ module.exports = {
         personal_info: {
           select: ["fullname"],
           populate: {
-            select: [""],
             image: {
               select: ["url"],
             },
@@ -24,6 +23,9 @@ module.exports = {
         },
         city: {
           select: ["name"],
+        },
+        security: {
+          select: ["is_verified"],
         },
       },
     });

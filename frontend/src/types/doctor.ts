@@ -91,3 +91,15 @@ export interface DoctorAutocompleteResponse {
   data: DoctorAutocompleteResult[];
   message?: string;
 }
+
+export interface DoctorListItem {
+  id: number;
+  rating: number;
+  reviewCount: number;
+  personal_info: PersonalInfo;
+  specialties: Specialty[];
+  city: City;
+  security: {
+    is_verified: boolean;
+  };
+}
