@@ -5,7 +5,7 @@ module.exports = {
     {
       method: "GET",
       path: "/doctor/reviews",
-      handler: "review.findReviewsByDoctor",
+      handler: "doctor.findReviewsByDoctor",
       config: {
         auth: false,
         middlewares: ["api::doctor.auth"],

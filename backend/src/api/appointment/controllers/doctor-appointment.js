@@ -10,8 +10,9 @@ module.exports = ({ strapi }) => ({
         throw new NotFoundError("Doctor profile not found");
       }
 
-      const { status, startDate, endDate, search } = ctx.query;
       console.log(ctx.query);
+
+      const { status, startDate, endDate, search } = ctx.query;
 
       const isValidDate = (d) => !isNaN(new Date(d).getTime());
 
