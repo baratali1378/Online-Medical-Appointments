@@ -8,10 +8,8 @@ import {
   Typography,
   Divider,
   Stack,
-  Button,
   IconButton,
-  Card,
-  CardContent,
+  Alert,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { withAuth } from "@/components/dashboard/withAuth";
@@ -48,6 +46,28 @@ function PatientsPage({ session }: Props) {
 
   const patients = data?.data || [];
 
+  if (patients.length === 0) {
+    return (
+      <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 4 } }}>
+        <Alert
+          severity="info"
+          variant="filled"
+          sx={{
+            borderRadius: 2,
+          }}
+          action={
+            <IconButton onClick={() => refetch()} color="inherit" size="small">
+              <RefreshIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          No patients found — when patients are assigned to you, they’ll appear
+          here.
+        </Alert>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 4 } }}>
       {/* Header Section */}
@@ -72,25 +92,7 @@ function PatientsPage({ session }: Props) {
       </Stack>
 
       <Divider sx={{ mb: 3 }} />
-
-      {/* Empty State */}
-      {patients.length === 0 ? (
-        <Card sx={{ p: 3, textAlign: "center", borderRadius: 3 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              No patients found
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              When patients are assigned to you, they’ll appear here.
-            </Typography>
-            <Button variant="outlined" onClick={() => refetch} sx={{ mt: 2 }}>
-              Refresh
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <PatientsTable patients={patients} />
-      )}
+      <PatientsTable patients={patients} />
     </Container>
   );
 }
