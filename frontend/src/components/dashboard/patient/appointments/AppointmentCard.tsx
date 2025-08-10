@@ -9,7 +9,6 @@ import {
   Divider,
   useTheme,
   useMediaQuery,
-  Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { PatientAppointment } from "@/types/appointments";
@@ -17,6 +16,7 @@ import { useChangePatientAppointmentStatus } from "@/hooks/profile/patient/appoi
 import { AppointmentStatus } from "@/components/dashboard/common/AppointmentStatus";
 import { DoctorInfo } from "./DoctorInfo";
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog";
+import { ReviewDialog } from "./ReviewDialog";
 
 interface Props {
   appointment: PatientAppointment;
@@ -27,6 +27,7 @@ export const PatientAppointmentCard = ({ appointment, token }: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [openDetails, setOpenDetails] = useState(false);
+  const [openReviewDialog, setOpenReviewDialog] = useState(false);
 
   const changeStatusMutation = useChangePatientAppointmentStatus(token);
 
@@ -71,6 +72,26 @@ export const PatientAppointmentCard = ({ appointment, token }: Props) => {
               spacing={1.5}
               justifyContent="flex-end"
             >
+              {appointment.appointment_status === "Completed" && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  onClick={() => setOpenReviewDialog(true)}
+                  fullWidth={isMobile}
+                  sx={{
+                    background: "linear-gradient(135deg, #4CAF50, #81C784)",
+                    color: "#ffffff",
+                    fontWeight: 600,
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #43A047, #66BB6A)",
+                    },
+                  }}
+                >
+                  Leave Review
+                </Button>
+              )}
+
               <Button
                 variant="outlined"
                 size="small"
@@ -100,6 +121,14 @@ export const PatientAppointmentCard = ({ appointment, token }: Props) => {
       <AppointmentDetailsDialog
         open={openDetails}
         onClose={() => setOpenDetails(false)}
+        appointment={appointment}
+        token={token}
+      />
+
+      {/* {Review Dialog} */}
+      <ReviewDialog
+        open={openReviewDialog}
+        onClose={() => setOpenReviewDialog(false)}
         appointment={appointment}
         token={token}
       />

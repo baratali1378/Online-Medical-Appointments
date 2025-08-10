@@ -26,3 +26,30 @@ export interface Review {
     city?: string;
   };
 }
+
+// ======================
+// Request Payload
+// ======================
+export interface CreateReviewRequest {
+  appointmentId: number;
+  rating: number; // 1-5
+  comment?: string;
+}
+
+// ======================
+// Success Response
+// ======================
+export interface CreateReviewSuccess {
+  message: string;
+}
+
+// ======================
+// Error Response
+// ======================
+export interface ApiError {
+  status: number;
+  error: string;
+  message: string;
+}
+
+export type CreateReviewResponse = CreateReviewSuccess | ApiError;
