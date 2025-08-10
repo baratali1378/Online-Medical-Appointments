@@ -1,6 +1,5 @@
 module.exports = {
   async me(ctx) {
-    // doctor is already loaded and attached by middleware
     const doctor = ctx.state.doctor;
 
     if (!doctor) {
@@ -10,7 +9,6 @@ module.exports = {
     const {
       id,
       personal_info,
-      phone_number,
       city,
       specialties,
       biography,
@@ -21,8 +19,6 @@ module.exports = {
       security,
       clinic_info,
     } = doctor;
-
-    console.log(clinic_info);
 
     return ctx.send({
       data: {
@@ -36,9 +32,56 @@ module.exports = {
         rating,
         available_slots,
         verification,
-        is_verified: security.is_verified || false,
+        is_verified: security?.is_verified || false,
       },
       meta: {},
     });
+  },
+
+  async getDoctor(ctx) {
+    try {
+      const { id } = ctx.params;
+
+      if (!id) {
+        return ctx.badRequest("Doctor ID is required");
+      }
+
+      const doctor = await strapi.db.query("api::doctor.doctor").findOne({
+        where: { id },
+        populate: {
+          personal_info: true,
+          city: true,
+          specialties: true,
+          available_slots: true,
+          verification: true,
+          clinic_info: true,
+          security: true,
+        },
+      });
+
+      if (!doctor) {
+        return ctx.notFound("Doctor not found");
+      }
+
+      return ctx.send({
+        data: {
+          id: doctor.id,
+          personal_info: doctor.personal_info,
+          clinic_info: doctor.clinic_info,
+          city: doctor.city,
+          specialties: doctor.specialties,
+          biography: doctor.biography,
+          experience: doctor.experience,
+          rating: doctor.rating,
+          available_slots: doctor.available_slots,
+          verification: doctor.verification,
+          is_verified: doctor.security?.is_verified || false,
+        },
+        meta: {},
+      });
+    } catch (error) {
+      strapi.log.error(error);
+      return ctx.internalServerError("Failed to fetch doctor data");
+    }
   },
 };
