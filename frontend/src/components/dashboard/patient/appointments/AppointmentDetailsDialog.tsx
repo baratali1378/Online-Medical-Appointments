@@ -42,7 +42,7 @@ export const AppointmentDetailsDialog = ({
   const canReschedule = appointment.appointment_status === "Pending";
 
   const { data: availableSlots, isLoading: slotsLoading } =
-    usePatientAvailableSlotsQuery(appointment.doctor.id, token);
+    usePatientAvailableSlotsQuery(appointment?.doctor?.id, token);
 
   const { selectedDate, setSelectedDate, selectedSlot, setSelectedSlot } =
     useAppointmentReschedule(appointment.date, availableSlots?.data);

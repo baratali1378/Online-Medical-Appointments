@@ -31,6 +31,8 @@ function PatientAppointmentsPage({ session }: Props) {
     filters,
   });
 
+  console.log("apponintment", data?.data);
+
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   useEffect(() => {

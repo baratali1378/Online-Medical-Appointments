@@ -5,10 +5,9 @@ import { Doctor } from "@/types/appointments";
 const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
 export const DoctorInfo = ({ doctor }: { doctor: Doctor }) => {
-  console.log(doctor?.image);
   return (
     <Box display="flex" alignItems="center" gap={2}>
-      <Link href={`/doctor/${doctor.id}`} passHref>
+      <Link href={`/doctor/${doctor?.id}`} passHref>
         <Avatar
           src={API_URL + "" + doctor?.image || ""}
           alt={doctor?.fullname}
@@ -22,10 +21,10 @@ export const DoctorInfo = ({ doctor }: { doctor: Doctor }) => {
       </Link>
       <Box>
         <Typography variant="subtitle1" fontWeight="bold">
-          Dr. {doctor.fullname}
+          Dr. {doctor?.fullname}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {doctor.email}
+          {doctor?.email}
         </Typography>
       </Box>
     </Box>
