@@ -584,7 +584,7 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
     singularName: 'doctor';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     appointments: Schema.Attribute.Relation<
