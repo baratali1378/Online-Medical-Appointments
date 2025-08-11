@@ -103,3 +103,29 @@ export interface DoctorListItem {
     is_verified: boolean;
   };
 }
+
+export interface DoctorDetailsResponse {
+  data: {
+    doctor: DoctorDetails;
+  };
+  meta: Record<string, unknown>;
+}
+
+export interface DoctorDetails extends Doctor {
+  reviewCount: number;
+  reviews: Review[];
+  security: {
+    is_verified: boolean;
+  };
+}
+
+export interface Review {
+  rating: number;
+  comment: string;
+  date: string;
+  id: number;
+  patient: {
+    id: number;
+    personal_info: PersonalInfo;
+  };
+}

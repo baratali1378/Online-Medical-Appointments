@@ -1,73 +1,59 @@
-import requests
 import json
+import requests
 from faker import Faker
-import random
 
-STRAPI_URL = "http://localhost:1337"
-DOCTORS_FILE = "doctors_with_tokens.json"
-
+# Create faker instance
 fake = Faker()
 
-def load_doctors():
-    with open(DOCTORS_FILE, "r") as f:
-        return json.load(f)
+# Path to your JSON file
+DOCTORS_FILE = "doctors_with_tokens.json"
 
-def generate_personal_info():
-    gender = random.choice(["Male", "Female"])
-    # Choose name based on gender
-    if gender == "Male":
-        fullname = fake.name_male()
-    else:
-        fullname = fake.name_female()
+# Base URL for your Strapi API
+BASE_URL = "http://localhost:1337/api/doctor/profile"  # Change to your domain
 
-    birthdate = fake.date_of_birth(minimum_age=30, maximum_age=65).isoformat()
-    biography = fake.paragraph(nb_sentences=5)
-    email = fake.email()
-
+def generate_fake_clinic_info():
+    """Generate fake clinic information for a doctor."""
     return {
-        "fullname": fullname,
-        "gender": gender,
-        "birth": birthdate,
-        "biography": biography,
-        "email": email,
-    }
-
-def update_doctor_personal_info(doctor_id, token, personal_info):
-    url = f"{STRAPI_URL}/api/doctor/profile"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "data": {
-            "personal_info": {
-                "fullname": personal_info["fullname"],
-                "gender": personal_info["gender"],
-                "birth": personal_info["birth"],
-                "email": personal_info["email"]
-            },
-            "biography": personal_info["biography"]
+        "clinic_info": {
+            "address": fake.address(),
+            "phone": fake.msisdn()[:10],  # 10-digit number
+            "latitude": float(fake.latitude()),
+            "longitude": float(fake.longitude()),
+            "clinic_name": f"{fake.last_name()} Clinic"
         }
     }
 
-    resp = requests.put(url, headers=headers, json=payload)
-    if resp.status_code == 200:
-        print(f"✅ Updated doctor {doctor_id}: {personal_info['fullname']} ({personal_info['gender']})")
-    else:
-        print(f"❌ Failed to update doctor {doctor_id}: {resp.status_code} {resp.text}")
+def update_doctor_clinic(token, clinic_info):
+    """Send a PUT request to update clinic info of a doctor."""
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    payload = {
+        "data": clinic_info
+    }
+
+    try:
+        response = requests.put(BASE_URL, json=payload, headers=headers)
+        if response.status_code == 200:
+            print("✅ Updated clinic info successfully")
+        else:
+            print(f"❌ Failed to update clinic info: {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"⚠ Error updating clinic info: {e}")
 
 def main():
-    doctors = load_doctors()
+    # Load doctors with tokens
+    with open(DOCTORS_FILE, "r") as f:
+        doctors = json.load(f)
 
     for doctor in doctors:
-        doctor_id = doctor.get("id")
         token = doctor.get("token")
-        if not doctor_id or not token:
-            print("⚠ Missing id or token for doctor, skipping...")
+        if not token:
+            print("⚠ No token found for doctor, skipping...")
             continue
-
-        personal_info = generate_personal_info()
-        update_doctor_personal_info(doctor_id, token, personal_info)
+        
+        clinic_info = generate_fake_clinic_info()
+        update_doctor_clinic(token, clinic_info)
 
 if __name__ == "__main__":
     main()
