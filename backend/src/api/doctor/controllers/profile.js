@@ -46,7 +46,7 @@ module.exports = {
 
       const doctor = await strapi.db.query("api::doctor.doctor").findOne({
         where: { id },
-        select: ["id", "rating", "experience", "reviewCount", "biography"],
+        select: ["id", "experience", "biography"],
         populate: {
           personal_info: {
             select: ["fullname", "email"],
