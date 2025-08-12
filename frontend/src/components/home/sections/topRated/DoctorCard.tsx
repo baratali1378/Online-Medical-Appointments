@@ -36,7 +36,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
             color: theme.palette.secondary.contrastText,
             fontWeight: 500,
             px: 1,
-            height: 24,
+            height: 22,
           }}
         />
       );
@@ -53,7 +53,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
             backgroundColor: theme.palette.secondary.light,
             color: theme.palette.secondary.contrastText,
             fontWeight: 500,
-            height: 24,
+            height: 22,
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -68,7 +68,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
               backgroundColor: theme.palette.grey[200],
               color: theme.palette.text.secondary,
               fontWeight: 500,
-              height: 24,
+              height: 22,
               ml: 0.5,
             }}
           />
@@ -88,27 +88,30 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          transition: "all 0.3s ease",
-          maxWidth: 320,
+          transition: "all 0.25s ease",
+          maxWidth: 280, // smaller width
           mx: "auto",
+          borderRadius: 3, // softer corners
+          overflow: "hidden",
           border: "1px solid",
           borderColor: theme.palette.divider,
+          backgroundColor: theme.palette.background.paper,
           "&:hover": {
-            transform: "translateY(-5px)",
-            boxShadow: theme.shadows[8],
+            transform: "translateY(-4px)",
+            boxShadow: theme.shadows[6],
             borderColor: theme.palette.primary.main,
           },
         }}
       >
-        <Box position="relative" sx={{ pt: 3, px: 2 }}>
+        <Box position="relative" sx={{ pt: 2, px: 2 }}>
           <Box
             sx={{
               position: "relative",
-              width: 120,
-              height: 120,
+              width: 100,
+              height: 100,
               mx: "auto",
               borderRadius: "50%",
-              border: "3px solid white",
+              border: `3px solid ${theme.palette.background.paper}`,
               boxShadow: theme.shadows[2],
             }}
           >
@@ -138,11 +141,11 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
           </Box>
         </Box>
 
-        <CardContent sx={{ px: 2.5, pt: 2, pb: 2.5 }}>
-          <Stack spacing={1.5} alignItems="center">
+        <CardContent sx={{ px: 2, pt: 1.5, pb: 2 }}>
+          <Stack spacing={1.2} alignItems="center">
             <Box sx={{ textAlign: "center" }}>
               <Typography
-                variant="h6"
+                variant="subtitle1"
                 fontWeight={600}
                 sx={{
                   display: "inline-flex",
@@ -156,7 +159,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
                     size="small"
                     position="relative"
                     withTooltip={false}
-                    sx={{ ml: 1, verticalAlign: "middle" }}
+                    sx={{ ml: 0.5, verticalAlign: "middle" }}
                   />
                 )}
               </Typography>
@@ -171,7 +174,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
                 color: theme.palette.text.secondary,
               }}
             >
-              <LocationOnIcon fontSize="small" sx={{ mr: 0.5 }} />
+              <LocationOnIcon fontSize="small" sx={{ mr: 0.3 }} />
               <Typography variant="body2">
                 {doctor.city?.name || "Location not specified"}
               </Typography>
@@ -180,7 +183,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
             <DoctorRating
               rating={doctor.rating}
               reviewCount={doctor.reviewCount}
-              size="medium"
+              size="small"
             />
           </Stack>
         </CardContent>

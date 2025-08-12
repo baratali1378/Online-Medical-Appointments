@@ -96,7 +96,7 @@ const DoctorList = () => {
         {" "}
         {/* Reduced spacing between cards */}
         {data.map((doctor: DoctorListItem) => (
-          <Grid item xs={12} sm={6} md={4} key={doctor.id}>
+          <Grid item xs={12} sm={6} md={3} key={doctor.id}>
             <DoctorCard doctor={doctor} />
           </Grid>
         ))}
