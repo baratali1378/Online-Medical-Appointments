@@ -106,11 +106,12 @@ export interface DoctorListItem {
 
 export interface DoctorDetailsResponse {
   doctor: DoctorDetails;
+  reviewCount: number;
+  rating: number;
   meta: Record<string, unknown>;
 }
 
 export interface DoctorDetails extends Doctor {
-  reviewCount: number;
   reviews: Review[];
   security: {
     is_verified: boolean;

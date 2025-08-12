@@ -1,12 +1,15 @@
+import React from "react";
 import {
-  Box,
+  Card,
   Typography,
   Grid,
-  Button,
-  Card,
-  CardContent,
+  Box,
+  Alert,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
-import { AvailableSlot } from "@/types/doctor";
+import type { AvailableSlot } from "@/types/doctor";
+import Slot from "./Slot";
 
 interface Props {
   slots: AvailableSlot[];
@@ -14,37 +17,49 @@ interface Props {
 }
 
 export default function DoctorAvailableSlots({ slots, doctorId }: Props) {
+  const theme = useTheme();
+  const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
+
   if (!slots?.length) {
-    return <Typography>No available slots at the moment.</Typography>;
+    return (
+      <Box my={6} mx={2} display="flex" justifyContent="center">
+        <Alert severity="error" variant="outlined" sx={{ maxWidth: 600 }}>
+          No available slots right now. Please check again later.
+        </Alert>
+      </Box>
+    );
   }
 
   return (
-    <Box>
-      <Typography variant="h6" gutterBottom>
-        Available Slots
+    <Card
+      sx={{
+        borderRadius: 3,
+        boxShadow: 4,
+        p: { xs: 2, md: 4 },
+        bgcolor: "background.paper",
+      }}
+      elevation={6}
+    >
+      <Typography
+        variant="h5"
+        gutterBottom
+        fontWeight="bold"
+        sx={{
+          mb: 4,
+          display: "inline-block",
+          color: "#71C9CE",
+        }}
+      >
+        Available Time Slots
       </Typography>
-      <Grid container spacing={2}>
+
+      <Grid container spacing={isSmUp ? 4 : 3}>
         {slots.map((slot) => (
           <Grid item xs={12} sm={6} md={4} key={slot.id}>
-            <Card>
-              <CardContent>
-                <Typography variant="subtitle1">{slot.days}</Typography>
-                <Typography variant="body2">
-                  {slot.start_time} - {slot.end_time}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  sx={{ mt: 1 }}
-                >
-                  Book this slot
-                </Button>
-              </CardContent>
-            </Card>
+            <Slot slot={slot} />
           </Grid>
         ))}
       </Grid>
-    </Box>
+    </Card>
   );
 }

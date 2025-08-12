@@ -1,3 +1,4 @@
+// components/doctor/VerificationBadge.tsx
 import { Chip } from "@mui/material";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
@@ -8,6 +9,7 @@ export default function VerificationBadge() {
       label="Verified"
       color="success"
       size="small"
+      sx={{ fontWeight: "bold", fontSize: 13 }}
     />
   );
 }

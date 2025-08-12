@@ -51,24 +51,16 @@ module.exports = {
           personal_info: {
             select: ["fullname", "email"],
             populate: {
-              image: {
-                select: ["url"],
-              },
+              image: { select: ["url"] },
             },
           },
-          city: {
-            select: ["name"],
-          },
-          specialties: {
-            select: ["name"],
-          },
+          city: { select: ["name"] },
+          specialties: { select: ["name"] },
           available_slots: {
             select: ["date", "start_time", "end_time", "capacity", "is_active"],
           },
           clinic_info: true,
-          security: {
-            select: ["is_verified"],
-          },
+          security: { select: ["is_verified"] },
           reviews: {
             select: ["rating", "comment", "date"],
             populate: {
@@ -77,11 +69,7 @@ module.exports = {
                 populate: {
                   personal_info: {
                     select: ["fullname"],
-                    populate: {
-                      image: {
-                        select: ["url"],
-                      },
-                    },
+                    populate: { image: { select: ["url"] } },
                   },
                 },
               },
@@ -94,9 +82,19 @@ module.exports = {
         return ctx.notFound("Doctor not found");
       }
 
+      // Calculate ratings
+      const ratings = doctor.reviews.map((r) => Number(r.rating) || 0);
+      const reviewCount = ratings.length;
+      const avgRating =
+        reviewCount > 0
+          ? ratings.reduce((sum, r) => sum + r, 0) / reviewCount
+          : 0;
+
       return ctx.send({
         data: {
           doctor: doctor,
+          rating: Number(avgRating.toFixed(2)),
+          reviewCount,
         },
         meta: {},
       });

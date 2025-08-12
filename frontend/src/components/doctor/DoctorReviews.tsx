@@ -1,52 +1,101 @@
+// components/doctor/DoctorReviews.tsx
+import React, { useState } from "react";
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
-  Avatar,
   Stack,
+  Pagination,
+  Card,
+  useTheme,
 } from "@mui/material";
-import { Review } from "@/types/doctor";
-import StarIcon from "@mui/icons-material/Star";
+import ReviewCard from "@/components/dashboard/doctor/reviews/ReviewCard";
+import type { Review } from "@/types/doctor";
 
-interface Props {
+interface DoctorReviewsProps {
   reviews: Review[];
+  reviewsPerPage?: number;
 }
 
-export default function DoctorReviews({ reviews }: Props) {
-  if (!reviews?.length) {
-    return <Typography>No reviews yet.</Typography>;
+export default function DoctorReviews({
+  reviews,
+  reviewsPerPage = 4,
+}: DoctorReviewsProps) {
+  const [page, setPage] = useState(1);
+
+  const pageCount = Math.ceil(reviews.length / reviewsPerPage);
+
+  const handleChangePage = (_: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
+  const startIndex = (page - 1) * reviewsPerPage;
+  const currentReviews = reviews.slice(startIndex, startIndex + reviewsPerPage);
+
+  if (!reviews.length) {
+    return (
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        textAlign="center"
+        mt={4}
+      >
+        No reviews yet.
+      </Typography>
+    );
   }
 
   return (
-    <Box>
-      <Typography variant="h6" gutterBottom>
+    <Card
+      sx={{
+        width: "100%",
+        mx: "auto",
+        p: { xs: 2, sm: 4, md: 5 },
+        borderRadius: 3,
+        boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+      }}
+    >
+      <Typography
+        variant="h5"
+        fontWeight="bold"
+        mb={3}
+        color={"#71C9CE"}
+        textAlign="left"
+      >
         Patient Reviews
       </Typography>
-      <Stack spacing={2}>
-        {reviews.map((review) => (
-          <Card key={review.id}>
-            <CardContent>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Avatar src={review.patient.personal_info.image?.url} />
-                <Box>
-                  <Typography fontWeight="bold">
-                    {review.patient.personal_info.fullname}
-                  </Typography>
-                  <Stack direction="row" spacing={0.5} alignItems="center">
-                    <StarIcon color="warning" fontSize="small" />
-                    <Typography>{review.rating}</Typography>
-                  </Stack>
-                  <Typography variant="body2" color="text.secondary">
-                    {new Date(review.date).toLocaleDateString()}
-                  </Typography>
-                </Box>
-              </Stack>
-              <Typography mt={1}>{review.comment}</Typography>
-            </CardContent>
-          </Card>
+
+      <Stack spacing={4}>
+        {currentReviews.map((review) => (
+          <ReviewCard
+            key={review.id}
+            review={{
+              comment: review.comment,
+              id: review.id,
+              date: review.date,
+              rating: review.rating,
+              patient: {
+                fullname: review.patient.personal_info.fullname,
+                image: review.patient?.personal_info.image?.url || "",
+                city: "",
+                id: review.patient.id,
+              },
+            }}
+          />
         ))}
       </Stack>
-    </Box>
+
+      {pageCount > 1 && (
+        <Pagination
+          count={pageCount}
+          page={page}
+          onChange={handleChangePage}
+          sx={{ mt: 4, display: "flex", justifyContent: "center" }}
+          color="primary"
+          shape="rounded"
+          showFirstButton
+          showLastButton
+        />
+      )}
+    </Card>
   );
 }
