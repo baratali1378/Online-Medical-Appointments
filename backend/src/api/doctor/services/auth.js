@@ -87,7 +87,7 @@ module.exports = () => ({
   },
 
   async signup(data) {
-    const { name, email, password, experience, city } = data;
+    const { name, email, password, experience, city, gender, birth } = data;
 
     if (!name || !email || !password || !experience || !city) {
       throw new Error("Please provide all required fields");
@@ -116,6 +116,8 @@ module.exports = () => ({
         personal_info: {
           fullname: name,
           email,
+          gender,
+          birth,
         },
         security: {
           is_verified: false,

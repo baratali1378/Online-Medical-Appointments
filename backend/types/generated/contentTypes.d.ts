@@ -628,8 +628,6 @@ export interface ApiDoctorDoctor extends Struct.CollectionTypeSchema {
       false
     >;
     publishedAt: Schema.Attribute.DateTime;
-    rating: Schema.Attribute.Decimal;
-    reviewCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     security: Schema.Attribute.Component<'systems.security-fields', false>;
     specialties: Schema.Attribute.Relation<

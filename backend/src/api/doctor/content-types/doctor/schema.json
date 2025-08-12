@@ -19,13 +19,6 @@
       "type": "string",
       "required": true
     },
-    "rating": {
-      "type": "decimal"
-    },
-    "reviewCount": {
-      "type": "integer",
-      "default": 0
-    },
     "appointments": {
       "type": "relation",
       "relation": "oneToMany",

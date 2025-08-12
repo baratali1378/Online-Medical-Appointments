@@ -13,7 +13,6 @@ module.exports = {
       specialties,
       biography,
       experience,
-      rating,
       available_slots,
       verification,
       security,
@@ -29,7 +28,6 @@ module.exports = {
         specialties,
         biography,
         experience,
-        rating,
         available_slots,
         verification,
         is_verified: security?.is_verified || false,
@@ -48,7 +46,7 @@ module.exports = {
 
       const doctor = await strapi.db.query("api::doctor.doctor").findOne({
         where: { id },
-        select: ["id", "rating", "experience", "reviewCount"],
+        select: ["id", "rating", "experience", "reviewCount", "biography"],
         populate: {
           personal_info: {
             select: ["fullname", "email"],

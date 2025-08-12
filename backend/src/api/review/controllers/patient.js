@@ -9,7 +9,7 @@ module.exports = {
         return ctx.unauthorized("Patient not authenticated");
       }
 
-      const { appointmentId, rating, comment } = ctx.request.body;
+      const { appointmentId, rating, comment } = ctx.request.body.data;
 
       if (!appointmentId || !rating) {
         return ctx.badRequest("Appointment ID and rating are required");
@@ -51,29 +51,8 @@ module.exports = {
         },
       });
 
-      // 5️⃣ Get all reviews count and ratings for this doctor
-      const allReviews = await strapi.db.query("api::review.review").findMany({
-        where: { doctor: appointment.doctor.id },
-        select: ["rating"],
-      });
-
-      const avgRating =
-        allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
-
-      const reviewCount = allReviews.length;
-
-      // 6️⃣ Update doctor rating and reviewCount
-      await strapi.db.query("api::doctor.doctor").update({
-        where: { id: appointment.doctor.id },
-        data: {
-          rating: Number(avgRating.toFixed(2)), // store as number
-          reviewCount: reviewCount,
-        },
-      });
-
       return ctx.send({
         message: "Review created and doctor's rating updated successfully",
-        data: review,
       });
     } catch (error) {
       strapi.log.error("Error creating review:", error);

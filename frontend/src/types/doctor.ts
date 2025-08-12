@@ -105,9 +105,7 @@ export interface DoctorListItem {
 }
 
 export interface DoctorDetailsResponse {
-  data: {
-    doctor: DoctorDetails;
-  };
+  doctor: DoctorDetails;
   meta: Record<string, unknown>;
 }
 

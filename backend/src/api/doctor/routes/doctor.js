@@ -91,7 +91,7 @@ module.exports = {
     },
     {
       method: "GET",
-      path: "/doctors/top-rated",
+      path: "/doctors/top-ranks",
       handler: "top-rated.findTopRated",
       config: {
         auth: false, // public access
