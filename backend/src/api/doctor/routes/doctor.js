@@ -22,7 +22,7 @@ module.exports = {
     },
     {
       method: "GET",
-      path: "/doctors/autocomplete",
+      path: "/doctors/search/autocomplete",
       handler: "search.autocomplete",
       config: {
         auth: false, // Make publicly accessible

@@ -3,23 +3,46 @@
 module.exports = {
   async search(ctx) {
     try {
-      const { city, specialty } = ctx.query;
+      const {
+        city,
+        specialty,
+        searchQuery,
+        page = 1,
+        pageSize = 10,
+      } = ctx.query;
+
+      // Prevent empty search
+      if (!city && !specialty && !searchQuery) {
+        return ctx.send({
+          success: true,
+          message: "No search parameters provided",
+          data: [],
+          pagination: {
+            page: 1,
+            pageSize: 0,
+            total: 0,
+            totalPages: 0,
+          },
+        });
+      }
 
       const filters = {};
 
       if (city) {
         filters.city = {
-          name: {
-            $eqi: city,
-          },
+          name: { $containsi: city },
         };
       }
 
       if (specialty) {
         filters.specialties = {
-          name: {
-            $eqi: specialty,
-          },
+          name: { $containsi: specialty },
+        };
+      }
+
+      if (searchQuery) {
+        filters.personal_info = {
+          fullname: { $containsi: searchQuery },
         };
       }
 
@@ -27,37 +50,55 @@ module.exports = {
         "api::doctor.doctor",
         {
           filters,
+          fields: ["id"],
           populate: {
-            city: true,
-            specialties: true,
-            profile_picture: true,
+            city: { fields: ["name"] },
+            specialties: { fields: ["name"] },
+            personal_info: {
+              fields: ["fullname"],
+              populate: {
+                image: {
+                  fields: ["url"],
+                },
+              },
+            },
           },
+          start: (page - 1) * pageSize,
+          limit: parseInt(pageSize, 10),
         }
       );
 
-      if (!doctors || doctors.length === 0) {
-        return ctx.notFound(
-          "No doctors found matching the given city and specialty."
-        );
-      }
+      const total = await strapi.entityService.count("api::doctor.doctor", {
+        filters,
+      });
 
-      return {
+      return ctx.send({
         success: true,
-        count: doctors.length,
+        message: doctors.length ? "Doctors found" : "No doctors found",
+        pagination: {
+          page: parseInt(page, 10),
+          pageSize: parseInt(pageSize, 10),
+          total,
+          totalPages: Math.ceil(total / pageSize),
+        },
         data: doctors,
-      };
+      });
     } catch (error) {
       strapi.log.error("Doctor search error:", error);
-      return ctx.badRequest("Search failed.", {
-        error: error.message || "Unexpected error",
-      });
+      return ctx.send(
+        {
+          success: false,
+          message: "Search failed",
+          error: error.message || "Unexpected error",
+        },
+        500
+      );
     }
   },
   async autocomplete(ctx) {
     try {
       const { query } = ctx.query;
 
-      // Validate input
       if (!query || query.length < 3) {
         return ctx.send({
           success: true,
@@ -66,7 +107,6 @@ module.exports = {
         });
       }
 
-      // Fetch doctors with personal_info and specialties
       const doctors = await strapi.entityService.findMany(
         "api::doctor.doctor",
         {
@@ -74,41 +114,33 @@ module.exports = {
           populate: {
             personal_info: {
               fields: ["fullname"],
-              populate: { image: true },
+              populate: { image: { fields: ["url"] } },
             },
-            specialties: {
-              fields: ["name"],
-            },
+            specialties: { fields: ["name"] },
           },
           filters: {
             personal_info: {
-              fullname: {
-                $containsi: query,
-              },
+              fullname: { $containsi: query },
             },
           },
           limit: 10,
         }
       );
 
-      // Format results
       const results = doctors.map((doctor) => ({
         id: doctor.id,
         // @ts-ignore
         name: doctor.personal_info?.fullname || "Unknown Doctor",
         // @ts-ignore
-        image: doctor.personal_info?.image?.url
-          ? // @ts-ignore
-            `${doctor.personal_info.image.url}`
-          : "/default-doctor.png",
-        specialties:
-          // @ts-ignore
-          doctor.specialties?.map((s) => s.name) || [], // Return as array
+        image: doctor.personal_info?.image?.url || "/default-doctor.png",
+        // @ts-ignore
+        specialties: doctor.specialties?.map((s) => s.name) || [],
       }));
 
       return ctx.send({
         success: true,
         data: results,
+        message: results.length ? "Results found" : "No matches",
       });
     } catch (err) {
       strapi.log.error("Doctor autocomplete error:", err);
@@ -117,6 +149,7 @@ module.exports = {
           success: false,
           data: [],
           message: "Failed to fetch results",
+          error: err.message || "Unexpected error",
         },
         500
       );

@@ -56,6 +56,8 @@ export interface Specialty {
 }
 
 export interface AvailableSlot {
+  is_active: any;
+  capacity: string;
   id?: number;
   days: string;
   start_time: string; // HH:mm format
@@ -118,6 +120,7 @@ export interface DoctorDetails extends Doctor {
   };
 }
 
+//doctor review
 export interface Review {
   rating: number;
   comment: string;
@@ -126,5 +129,41 @@ export interface Review {
   patient: {
     id: number;
     personal_info: PersonalInfo;
+  };
+}
+
+export interface DoctorSearchResult {
+  success: boolean;
+  message: string;
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+  data: DoctorSearchResultItem[];
+}
+
+export interface DoctorSearchResultItem {
+  id: number;
+  documentId: string;
+  city: {
+    id: number;
+    documentId: string;
+    name: string;
+  };
+  specialties: {
+    id: number;
+    documentId: string;
+    name: string;
+  }[];
+  personal_info: {
+    id: number;
+    fullname: string;
+    image: {
+      id: number;
+      documentId: string;
+      url: string;
+    } | null;
   };
 }

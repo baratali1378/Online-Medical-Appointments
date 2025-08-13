@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTheme, Box, useMediaQuery } from "@mui/material";
+import { useRouter } from "next/navigation";
 import { SearchView } from "./SearchView";
 import { useCitiesQuery } from "@/hooks/useCitiesQuery";
 import { useSpecialtiesQuery } from "@/hooks/useSpecialtiesQuery";
@@ -9,6 +10,7 @@ import { SearchFilters } from "@/types/search";
 
 export const SearchContainer = () => {
   const theme = useTheme();
+  const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"), { noSsr: true });
 
   const [filters, setFilters] = useState<SearchFilters>({
@@ -29,7 +31,12 @@ export const SearchContainer = () => {
   };
 
   const handleSearch = () => {
-    console.log("Search triggered with:", filters);
+    const query = new URLSearchParams();
+    if (filters.city) query.append("city", filters.city);
+    if (filters.specialty) query.append("specialty", filters.specialty);
+    if (filters.searchQuery) query.append("searchQuery", filters.searchQuery);
+
+    router.push(`/search/doctors/?${query.toString()}`);
   };
 
   const handleClearFilters = () => {

@@ -14,7 +14,7 @@ export const fetchDoctorSuggestions = async (
     if (query.length < 3) return [];
 
     const { data } = await axios.get<DoctorAutocompleteResponse>(
-      `${API_URL}/api/doctors/autocomplete`,
+      `${API_URL}/api/doctors/search/autocomplete`,
       {
         params: { query },
         timeout: 5000, // 5 second timeout
