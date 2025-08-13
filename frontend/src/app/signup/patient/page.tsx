@@ -1,17 +1,19 @@
 "use client";
 
 import SignupPageLayout from "@/components/signup/SignUpPageWrapper";
-import SignupStepper from "@/components/signup/SignupStepper"; // reuse the stepper you already have
+import SignupStepper from "@/components/signup/SignupStepper";
 import PatientPersonalInfoStep from "@/components/forms/steps/PersonalInfoStep";
-import ContactInfoStep from "@/components/forms/steps/ContactInfoStep"; // reuse with some props for patient
-import FinalStep from "@/components/forms/steps/FinalStep"; // generic confirmation step
+import ContactInfoStep from "@/components/forms/steps/ContactInfoStep";
+import FinalStep from "@/components/forms/steps/FinalStep";
 import { patientValidationSchemas } from "@/utils/validation";
-import ImageSide from "@/components/signup/ImageWrapper"; // image component beside signup form
+import ImageSide from "@/components/signup/ImageWrapper";
 import { usePatient } from "@/hooks/signup/patient/usePatient";
 import { useRouter } from "next/navigation";
 import { SignupFormValues } from "@/types/patient";
 import { loginWithCredentials } from "@/lib/authHelper";
 import ProtectedAuth from "@/components/common/ProtectedAuth";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const patientInitialValues: SignupFormValues = {
   name: "",
@@ -26,7 +28,7 @@ const patientInitialValues: SignupFormValues = {
 };
 
 const PatientSignupPage = () => {
-  const { signup, loading } = usePatient();
+  const { signup } = usePatient();
   const router = useRouter();
 
   const handleSubmit = async (values: SignupFormValues, helpers: any) => {
@@ -53,16 +55,22 @@ const PatientSignupPage = () => {
       );
 
       if (result?.error) {
-        helpers.setStatus({ apiError: "Login failed: " + result.error });
+        toast.error(`Login failed: ${result.error}`, {
+          position: "top-right",
+        });
       } else {
+        toast.success("Signup successful! Welcome to your care journey 🎉", {
+          position: "top-right",
+        });
         router.push("/");
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.error?.message ||
-        error?.response?.data?.message ||
-        error.message ||
-        "Signup failed";
+      const message = error.message || "Signup failed";
+
+      toast.error(message, {
+        position: "top-right",
+      });
+
       helpers.setStatus({ apiError: message });
     }
   };
@@ -78,7 +86,7 @@ const PatientSignupPage = () => {
         <SignupStepper
           steps={["Personal Info", "Contact Info", "Confirm"]}
           initialValues={patientInitialValues}
-          validationSchemas={patientValidationSchemas} // assuming validation is ready for patient
+          validationSchemas={patientValidationSchemas}
           onSubmit={handleSubmit}
           imageSide={
             <ImageSide src="/patient_signup.jpg" alt="Patient Signup" />
@@ -88,7 +96,7 @@ const PatientSignupPage = () => {
           <ContactInfoStep
             phoneField="phone"
             cityField="city"
-            includeExperience={false} // patient doesn't have experience field
+            includeExperience={false}
             birthPrefix="birth"
           />
           <FinalStep />
