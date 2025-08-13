@@ -9,6 +9,8 @@ export async function searchDoctors(params?: {
   searchQuery?: string;
   page?: number;
   pageSize?: number;
+  minRating?: number | string;
+  verified?: boolean;
 }): Promise<DoctorSearchResult> {
   const queryString = params
     ? "?" +

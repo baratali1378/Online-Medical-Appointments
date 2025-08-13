@@ -14,8 +14,6 @@ import { useSpecialtiesQuery } from "@/hooks/useSpecialtiesQuery";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FilterValues } from "@/types/search";
 
-const drawerWidth = 320;
-
 export default function SearchLayout({
   children,
 }: {
@@ -26,7 +24,6 @@ export default function SearchLayout({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ✅ Fetch cities and specialties
   const { data: citiesData, isLoading: citiesLoading } = useCitiesQuery();
   const { data: specialtiesData, isLoading: specialtiesLoading } =
     useSpecialtiesQuery();
@@ -40,17 +37,23 @@ export default function SearchLayout({
       ? specialtiesData.map((s) => s.name)
       : [];
 
-  // ✅ This runs whenever filters are applied
   const handleFilterChange = (filters: FilterValues) => {
     const params = new URLSearchParams();
 
     if (filters.city) params.set("city", filters.city);
     if (filters.specialty) params.set("specialty", filters.specialty);
     if (filters.query) params.set("q", filters.query);
+
+    params.set("minRating", String(filters.minRating));
+
     if (filters.verifiedOnly) params.set("verified", "true");
-    if (filters.minRating) params.set("minRating", String(filters.minRating));
+    else params.delete("verified");
+
     router.push(`?${params.toString()}`);
   };
+
+  // ✅ Drawer width changes slightly for responsiveness
+  const drawerWidth = isDesktop ? 300 : 260;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "row", mt: -2 }}>
@@ -88,9 +91,7 @@ export default function SearchLayout({
           onClose={handleDrawerToggle}
           ModalProps={{ keepMounted: true }}
           sx={{
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-            },
+            "& .MuiDrawer-paper": { width: drawerWidth },
           }}
         >
           <Box sx={{ overflowY: "auto", height: "100%" }}>
@@ -117,8 +118,10 @@ export default function SearchLayout({
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          px: { xs: 2, sm: 3 },
+          py: 2,
           backgroundColor: "#f9fafb",
+          minHeight: "100vh",
         }}
       >
         <Toolbar />

@@ -7,89 +7,37 @@ module.exports = {
         city,
         specialty,
         searchQuery,
+        verified = "false",
+        minRating = 0,
         page = 1,
         pageSize = 10,
       } = ctx.query;
 
-      // Prevent empty search
-      if (!city && !specialty && !searchQuery) {
-        return ctx.send({
-          success: true,
-          message: "No search parameters provided",
-          data: [],
-          pagination: {
-            page: 1,
-            pageSize: 0,
-            total: 0,
-            totalPages: 0,
-          },
+      const { doctors, pagination } = await strapi
+        .service("api::doctor.search")
+        .searchDoctors({
+          city,
+          specialty,
+          searchQuery,
+          verified,
+          minRating,
+          page,
+          pageSize,
         });
-      }
-
-      const filters = {};
-
-      if (city) {
-        filters.city = {
-          name: { $containsi: city },
-        };
-      }
-
-      if (specialty) {
-        filters.specialties = {
-          name: { $containsi: specialty },
-        };
-      }
-
-      if (searchQuery) {
-        filters.personal_info = {
-          fullname: { $containsi: searchQuery },
-        };
-      }
-
-      const doctors = await strapi.entityService.findMany(
-        "api::doctor.doctor",
-        {
-          filters,
-          fields: ["id"],
-          populate: {
-            city: { fields: ["name"] },
-            specialties: { fields: ["name"] },
-            personal_info: {
-              fields: ["fullname"],
-              populate: {
-                image: {
-                  fields: ["url"],
-                },
-              },
-            },
-          },
-          start: (page - 1) * pageSize,
-          limit: parseInt(pageSize, 10),
-        }
-      );
-
-      const total = await strapi.entityService.count("api::doctor.doctor", {
-        filters,
-      });
 
       return ctx.send({
         success: true,
         message: doctors.length ? "Doctors found" : "No doctors found",
-        pagination: {
-          page: parseInt(page, 10),
-          pageSize: parseInt(pageSize, 10),
-          total,
-          totalPages: Math.ceil(total / pageSize),
-        },
+        pagination,
         data: doctors,
       });
-    } catch (error) {
-      strapi.log.error("Doctor search error:", error);
+    } catch (err) {
+      strapi.log.error("Doctor search error:", err);
       return ctx.send(
         {
           success: false,
           message: "Search failed",
-          error: error.message || "Unexpected error",
+          error: err.message || "Unexpected error",
         },
         500
       );

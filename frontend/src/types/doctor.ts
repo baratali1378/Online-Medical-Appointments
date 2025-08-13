@@ -131,39 +131,3 @@ export interface Review {
     personal_info: PersonalInfo;
   };
 }
-
-export interface DoctorSearchResult {
-  success: boolean;
-  message: string;
-  pagination: {
-    page: number;
-    pageSize: number;
-    total: number;
-    totalPages: number;
-  };
-  data: DoctorSearchResultItem[];
-}
-
-export interface DoctorSearchResultItem {
-  id: number;
-  documentId: string;
-  city: {
-    id: number;
-    documentId: string;
-    name: string;
-  };
-  specialties: {
-    id: number;
-    documentId: string;
-    name: string;
-  }[];
-  personal_info: {
-    id: number;
-    fullname: string;
-    image: {
-      id: number;
-      documentId: string;
-      url: string;
-    } | null;
-  };
-}

@@ -1,6 +1,6 @@
 // hooks/useDoctorSearchQuery.ts
 import { useQuery } from "@tanstack/react-query";
-import { searchDoctors } from "@/service/searchService"; // your searchDoctors function
+import { searchDoctors } from "@/service/searchService";
 import { DoctorSearchResult } from "@/types/search";
 
 export function useDoctorSearchQuery(params?: {
@@ -9,6 +9,8 @@ export function useDoctorSearchQuery(params?: {
   searchQuery?: string;
   page?: number;
   pageSize?: number;
+  minRating?: number;
+  verifiedOnly?: boolean;
 }) {
   return useQuery<DoctorSearchResult, Error>({
     queryKey: ["doctorSearch", params], // cache per filter set

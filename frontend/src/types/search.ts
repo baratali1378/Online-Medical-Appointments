@@ -1,3 +1,5 @@
+import { DoctorListItem } from "./doctor";
+
 export interface SearchFilters {
   city: string;
   specialty: string;
@@ -30,31 +32,7 @@ export interface DoctorSearchResult {
     total: number;
     totalPages: number;
   };
-  data: DoctorSearchResultItem[];
-}
-
-export interface DoctorSearchResultItem {
-  id: number;
-  documentId: string;
-  city: {
-    id: number;
-    documentId: string;
-    name: string;
-  };
-  specialties: {
-    id: number;
-    documentId: string;
-    name: string;
-  }[];
-  personal_info: {
-    id: number;
-    fullname: string;
-    image: {
-      id: number;
-      documentId: string;
-      url: string;
-    } | null;
-  };
+  data: DoctorListItem[];
 }
 
 export interface FilterValues {
