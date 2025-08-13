@@ -2,7 +2,7 @@ import RootLayout from "./cutom_layout";
 
 export const metadata = {
   title: {
-    default: "Online Oppointments System",
+    default: "Online Appointments System",
     template: "%s",
   },
   description: "Created by Barat Ali Hassanzada.",
