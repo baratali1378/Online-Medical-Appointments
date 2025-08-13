@@ -10,6 +10,7 @@ export interface DoctorSignupFormValues {
   biography?: string;
   phone_number: string;
   city: string;
+  gender?: string;
 }
 
 export interface SignUpResonpose {

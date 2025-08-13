@@ -13,6 +13,8 @@ import { DoctorSignupFormValues } from "@/types/doctor";
 import { loginWithCredentials } from "@/lib/authHelper";
 import { useRouter } from "next/navigation";
 import ProtectedAuth from "@/components/common/ProtectedAuth";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const doctorInitialValues: DoctorSignupFormValues = {
   name: "",
@@ -25,16 +27,14 @@ const doctorInitialValues: DoctorSignupFormValues = {
   biography: "",
   phone_number: "",
   city: "",
+  gender: "",
 };
 
 const DoctorSignupPage = () => {
   const { mutateAsync: signupDoctor } = useDoctorSignup();
   const router = useRouter();
 
-  const handleSubmit = async (
-    values: DoctorSignupFormValues,
-    { setStatus }: any
-  ) => {
+  const handleSubmit = async (values: DoctorSignupFormValues) => {
     const formattedValues: DoctorSignupFormValues = {
       ...values,
       birth:
@@ -57,17 +57,19 @@ const DoctorSignupPage = () => {
       );
 
       if (result?.error) {
-        setStatus({ apiError: "Login failed: " + result.error });
+        toast.error(`Login failed: ${result.error}`, {
+          position: "top-right",
+        });
       } else {
+        toast.success("Signup successful! Welcome aboard 🎉", {
+          position: "top-right",
+        });
         router.push("/");
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.error?.message ||
-        error?.response?.data?.message ||
-        error.message ||
-        "Signup failed";
-      setStatus({ apiError: message });
+      toast.error(error?.message, {
+        position: "top-right",
+      });
     }
   };
 
@@ -86,7 +88,7 @@ const DoctorSignupPage = () => {
           onSubmit={handleSubmit}
           imageSide={<ImageSide src="/doctor_signup.jpg" alt="Doctor Image" />}
         >
-          <PersonalInfoStep />
+          <PersonalInfoStep includeGender />
           <ContactInfoStep includeExperience />
           <FinalStep />
         </SignupStepper>
