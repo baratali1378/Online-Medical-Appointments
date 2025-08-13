@@ -41,7 +41,7 @@ export default function DoctorsResults() {
             count={data.pagination.totalPages}
             page={page}
             onChange={handlePageChange}
-            color="primary"
+            color="secondary"
             shape="rounded"
             showFirstButton
             showLastButton
