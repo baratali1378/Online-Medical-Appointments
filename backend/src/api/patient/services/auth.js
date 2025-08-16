@@ -24,15 +24,13 @@ module.exports = () => ({
       throw new Error("Invalid email or password");
     }
 
-    // Check if locked
+    // Check if account is locked
     if (
       patient.security?.is_locked &&
       new Date(patient.security.lock_until) > new Date()
     ) {
-      const lockTime = new Date(patient.security.lock_until).getTime();
-      const currentTime = new Date().getTime();
-      const minutesLeft = Math.ceil((lockTime - currentTime) / (1000 * 60));
-      throw new Error(`Account locked. Try again in ${minutesLeft} minutes.`);
+      // Standardized locked message
+      throw new Error("Your account is locked.");
     }
 
     const validPassword = await bcrypt.compare(password, patient.password);
@@ -58,7 +56,7 @@ module.exports = () => ({
       });
 
       const msg = shouldLock
-        ? `Account locked. Try again after ${LOCK_TIME_MINUTES} minutes.`
+        ? "Your account is locked."
         : `Invalid credentials. ${MAX_LOGIN_ATTEMPTS - attempts} attempts remaining.`;
       throw new Error(msg);
     }
@@ -92,7 +90,6 @@ module.exports = () => ({
       },
     };
   },
-
   async signup({ name, email, password, phone, city, gender }) {
     if (!name || !email || !password || !phone || !city) {
       throw new Error("Please provide all required fields");

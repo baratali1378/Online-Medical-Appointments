@@ -27,12 +27,18 @@ module.exports = {
 
   async signup(ctx) {
     try {
-      const data = ctx.request.body.data;
-      const patientService = strapi.service("api::patient.auth");
+      // Ensure body and data exist
+      const data = ctx.request.body?.data;
+      if (!data) {
+        return ctx.badRequest("Request body is missing 'data' object");
+      }
 
+      const patientService = strapi.service("api::patient.auth");
       const result = await patientService.signup(data);
+
       return ctx.send(result);
     } catch (error) {
+      // Handle validation errors from the service
       if (
         error.message.includes("required") ||
         error.message.includes("exists") ||
@@ -40,8 +46,12 @@ module.exports = {
       ) {
         return ctx.badRequest(error.message);
       }
+
+      // Handle unexpected errors
       strapi.log.error("Patient signup error:", error);
-      return ctx.internalServerError(error.message || "Registration failed");
+      return ctx.internalServerError(
+        error.message || "Something went wrong during patient signup"
+      );
     }
   },
 };
