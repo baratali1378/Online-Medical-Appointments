@@ -7,7 +7,12 @@ module.exports = {
       return ctx.send(result);
     } catch (err) {
       strapi.log.error("Login error:", err);
-      return ctx.internalServerError("Something went wrong during login");
+
+      ctx.status = err.status || 500;
+      ctx.body = {
+        error: err.message || "Something went wrong during login",
+        type: err.name || "InternalServerError",
+      };
     }
   },
 
@@ -19,7 +24,12 @@ module.exports = {
       return ctx.send(result);
     } catch (err) {
       strapi.log.error("Signup error:", err);
-      return ctx.internalServerError(err.message || "Signup failed");
+
+      ctx.status = err.status || 500;
+      ctx.body = {
+        error: err.message || "Signup failed",
+        type: err.name || "InternalServerError",
+      };
     }
   },
 };

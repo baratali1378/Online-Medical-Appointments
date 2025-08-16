@@ -1,13 +1,20 @@
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const doctorToken = require("../../../utils/service/auth-service");
+const {
+  BadRequestError,
+  UnauthorizedError,
+  ConflictError,
+  NotFoundError,
+} = require("../../../utils/error");
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_TIME_MINUTES = 15;
 
 module.exports = () => ({
   async login({ email, password }) {
-    if (!email || !password) throw new Error("Email and password are required");
+    if (!email || !password) {
+      throw new BadRequestError("Email and password are required");
+    }
 
     const doctor = await strapi.query("api::doctor.doctor").findOne({
       where: { personal_info: { email } },
@@ -18,7 +25,9 @@ module.exports = () => ({
       },
     });
 
-    if (!doctor) throw new Error("Invalid email or password");
+    if (!doctor) {
+      throw new UnauthorizedError("Invalid email or password");
+    }
 
     if (
       doctor.security?.is_locked &&
@@ -28,7 +37,9 @@ module.exports = () => ({
         // @ts-ignore
         (new Date(doctor.security.lock_until) - new Date()) / 60000
       );
-      throw new Error(`Account locked. Try again in ${minutesLeft} minutes.`);
+      throw new UnauthorizedError(
+        `Account locked. Try again in ${minutesLeft} minutes.`
+      );
     }
 
     const validPassword = await bcrypt.compare(password, doctor.password);
@@ -50,7 +61,7 @@ module.exports = () => ({
         },
       });
 
-      throw new Error(
+      throw new UnauthorizedError(
         shouldLock
           ? `Account locked. Try again after ${LOCK_TIME_MINUTES} minutes.`
           : `Invalid credentials. ${MAX_LOGIN_ATTEMPTS - attempts} attempts remaining.`
@@ -90,17 +101,15 @@ module.exports = () => ({
     const { name, email, password, experience, city, gender, birth } = data;
 
     if (!name || !email || !password || !experience || !city) {
-      throw new Error("Please provide all required fields");
+      throw new BadRequestError("Please provide all required fields");
     }
 
     const existingDoctors = await strapi.db
       .query("api::doctor.doctor")
-      .findMany({
-        where: { personal_info: { email } },
-      });
+      .findMany({ where: { personal_info: { email } } });
 
     if (existingDoctors.length > 0) {
-      throw new Error("A doctor with this email already exists");
+      throw new ConflictError("A doctor with this email already exists");
     }
 
     const foundCity = await strapi.db.query("api::city.city").findOne({
@@ -108,21 +117,13 @@ module.exports = () => ({
     });
 
     if (!foundCity) {
-      throw new Error(`City '${city}' not found`);
+      throw new NotFoundError(`City '${city}' not found`);
     }
 
     const newDoctor = await strapi.entityService.create("api::doctor.doctor", {
       data: {
-        personal_info: {
-          fullname: name,
-          email,
-          gender,
-          birth,
-        },
-        security: {
-          is_verified: false,
-          is_locked: false,
-        },
+        personal_info: { fullname: name, email, gender, birth },
+        security: { is_verified: false, is_locked: false },
         experience,
         city: foundCity.id,
         password,
@@ -132,9 +133,6 @@ module.exports = () => ({
 
     const token = doctorToken.generateToken(newDoctor, "doctor");
 
-    return {
-      token,
-      role: "doctor",
-    };
+    return { token, role: "doctor" };
   },
 });
