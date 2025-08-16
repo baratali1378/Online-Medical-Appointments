@@ -7,27 +7,18 @@ module.exports = {
       const result = await patientService.login(email, password);
       return ctx.send(result);
     } catch (error) {
-      if (
-        error.message.includes("Invalid") ||
-        error.message.includes("locked")
-      ) {
-        return ctx.unauthorized(error.message);
-      }
-      if (
-        error.message.includes("required") ||
-        error.message.includes("exists") ||
-        error.message.includes("not found")
-      ) {
-        return ctx.badRequest(error.message);
-      }
       strapi.log.error("Login error:", error);
-      return ctx.internalServerError("Something went wrong during login");
+
+      ctx.status = error.status || 500;
+      ctx.body = {
+        error: error.message || "Something went wrong during login",
+        type: error.name || "InternalServerError",
+      };
     }
   },
 
   async signup(ctx) {
     try {
-      // Ensure body and data exist
       const data = ctx.request.body?.data;
       if (!data) {
         return ctx.badRequest("Request body is missing 'data' object");
@@ -35,23 +26,15 @@ module.exports = {
 
       const patientService = strapi.service("api::patient.auth");
       const result = await patientService.signup(data);
-
       return ctx.send(result);
     } catch (error) {
-      // Handle validation errors from the service
-      if (
-        error.message.includes("required") ||
-        error.message.includes("exists") ||
-        error.message.includes("not found")
-      ) {
-        return ctx.badRequest(error.message);
-      }
+      strapi.log.error("Signup error:", error);
 
-      // Handle unexpected errors
-      strapi.log.error("Patient signup error:", error);
-      return ctx.internalServerError(
-        error.message || "Something went wrong during patient signup"
-      );
+      ctx.status = error.status || 500;
+      ctx.body = {
+        error: error.message || "Signup failed",
+        type: error.name || "InternalServerError",
+      };
     }
   },
 };

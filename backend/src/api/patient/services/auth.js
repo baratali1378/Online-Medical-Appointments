@@ -1,6 +1,11 @@
-// path: src/api/patient/services/auth
 const patientService = require("../../../utils/service/auth-service");
 const bcrypt = require("bcryptjs");
+const {
+  BadRequestError,
+  UnauthorizedError,
+  ConflictError,
+  NotFoundError,
+} = require("../../../utils/error");
 
 const LOCK_TIME_MINUTES = parseInt(process.env.LOCK_TIME_MINUTES) || 15;
 const MAX_LOGIN_ATTEMPTS = parseInt(process.env.MAX_LOGIN_ATTEMPTS) || 5;
@@ -8,7 +13,7 @@ const MAX_LOGIN_ATTEMPTS = parseInt(process.env.MAX_LOGIN_ATTEMPTS) || 5;
 module.exports = () => ({
   async login(email, password) {
     if (!email || !password) {
-      throw new Error("Email and password are required.");
+      throw new BadRequestError("Email and password are required");
     }
 
     const patient = await strapi.query("api::patient.patient").findOne({
@@ -21,16 +26,15 @@ module.exports = () => ({
     });
 
     if (!patient) {
-      throw new Error("Invalid email or password");
+      throw new UnauthorizedError("Invalid email or password");
     }
 
-    // Check if account is locked
+    // Account lock check
     if (
       patient.security?.is_locked &&
       new Date(patient.security.lock_until) > new Date()
     ) {
-      // Standardized locked message
-      throw new Error("Your account is locked.");
+      throw new UnauthorizedError("Your account is locked.");
     }
 
     const validPassword = await bcrypt.compare(password, patient.password);
@@ -55,10 +59,11 @@ module.exports = () => ({
         },
       });
 
-      const msg = shouldLock
-        ? "Your account is locked."
-        : `Invalid credentials. ${MAX_LOGIN_ATTEMPTS - attempts} attempts remaining.`;
-      throw new Error(msg);
+      throw new UnauthorizedError(
+        shouldLock
+          ? "Your account is locked."
+          : `Invalid credentials. ${MAX_LOGIN_ATTEMPTS - attempts} attempts remaining.`
+      );
     }
 
     // Reset failed attempts
@@ -74,7 +79,6 @@ module.exports = () => ({
       },
     });
 
-    // Generate token
     const token = patientService.generateToken(patient, "patient");
 
     return {
@@ -90,14 +94,12 @@ module.exports = () => ({
       },
     };
   },
+
   async signup({ name, email, password, phone, city, gender }) {
     if (!name || !email || !password || !phone || !city) {
-      throw new Error("Please provide all required fields");
+      throw new BadRequestError("Please provide all required fields");
     }
 
-    const fullname = name;
-
-    // Check if patient with email or phone exists
     const existingPatients = await strapi.db
       .query("api::patient.patient")
       .findMany({
@@ -111,50 +113,35 @@ module.exports = () => ({
       });
 
     if (existingPatients.length > 0) {
-      throw new Error("A patient with this email or phone already exists");
+      throw new ConflictError(
+        "A patient with this email or phone already exists"
+      );
     }
 
-    // Find city by name
     const foundCity = await strapi.db.query("api::city.city").findOne({
       where: { name: city },
     });
 
     if (!foundCity) {
-      throw new Error(`City '${city}' not found`);
+      throw new NotFoundError(`City '${city}' not found`);
     }
 
-    // Create patient entity
     const newPatient = await strapi.entityService.create(
       "api::patient.patient",
       {
         data: {
-          personal_info: {
-            fullname,
-            email,
-            gender: gender || null,
-          },
-          contact_details: {
-            phone_number: phone,
-            city: foundCity.id,
-          },
-          security: {
-            is_locked: false,
-            is_verified: true,
-            lock_until: null,
-          },
-          password: password,
+          personal_info: { fullname: name, email, gender: gender || null },
+          contact_details: { phone_number: phone, city: foundCity.id },
+          security: { is_locked: false, is_verified: true, lock_until: null },
+          password,
           publishedAt: new Date(),
         },
         populate: ["personal_info"],
       }
     );
 
-    // Generate token
     const token = patientService.generateToken(newPatient, "patient");
 
-    return {
-      token,
-      role: "patient",
-    };
+    return { token, role: "patient" };
   },
 });
