@@ -1,11 +1,14 @@
 "use strict";
 
 const patientService = require("../services/update");
+const { UnauthorizedError } = require("../../../utils/error");
 
 module.exports = {
   async updateImg(ctx) {
     const patient = ctx.state.patient;
-    if (!patient) return ctx.unauthorized("No patient data available");
+    if (!patient) {
+      return new UnauthorizedError("Patient Not Found");
+    }
 
     try {
       const imageFile = ctx.request.files?.files;
@@ -15,15 +18,22 @@ module.exports = {
       );
 
       return ctx.send({ data: updatedPatient, meta: {} });
-    } catch (error) {
-      strapi.log.error("Image update error:", error);
-      return ctx.internalServerError(error.message || "Image update failed");
+    } catch (err) {
+      strapi.log.error("Image update error:", err);
+
+      ctx.status = err.status || 500;
+      ctx.body = {
+        error: err.message || "Image update failed",
+        type: err.name || "InternalServerError",
+      };
     }
   },
 
   async updateMe(ctx) {
     const patient = ctx.state.patient;
-    if (!patient) return ctx.unauthorized("No patient data available");
+    if (!patient) {
+      return new UnauthorizedError("invalid Patient");
+    }
 
     try {
       const data = ctx.request.body?.data;
@@ -32,16 +42,21 @@ module.exports = {
       return ctx.send({
         data: {
           id: updatedPatient.id,
+          // @ts-ignore
           personal_info: updatedPatient.personal_info,
+          // @ts-ignore
           contact: updatedPatient.contact_details,
         },
         meta: {},
       });
-    } catch (error) {
-      strapi.log.error("Update error:", error);
-      return ctx.internalServerError(
-        error.message || "An error occurred during update"
-      );
+    } catch (err) {
+      strapi.log.error("Update error:", err);
+
+      ctx.status = err.status || 500;
+      ctx.body = {
+        error: err.message || "An error occurred during update",
+        type: err.name || "InternalServerError",
+      };
     }
   },
 };

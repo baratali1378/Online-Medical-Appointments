@@ -1,7 +1,13 @@
+const {
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} = require("../../../utils/error"); // adjust the path if needed
+
 module.exports = {
   async updateImage(patient, imageFile) {
     if (!imageFile) {
-      throw new Error("No image file provided");
+      throw new BadRequestError("No image file provided");
     }
 
     const [uploadedImage] = await strapi
@@ -13,7 +19,7 @@ module.exports = {
       });
 
     if (!uploadedImage?.id) {
-      throw new Error("Image upload failed");
+      throw new ConflictError("Image upload failed");
     }
 
     const personalInfoUpdate = {
@@ -24,7 +30,7 @@ module.exports = {
       image: uploadedImage.id,
     };
 
-    return await strapi.entityService.update(
+    const updatedPatient = await strapi.entityService.update(
       "api::patient.patient",
       patient.id,
       {
@@ -37,26 +43,31 @@ module.exports = {
         },
       }
     );
+
+    // Remove sensitive data
+    if (updatedPatient.password) {
+      delete updatedPatient.password;
+    }
+
+    return updatedPatient;
   },
 
   async updateProfile(patient, data) {
     if (!data || !data.personal_info || !data.contact) {
-      throw new Error("Personal Info and Contact must be provided");
+      throw new BadRequestError("Personal Info and Contact must be provided");
     }
 
     // Resolve city
     let cityId = null;
+
     if (data.contact.city) {
-      const cities = await strapi.entityService.findMany("api::city.city", {
-        filters: { name: data.contact.city },
-        limit: 1,
+      const city = await strapi.db.query("api::city.city").findOne({
+        where: { name: data.contact.city }, // search by city name
       });
 
-      if (cities.length === 0) {
-        throw new Error("Invalid city name provided");
+      if (city) {
+        cityId = city.id;
       }
-
-      cityId = cities[0].id;
     }
 
     return await strapi.entityService.update(
