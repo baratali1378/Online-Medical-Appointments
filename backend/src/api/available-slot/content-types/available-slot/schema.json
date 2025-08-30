@@ -41,6 +41,11 @@
       "relation": "manyToOne",
       "target": "api::doctor.doctor",
       "inversedBy": "available_slots"
+    },
+    "price": {
+      "type": "decimal",
+      "default": 0,
+      "required": true
     }
   }
 }

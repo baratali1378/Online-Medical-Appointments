@@ -473,6 +473,9 @@ export interface ApiAvailableSlotAvailableSlot
       'api::available-slot.available-slot'
     > &
       Schema.Attribute.Private;
+    price: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
     publishedAt: Schema.Attribute.DateTime;
     start_time: Schema.Attribute.Time & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
