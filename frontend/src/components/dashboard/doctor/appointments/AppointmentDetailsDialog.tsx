@@ -1,4 +1,6 @@
 // components/AppointmentDetailsDialog.tsx
+"use client";
+
 import {
   Dialog,
   DialogTitle,
@@ -8,7 +10,6 @@ import {
   Avatar,
   Chip,
   IconButton,
-  Button,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
@@ -34,6 +35,15 @@ const statusColors: Record<
   Cancelled: "default",
 };
 
+const paymentColors: Record<
+  string,
+  "default" | "success" | "warning" | "error"
+> = {
+  Paid: "success",
+  Unpaid: "warning",
+  Failed: "error",
+};
+
 export const AppointmentDetailsDialog = ({
   open,
   onClose,
@@ -52,6 +62,8 @@ export const AppointmentDetailsDialog = ({
     notes,
     appointment_status,
     id: appointmentId,
+    price,
+    payment_status,
   } = appointment;
 
   const age =
@@ -59,7 +71,7 @@ export const AppointmentDetailsDialog = ({
     new Date(patient.personal_info.birth || "2000").getFullYear();
 
   const canAddMedicalRecord =
-    appointment_status === "Completed" || appointment_status === "Confirmed"; // ✅ logic
+    appointment_status === "Completed" || appointment_status === "Confirmed";
 
   const handleAddMedicalRecord = () => {
     router.push(
@@ -92,11 +104,13 @@ export const AppointmentDetailsDialog = ({
       </DialogTitle>
 
       <DialogContent dividers sx={{ px: 3, py: 2 }}>
+        {/* Patient Info */}
         <Box display="flex" gap={2} alignItems="center" mb={3}>
           <Avatar
             src={
-              `${API_URL}${patient.personal_info.image?.url}` ||
-              "/default-avatar.png"
+              patient.personal_info.image?.url
+                ? `${API_URL}${patient.personal_info.image?.url}`
+                : "/default-avatar.png"
             }
             alt={patient.personal_info.fullname}
             sx={{ width: 64, height: 64 }}
@@ -111,6 +125,7 @@ export const AppointmentDetailsDialog = ({
           </Box>
         </Box>
 
+        {/* Status */}
         <Box mb={2}>
           <Typography variant="subtitle2" color="text.secondary">
             Status
@@ -123,6 +138,7 @@ export const AppointmentDetailsDialog = ({
           />
         </Box>
 
+        {/* Appointment Date */}
         <Box mb={2}>
           <Typography variant="subtitle2" color="text.secondary">
             Appointment Date
@@ -132,6 +148,7 @@ export const AppointmentDetailsDialog = ({
           </Typography>
         </Box>
 
+        {/* Notes */}
         {notes && (
           <Box mb={2}>
             <Typography variant="subtitle2" color="text.secondary">
@@ -143,10 +160,34 @@ export const AppointmentDetailsDialog = ({
           </Box>
         )}
 
+        {/* Price & Payment */}
+        <Box mb={2} display="flex" justifyContent="space-between">
+          <Box>
+            <Typography variant="subtitle2" color="text.secondary">
+              Price
+            </Typography>
+            <Typography variant="body1" fontWeight={600}>
+              {price ? `$${price.toFixed(2)}` : "Not Set"}
+            </Typography>
+          </Box>
+          <Box textAlign="right">
+            <Typography variant="subtitle2" color="text.secondary">
+              Payment Status
+            </Typography>
+            <Chip
+              label={payment_status}
+              color={paymentColors[payment_status] || "default"}
+              size="small"
+              sx={{ mt: 0.5 }}
+            />
+          </Box>
+        </Box>
+
+        {/* Medical Record Button */}
         {canAddMedicalRecord && (
           <Box mt={3} textAlign="center">
-            <BrandButton variant="text" onClick={handleAddMedicalRecord}>
-              Add Medical Records
+            <BrandButton variant="contained" onClick={handleAddMedicalRecord}>
+              Add Medical Record
             </BrandButton>
           </Box>
         )}

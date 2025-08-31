@@ -27,7 +27,7 @@ export const AvailableSlotsCard = ({ token }: AvailableSlotsCardProps) => {
     try {
       for (const slot of values.available_slots) {
         const original = originalSlots.find((s) => s.id === slot.id);
-        console.log(slot);
+
         // Create new slot
         if (slot.id === 0) {
           await mutation.mutateAsync({ type: "create", data: slot });

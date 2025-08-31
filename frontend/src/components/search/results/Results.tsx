@@ -15,8 +15,8 @@ export default function DoctorsResults() {
     city: searchParams.get("city") || "",
     specialty: searchParams.get("specialty") || "",
     searchQuery: searchParams.get("q") || "",
-    minRating: searchParams.get("minRating") || "",
-    verified: Boolean(searchParams.get("verified")) || false,
+    minRating: Number(searchParams.get("minRating") || 0),
+    verified: searchParams.get("verified") === "true", // ✅ use the correct prop name
     page,
     pageSize,
   });

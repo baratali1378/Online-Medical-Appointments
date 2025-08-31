@@ -28,7 +28,9 @@ module.exports = ({ strapi }) => ({
     try {
       const doctor = ctx.state.doctor;
       if (!doctor) throw new NotFoundError("Doctor profile not found");
-      const { date, start_time, end_time, capacity } = ctx.request.body.data;
+      const { date, start_time, end_time, capacity, price } =
+        ctx.request.body.data;
+
       if (!date || !start_time || !end_time) {
         return ctx.badRequest("Date, start time, and end time are required");
       }
@@ -41,6 +43,7 @@ module.exports = ({ strapi }) => ({
             start_time,
             end_time,
             capacity,
+            price, // ✅ added price
             doctor: doctor.id,
             publishedAt: new Date(),
           },
@@ -53,6 +56,7 @@ module.exports = ({ strapi }) => ({
     }
   },
 
+  // 📌 Doctor: Update Available Slot
   async updateAvailableSlot(ctx) {
     try {
       const doctor = ctx.state.doctor;
@@ -73,7 +77,7 @@ module.exports = ({ strapi }) => ({
       if (!existingSlot) throw new NotFoundError("Slot not found");
 
       // Extract only allowed fields to update
-      const { date, start_time, end_time, capacity, is_active } = data;
+      const { date, start_time, end_time, capacity, is_active, price } = data;
 
       const updateData = {
         ...(date && { date }),
@@ -81,6 +85,7 @@ module.exports = ({ strapi }) => ({
         ...(end_time && { end_time }),
         ...(capacity && { capacity }),
         ...(is_active !== undefined && { is_active }),
+        ...(price !== undefined && { price }), // ✅ allow updating price
       };
 
       // Perform the update

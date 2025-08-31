@@ -27,6 +27,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
+import { file } from "@/types/medical-record";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -218,7 +219,7 @@ type MedicalRecordFormProps = {
   isPending: boolean;
   title: string;
   submitLabel: string;
-  existingFiles?: any[];
+  existingFiles?: file[];
 };
 
 export function MedicalRecordForm({

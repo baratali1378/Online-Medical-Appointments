@@ -55,6 +55,7 @@ export const TimeSlotForm = ({
               ...slot,
               start_time: formatTimeForBackend(slot.start_time),
               end_time: formatTimeForBackend(slot.end_time),
+              price: slot.price ?? 0, // ✅ ensure price is set
             })
           ),
         };
@@ -88,7 +89,8 @@ export const TimeSlotForm = ({
                   ))
                 )}
 
-                {isMobile && (
+                {/* Add Slot */}
+                {isMobile ? (
                   <Box display={"flex"} justifyContent={"flex-start"}>
                     <Fab
                       color="info"
@@ -100,6 +102,7 @@ export const TimeSlotForm = ({
                           start_time: "09:00",
                           end_time: "17:00",
                           capacity: 1,
+                          price: 0, // ✅ default price
                           is_active: true,
                         })
                       }
@@ -108,9 +111,7 @@ export const TimeSlotForm = ({
                       <Add />
                     </Fab>
                   </Box>
-                )}
-
-                {!isMobile && (
+                ) : (
                   <Box
                     sx={{
                       display: "flex",
@@ -129,6 +130,7 @@ export const TimeSlotForm = ({
                           start_time: "09:00",
                           end_time: "17:00",
                           capacity: 1,
+                          price: 0, // ✅ default price
                           is_active: true,
                         })
                       }
@@ -140,6 +142,7 @@ export const TimeSlotForm = ({
                   </Box>
                 )}
 
+                {/* Save Button */}
                 {values.available_slots.length > 0 && (
                   <>
                     {!isMobile && <Divider sx={{ my: 3 }} />}

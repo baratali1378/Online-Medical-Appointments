@@ -7,6 +7,8 @@ import {
   Button,
   Stack,
   Divider,
+  Typography,
+  Chip,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
@@ -22,6 +24,15 @@ interface Props {
   appointment: PatientAppointment;
   token: string;
 }
+
+const paymentColors: Record<
+  string,
+  "default" | "success" | "warning" | "error"
+> = {
+  Paid: "success",
+  Unpaid: "warning",
+  Failed: "error",
+};
 
 export const PatientAppointmentCard = ({ appointment, token }: Props) => {
   const theme = useTheme();
@@ -63,6 +74,37 @@ export const PatientAppointmentCard = ({ appointment, token }: Props) => {
               status={appointment.appointment_status}
               isMobile={isMobile}
             />
+
+            <Divider />
+
+            {/* Price + Payment */}
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Price
+                </Typography>
+                <Typography variant="body1" fontWeight={600}>
+                  {appointment.price
+                    ? `$${appointment.price.toFixed(2)}`
+                    : "Not Set"}
+                </Typography>
+              </Box>
+              <Box textAlign="right">
+                <Typography variant="subtitle2" color="text.secondary">
+                  Payment
+                </Typography>
+                <Chip
+                  label={appointment.payment_status}
+                  color={paymentColors[appointment.payment_status] || "default"}
+                  size="small"
+                  sx={{ mt: 0.5 }}
+                />
+              </Box>
+            </Stack>
 
             <Divider />
 
@@ -125,7 +167,7 @@ export const PatientAppointmentCard = ({ appointment, token }: Props) => {
         token={token}
       />
 
-      {/* {Review Dialog} */}
+      {/* Review Dialog */}
       <ReviewDialog
         open={openReviewDialog}
         onClose={() => setOpenReviewDialog(false)}

@@ -58,6 +58,22 @@
       "relation": "manyToOne",
       "target": "api::available-slot.available-slot",
       "inversedBy": "appointments"
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "payment_status": {
+      "type": "enumeration",
+      "enum": [
+        "Unpaid",
+        "Paid",
+        "Failed"
+      ],
+      "default": "Unpaid"
+    },
+    "transaction_id": {
+      "type": "string"
     }
   }
 }

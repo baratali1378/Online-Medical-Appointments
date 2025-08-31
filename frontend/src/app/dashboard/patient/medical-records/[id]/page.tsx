@@ -151,20 +151,29 @@ const MedicalRecordPage = ({ session }: Props) => {
         <InfoSection title="Notes" content={record.notes} />
 
         {/* Files Section */}
-        {record.files && (
+        {record.files && record.files.length > 0 && (
           <Box mt={3}>
             <Typography variant="subtitle1" fontWeight={600}>
               Files
             </Typography>
-            <Stack direction="row" spacing={1} mt={1}>
-              <Description color="action" />
-              <MuiLink
-                href={record.files.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View File ({(record.files.size / 1024).toFixed(1)} KB)
-              </MuiLink>
+            <Stack direction="column" spacing={1} mt={1}>
+              {record.files.map((file) => (
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  key={file.id}
+                >
+                  <Description color="action" />
+                  <MuiLink
+                    href={file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View File ({(file.size / 1024).toFixed(1)} KB)
+                  </MuiLink>
+                </Stack>
+              ))}
             </Stack>
           </Box>
         )}

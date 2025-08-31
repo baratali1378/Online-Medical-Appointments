@@ -7,6 +7,7 @@ export interface AvailableSlot {
   end_time: string; // HH:mm:ss
   capacity: number;
   is_active: boolean;
+  price: number | null;
 }
 
 export interface AvailableSlotResponse {

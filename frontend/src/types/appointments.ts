@@ -29,13 +29,17 @@ export type AppointmentStatus =
   | "Completed"
   | "Cancelled";
 
+export type PaymentStatus = "Paid" | "Unpaid" | "Failed";
+
 export interface Appointment {
   id: number;
   date: string;
   notes: string;
   appointment_status: AppointmentStatus;
+  payment_status: PaymentStatus;
   createdAt: string;
   updatedAt: string;
+  price: number | null;
 }
 
 export interface DoctorAppointment extends Appointment {

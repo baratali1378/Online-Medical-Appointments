@@ -24,6 +24,7 @@ export const AppointmentCard = ({
   appointment,
   token,
 }: AppointmentCardProps) => {
+  console.log("appointment", appointment);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [openDetails, setOpenDetails] = useState(false);

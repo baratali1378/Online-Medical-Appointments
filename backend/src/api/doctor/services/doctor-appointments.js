@@ -36,7 +36,14 @@ module.exports = ({ strapi }) => ({
       {
         filters: baseFilters,
         sort: { date: "asc" },
-        fields: ["id", "date", "appointment_status", "notes"],
+        fields: [
+          "id",
+          "date",
+          "appointment_status",
+          "notes",
+          "price",
+          "payment_status",
+        ],
         populate: {
           patient: {
             fields: ["id"],

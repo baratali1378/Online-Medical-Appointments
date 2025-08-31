@@ -9,8 +9,8 @@ export function useDoctorSearchQuery(params?: {
   searchQuery?: string;
   page?: number;
   pageSize?: number;
-  minRating?: number;
-  verifiedOnly?: boolean;
+  minRating?: number | string;
+  verified?: boolean;
 }) {
   return useQuery<DoctorSearchResult, Error>({
     queryKey: ["doctorSearch", params], // cache per filter set

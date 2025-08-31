@@ -3,7 +3,6 @@
 import {
   Grid,
   TextField,
-  MenuItem,
   IconButton,
   Switch,
   FormControlLabel,
@@ -142,8 +141,23 @@ export const TimeSlotField = ({
             />
           </Grid>
 
+          {/* Price */}
+          <Grid item xs={12} md={6} sm={6}>
+            <TextField
+              type="number"
+              fullWidth
+              label="Price"
+              name={`available_slots[${index}].price`}
+              value={slot.price ?? ""}
+              onChange={handleChange}
+              size="small"
+              inputProps={{ min: 0, step: 1 }}
+              disabled={loading}
+            />
+          </Grid>
+
           {/* Active Toggle */}
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <FormControlLabel
               control={
                 <Switch

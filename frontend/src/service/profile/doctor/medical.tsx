@@ -17,9 +17,9 @@ export const MedicalRecordService = {
       try {
         const api = createApiClient(token);
 
-        // Always use FormData regardless of files presence
         const formData = new FormData();
 
+        // Append payload fields to FormData
         for (const [key, value] of Object.entries(payload)) {
           if (key === "files") continue;
 
@@ -32,6 +32,7 @@ export const MedicalRecordService = {
           }
         }
 
+        // Append files if present
         if (payload.files && payload.files.length > 0) {
           payload.files.forEach((file) => {
             formData.append("files", file);
@@ -71,7 +72,6 @@ export const MedicalRecordService = {
           }
         }
 
-        console.log("file", payload.files);
         if (payload.files && payload.files.length > 0) {
           payload.files.forEach((file) => {
             formData.append("files", file);
@@ -93,6 +93,7 @@ export const MedicalRecordService = {
         throw handleServiceError(error, "Failed to update medical record");
       }
     },
+
     async getAll(
       token: string,
       patientId: number
@@ -111,13 +112,16 @@ export const MedicalRecordService = {
         throw handleServiceError(error, "Failed to fetch medical records");
       }
     },
+
     async getById(token: string, id: number): Promise<MedicalRecord> {
       try {
         const api = createApiClient(token);
-        const response = await api.get<MedicalRecord>(
+        const response = await api.get<{ data: MedicalRecord }>(
           `/api/doctor/medical-records/${id}`
         );
-        return response.data?.data;
+
+        // ✅ response.data has a "data" property containing the record
+        return response.data.data;
       } catch (error) {
         throw handleServiceError(error, "Failed to fetch medical record");
       }

@@ -434,8 +434,12 @@ export interface ApiAppointmentAppointment extends Struct.CollectionTypeSchema {
     >;
     notes: Schema.Attribute.Text;
     patient: Schema.Attribute.Relation<'manyToOne', 'api::patient.patient'>;
+    payment_status: Schema.Attribute.Enumeration<['Unpaid', 'Paid', 'Failed']> &
+      Schema.Attribute.DefaultTo<'Unpaid'>;
+    price: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     review: Schema.Attribute.Relation<'oneToOne', 'api::review.review'>;
+    transaction_id: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

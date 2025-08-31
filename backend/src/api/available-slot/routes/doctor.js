@@ -44,5 +44,13 @@ module.exports = {
         auth: false,
       },
     },
+    {
+      method: "POST",
+      path: "/doctor/available-slots/testing",
+      handler: "test.updatePrice",
+      config: {
+        auth: false,
+      },
+    },
   ],
 };
