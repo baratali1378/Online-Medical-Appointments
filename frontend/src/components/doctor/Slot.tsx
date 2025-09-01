@@ -16,7 +16,7 @@ import { format, parseISO, isToday, isTomorrow } from "date-fns";
 import type { AvailableSlot } from "@/types/doctor";
 import { BrandButton } from "../dashboard/common/BrandButton";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCreateAppointment } from "@/hooks/useAppointment";
 
 // Helper to format time in 12-hour format with AM/PM
@@ -36,8 +36,8 @@ interface Props {
 export default function Slot({ slot, doctorId }: Props) {
   const theme = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
-  console.log("slot", slot);
 
   // Hook to create appointment via Stripe
   const createAppointmentMutation = useCreateAppointment(
@@ -47,7 +47,8 @@ export default function Slot({ slot, doctorId }: Props) {
   // Handle booking
   const handleBook = async () => {
     if (!session) {
-      router.push("/login/patient");
+      // Redirect to login with callbackUrl
+      router.push(`/login/patient?callbackUrl=${encodeURIComponent(pathname)}`);
       return;
     }
 
