@@ -57,12 +57,13 @@ export interface Specialty {
 }
 
 export interface AvailableSlot {
+  id: number;
   is_active: any;
   capacity: string;
-  id?: number;
   days: string;
   start_time: string; // HH:mm format
   end_time: string;
+  price: number | null;
 }
 
 export interface VerificationDocument {

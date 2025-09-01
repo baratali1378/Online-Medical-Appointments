@@ -39,10 +39,7 @@ module.exports = ({ strapi }) => ({
   },
 
   /**
-   * 📌 Change appointment status (Cancel / Reschedule)
-   * Accepts:
-   *  - appointment_status (Pending / Cancelled etc.)
-   *  - available_slot (for reschedule)
+   * 📌 Update appointment (Cancel / Reschedule)
    */
   async updateAppointment(ctx) {
     try {
@@ -59,7 +56,6 @@ module.exports = ({ strapi }) => ({
         return ctx.badRequest("Invalid appointment status");
       }
 
-      // 🔍 Find appointment
       const appointment = await strapi.db
         .query("api::appointment.appointment")
         .findOne({
@@ -69,14 +65,12 @@ module.exports = ({ strapi }) => ({
 
       if (!appointment) throw new NotFoundError("Appointment not found");
 
-      // ⏱ Restriction check based on `date` (datetime field)
       if (dayjs(appointment.date).diff(dayjs(), "hour") < 24) {
         return ctx.badRequest(
           "You can only change or cancel appointments at least 24 hours in advance."
         );
       }
 
-      // Prepare update data
       let updateData = {
         appointment_status,
         updatedByPatient: true,
@@ -84,7 +78,7 @@ module.exports = ({ strapi }) => ({
         doctorID: appointment.doctor?.id,
       };
 
-      // 🗑 Free old slot if cancelling or rescheduling
+      // Free old slot if cancelling or rescheduling
       if (appointment.available_slot) {
         await strapi.db.query("api::available-slot.available-slot").update({
           where: { id: appointment.available_slot.id },
@@ -95,7 +89,7 @@ module.exports = ({ strapi }) => ({
         });
       }
 
-      // 📅 Rescheduling: book new slot
+      // Reschedule logic
       if (appointment_status === "Pending" && available_slot) {
         const slot = await strapi.db
           .query("api::available-slot.available-slot")
@@ -108,13 +102,11 @@ module.exports = ({ strapi }) => ({
           return ctx.badRequest("Selected slot is full or already booked");
         }
 
-        // Book new slot
         await strapi.db.query("api::available-slot.available-slot").update({
           where: { id: slot.id },
           data: { capacity: slot.capacity - 1 },
         });
 
-        // Update appointment datetime
         const slotDateTime = dayjs(
           `${dayjs(slot.date).format("YYYY-MM-DD")} ${slot.start_time}`
         );
@@ -128,7 +120,6 @@ module.exports = ({ strapi }) => ({
         };
       }
 
-      // ✅ Update appointment
       const updatedAppointment = await strapi.db
         .query("api::appointment.appointment")
         .update({
@@ -143,96 +134,6 @@ module.exports = ({ strapi }) => ({
     } catch (error) {
       strapi.log.error("Error updating patient appointment status:", error);
       return ctx.internalServerError("Could not update appointment status");
-    }
-  },
-
-  async createAppointment(ctx) {
-    try {
-      const patient = ctx.state.patient;
-      if (!patient) throw new NotFoundError("Patient profile not found");
-
-      const { note, doctorId, slotId } = ctx.request.body;
-
-      if (!doctorId || !slotId) {
-        return ctx.badRequest("Doctor ID and Slot ID are required");
-      }
-
-      const slot = await strapi.db
-        .query("api::available-slot.available-slot")
-        .findOne({
-          where: { id: slotId, doctor: doctorId },
-        });
-
-      if (!slot) {
-        return ctx.badRequest("Invalid or unavailable slot");
-      }
-
-      if (slot.capacity <= 0) {
-        return ctx.badRequest("Selected slot is full or already booked");
-      }
-
-      const dayjs = require("dayjs");
-      const appointmentDateTime = dayjs(`${slot.date}T${slot.start_time}`);
-
-      // Create appointment record
-      const appointment = await strapi.db
-        .query("api::appointment.appointment")
-        .create({
-          data: {
-            patient: patient.id,
-            doctor: doctorId,
-            available_slot: slotId,
-            date: appointmentDateTime.toDate(),
-            start_time: slot.start_time,
-            end_time: slot.end_time,
-            note: note || "",
-            appointment_status: "Pending",
-          },
-        });
-
-      // Update slot capacity and is_booked flag
-      await strapi.db.query("api::available-slot.available-slot").update({
-        where: { id: slotId },
-        data: {
-          capacity: slot.capacity - 1,
-          is_booked: slot.capacity - 1 <= 0,
-        },
-      });
-
-      // === HERE: Update the patient-doctor many-to-many relationship ===
-      // Fetch current patient record with doctors relation populated
-      const patientWithDoctors = await strapi.db
-        .query("api::patient.patient")
-        .findOne({
-          where: { id: patient.id },
-          populate: ["doctors"],
-        });
-
-      // Check if doctor already exists in patient's doctors list
-      const alreadyRelated = patientWithDoctors.doctors.some(
-        (doc) => doc.id === doctorId
-      );
-
-      if (!alreadyRelated) {
-        // Add doctor to patient's doctors relation
-        await strapi.db.query("api::patient.patient").update({
-          where: { id: patient.id },
-          data: {
-            doctors: [
-              ...patientWithDoctors.doctors.map((doc) => doc.id),
-              doctorId,
-            ],
-          },
-        });
-      }
-
-      return ctx.send({
-        message: "Appointment created successfully",
-        data: appointment,
-      });
-    } catch (error) {
-      strapi.log.error("Error creating appointment:", error);
-      return ctx.internalServerError("Could not create appointment");
     }
   },
 });

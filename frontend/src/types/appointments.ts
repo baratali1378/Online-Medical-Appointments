@@ -74,3 +74,25 @@ export interface PatientAppointmentsResponse {
     filters: Record<string, unknown>;
   };
 }
+
+export interface CreateAppointmentPayload {
+  doctorId: number;
+  slotId: number;
+  price: number | null;
+  note?: string;
+}
+
+export interface CreateAppointmentResponse {
+  message: string;
+  data: PatientAppointment;
+}
+
+export interface StripeCheckoutPayload {
+  doctorId: number;
+  slotId: number;
+  price: number;
+}
+
+export interface StripeCheckoutResponse {
+  url: string; // Stripe Checkout URL
+}

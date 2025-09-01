@@ -1,8 +1,8 @@
-// components/doctor/Slot.tsx
+"use client";
+
 import React from "react";
 import {
   Card,
-  Button,
   Stack,
   Typography,
   Chip,
@@ -15,6 +15,9 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
 import type { AvailableSlot } from "@/types/doctor";
 import { BrandButton } from "../dashboard/common/BrandButton";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useCreateAppointment } from "@/hooks/useAppointment";
 
 // Helper to format time in 12-hour format with AM/PM
 function formatTime(time: string) {
@@ -26,16 +29,43 @@ function formatTime(time: string) {
 }
 
 interface Props {
-  slot: AvailableSlot & { date?: string }; // date optional ISO string
+  slot: AvailableSlot & { date?: string };
+  doctorId: number;
 }
 
-export default function Slot({ slot }: Props) {
+export default function Slot({ slot, doctorId }: Props) {
   const theme = useTheme();
+  const router = useRouter();
+  const { data: session } = useSession();
+  console.log("slot", slot);
 
+  // Hook to create appointment via Stripe
+  const createAppointmentMutation = useCreateAppointment(
+    session?.user.token || ""
+  );
+
+  // Handle booking
+  const handleBook = async () => {
+    if (!session) {
+      router.push("/login/patient");
+      return;
+    }
+
+    try {
+      await createAppointmentMutation.mutateAsync({
+        doctorId,
+        slotId: Number(slot.id),
+        price: slot.price ?? 0, // Stripe requires a price
+      });
+    } catch (err) {
+      console.error("Failed to book appointment:", err);
+    }
+  };
+
+  // Keep original date display logic
   let displayDate: React.ReactNode = slot.days;
   if (slot.date) {
     const parsedDate = parseISO(slot.date);
-
     if (isToday(parsedDate)) {
       displayDate = (
         <Typography
@@ -59,7 +89,7 @@ export default function Slot({ slot }: Props) {
         </Typography>
       );
     } else {
-      displayDate = format(parsedDate, "EEE, MMM d, yyyy"); // e.g. Wed, Aug 12, 2025
+      displayDate = format(parsedDate, "EEE, MMM d, yyyy");
     }
   }
 
@@ -89,6 +119,7 @@ export default function Slot({ slot }: Props) {
       elevation={6}
     >
       <Stack spacing={2}>
+        {/* Date Header */}
         <Box
           sx={{
             display: "flex",
@@ -121,6 +152,7 @@ export default function Slot({ slot }: Props) {
 
         <Divider />
 
+        {/* Time Section */}
         <Stack direction="row" spacing={1.5} alignItems="center">
           <AccessTimeIcon color="primary" fontSize="medium" />
           <Typography variant="subtitle1" fontWeight={600}>
@@ -130,19 +162,44 @@ export default function Slot({ slot }: Props) {
 
         <Divider />
 
-        <Chip
-          label={`Capacity: ${slot.capacity ?? "Unlimited"}`}
-          color={
-            slot.capacity !== undefined && Number(slot.capacity) <= 5
-              ? "warning"
-              : "secondary"
-          }
-          variant="outlined"
-          sx={{ fontWeight: "bold", maxWidth: 160 }}
-        />
+        {/* Capacity + Price */}
+        <Stack
+          direction="row"
+          spacing={1.5}
+          alignItems="center"
+          flexWrap="wrap"
+        >
+          <Chip
+            label={`Capacity: ${slot.capacity ?? "Unlimited"}`}
+            color={
+              slot.capacity !== undefined && Number(slot.capacity) <= 5
+                ? "warning"
+                : "secondary"
+            }
+            variant="outlined"
+            sx={{ fontWeight: "bold", maxWidth: 160 }}
+          />
+          {slot.price !== null && (
+            <Chip
+              label={`${slot.price} AFN`}
+              color="success"
+              sx={{ fontWeight: "bold", fontSize: "0.95rem" }}
+            />
+          )}
+        </Stack>
       </Stack>
+
+      {/* Book Button */}
       <Box mt={2}>
-        <BrandButton fullWidth>Book Appointment</BrandButton>
+        <BrandButton
+          onClick={handleBook}
+          fullWidth
+          disabled={!slot.is_active || createAppointmentMutation.isPending}
+        >
+          {createAppointmentMutation.isPending
+            ? "Redirecting..."
+            : "Book Appointment"}
+        </BrandButton>
       </Box>
     </Card>
   );

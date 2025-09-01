@@ -56,7 +56,7 @@ export default function DoctorAvailableSlots({ slots, doctorId }: Props) {
       <Grid container spacing={isSmUp ? 4 : 3}>
         {slots.map((slot) => (
           <Grid item xs={12} sm={6} md={4} key={slot.id}>
-            <Slot slot={slot} />
+            <Slot slot={slot} doctorId={doctorId} />
           </Grid>
         ))}
       </Grid>

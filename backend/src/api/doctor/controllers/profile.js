@@ -36,6 +36,7 @@ module.exports = {
     });
   },
 
+  // controllers/doctor.js
   async getDoctor(ctx) {
     try {
       const { id } = ctx.params;
@@ -57,7 +58,15 @@ module.exports = {
           city: { select: ["name"] },
           specialties: { select: ["name"] },
           available_slots: {
-            select: ["date", "start_time", "end_time", "capacity", "is_active"],
+            select: [
+              "id",
+              "date",
+              "start_time",
+              "end_time",
+              "capacity",
+              "is_active",
+              "price",
+            ],
           },
           clinic_info: true,
           security: { select: ["is_verified"] },
@@ -81,6 +90,14 @@ module.exports = {
       if (!doctor) {
         return ctx.notFound("Doctor not found");
       }
+
+      // Filter out past slots
+      const now = new Date();
+      doctor.available_slots = doctor.available_slots.filter((slot) => {
+        if (!slot.date) return false;
+        const slotDateTime = new Date(`${slot.date}T${slot.start_time}`);
+        return slotDateTime >= now;
+      });
 
       // Calculate ratings
       const ratings = doctor.reviews.map((r) => Number(r.rating) || 0);

@@ -88,9 +88,7 @@ export const PatientAppointmentCard = ({ appointment, token }: Props) => {
                   Price
                 </Typography>
                 <Typography variant="body1" fontWeight={600}>
-                  {appointment.price
-                    ? `$${appointment.price.toFixed(2)}`
-                    : "Not Set"}
+                  {appointment.price ? `${appointment.price} AFN` : "Not Set"}
                 </Typography>
               </Box>
               <Box textAlign="right">

@@ -5,7 +5,7 @@ module.exports = {
       path: "/appointments/patient/create-checkout-session",
       handler: "payment.createCheckoutSession",
       config: {
-        policies: [],
+        auth: false,
         middlewares: ["api::patient.auth"],
       },
     },
