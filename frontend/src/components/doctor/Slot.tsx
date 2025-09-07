@@ -38,6 +38,7 @@ export default function Slot({ slot, doctorId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
+  console.log("slot", session);
 
   // Hook to create appointment via Stripe
   const createAppointmentMutation = useCreateAppointment(
