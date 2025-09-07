@@ -74,7 +74,7 @@ const handler = NextAuth({
       // On subsequent requests, refresh user data from backend
       try {
         const meEndpoint =
-          token.role === "doctor" ? "/api/doctor/profile" : "/api/patients/me";
+          token.role === "doctor" ? "/api/doctor/profile" : "/api/patient/me";
 
         const response = await axios.get(`${API_URL}${meEndpoint}`, {
           headers: { Authorization: `Bearer ${token.token}` },

@@ -2,6 +2,7 @@ module.exports = {
   async login(ctx) {
     try {
       const { email, password } = ctx.request.body;
+      console.log(email, password);
       const patientService = strapi.service("api::patient.auth");
 
       const result = await patientService.login(email, password);
