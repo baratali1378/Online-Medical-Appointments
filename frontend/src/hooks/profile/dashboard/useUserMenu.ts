@@ -20,7 +20,7 @@ export const useUserMenu = (role?: string) => {
   };
 
   const handleProfile = () => {
-    if (role) router.push(`/dashboard/${role}/profile`);
+    if (role) router.push(`/dashboard/${role}`);
     handleMenuClose();
   };
 
