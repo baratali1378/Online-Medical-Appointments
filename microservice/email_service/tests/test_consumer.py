@@ -15,24 +15,42 @@ def test_callback_sends_email(mock_send_email):
     mock_channel = MagicMock()
     mock_method = MagicMock()
     mock_properties = MagicMock()
-    test_body = json.dumps({"email": test_email, "message": test_message})
+    test_body = json.dumps({
+        "email": test_email,
+        "content": test_message,
+        "subject": "Test Subject"
+    }).encode("utf-8")
 
     # Act
     consumer.callback(mock_channel, mock_method, mock_properties, test_body)
 
     # Assert
-    mock_send_email.assert_called_once_with(test_email, test_message)
+    mock_send_email.assert_called_once_with(test_email, test_message, subject="Test Subject")
 
 
 @patch("app.consumer.send_email")
 def test_callback_handles_missing_fields(mock_send_email):
-    test_body = json.dumps({"email": "user@example.com"})  # No message
+    # Arrange: پیام بدون content
+    test_body = json.dumps({"email": "user@example.com"}).encode("utf-8")
+
+    # Act
     consumer.callback(None, None, None, test_body)
+
+    # Assert
     mock_send_email.assert_not_called()
 
 
 @patch("app.consumer.send_email", side_effect=Exception("Email error"))
 def test_callback_handles_send_email_error(mock_send_email):
-    test_body = json.dumps({"email": "user@example.com", "message": "fail test"})
+    # Arrange: پیام معتبر ولی send_email خطا می‌دهد
+    test_body = json.dumps({
+        "email": "user@example.com",
+        "content": "fail test",
+        "subject": "Error Test"
+    }).encode("utf-8")
+
+    # Act
     consumer.callback(None, None, None, test_body)
-    mock_send_email.assert_called_once()
+
+    # Assert
+    mock_send_email.assert_called_once_with("user@example.com", "fail test", subject="Error Test")
