@@ -35,7 +35,7 @@ module.exports = ({ strapi }) => ({
       "api::appointment.appointment",
       {
         filters: baseFilters,
-        sort: { date: "asc" },
+        sort: { createdAt: "desc" },
         fields: [
           "id",
           "date",

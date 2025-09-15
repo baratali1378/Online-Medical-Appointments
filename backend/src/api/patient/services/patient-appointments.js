@@ -28,7 +28,7 @@ module.exports = ({ strapi }) => ({
       "api::appointment.appointment",
       {
         filters: baseFilters,
-        sort: { date: "asc" },
+        sort: { date: "desc" },
         populate: {
           doctor: {
             populate: {

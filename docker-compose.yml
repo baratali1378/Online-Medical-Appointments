@@ -75,7 +75,7 @@ services:
   # Email Service (Python)
   email_service:
     build:
-      context: ./email_service
+      context: ./microservice/email_service
       dockerfile: Dockerfile
     container_name: email_service_container
     depends_on:
